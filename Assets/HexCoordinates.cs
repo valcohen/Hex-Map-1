@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [System.Serializable]
 public struct HexCoordinates
@@ -22,7 +23,45 @@ public struct HexCoordinates
         return new HexCoordinates(x - z / 2, z);
     }
 
-	public override string ToString()
+    public static HexCoordinates FromPosition(Vector3 position)
+    {
+        float x = position.x / (HexMetrics.innerRadius * 2f);
+        float y = -x;
+
+        // adjust for non-zero Z
+        // every 2 rows, shift an entire unit to the left
+        float offset = position.z / (HexMetrics.outerRadius * 3f);
+        x -= offset;
+        y -= offset;
+
+        // x and y are now whole numbers at the center of each cell. round to int.
+        int iX = Mathf.RoundToInt(x);
+        int iY = Mathf.RoundToInt(y);
+        int iZ = Mathf.RoundToInt(-x - y);
+
+        if (iX + iY + iZ != 0) {
+            Debug.LogWarning(String.Format(
+                "rounding error! {0} ({1}), {2} ({3}), {4} ({5})", 
+                x, iX, 
+                y, iY, 
+                (-x - y), iZ
+            ));
+
+            float dX = Mathf.Abs(x - iX);
+            float dY = Mathf.Abs(y - iY);
+            float dZ = Mathf.Abs(-x -y - iZ);
+
+            if (dX > dY && dX > dZ) {
+                iX = -iY - iZ;
+            } else if (dZ > dY) {
+                iZ = -iX - iY;
+            }
+        }
+
+        return new HexCoordinates(iX, iZ);
+    }
+
+    public override string ToString()
 	{
         return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
