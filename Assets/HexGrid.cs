@@ -4,15 +4,18 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour {
 
-    public int width  = 6;
-    public int height = 6;
+    public int      width  = 6;
+    public int      height = 6;
 
     public HexCell  cellPrefab;
     public Text     cellLabelPrefab;
 
-    Canvas      gridCanvas;
-    HexCell[]   cells;
-    HexMesh     hexMesh;
+    public Color    defaultColor = Color.white;
+    public Color    touchedColor = Color.magenta;
+
+    Canvas          gridCanvas;
+    HexCell[]       cells;
+    HexMesh         hexMesh;
 
 	private void Awake()
 	{
@@ -51,6 +54,11 @@ public class HexGrid : MonoBehaviour {
     void TouchCell (Vector3 position) {
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
+        int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
+        HexCell cell = cells[index];
+        cell.color = touchedColor;
+        hexMesh.Triangulate(cells);
+
         Debug.Log("touched at " + coordinates.ToString());
     }
 
@@ -65,6 +73,7 @@ public class HexGrid : MonoBehaviour {
         cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+        cell.color = defaultColor;
 
         Text label = Instantiate<Text>(cellLabelPrefab);
         label.rectTransform.SetParent(gridCanvas.transform, false);
