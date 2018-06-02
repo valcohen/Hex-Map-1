@@ -33,7 +33,27 @@ public class HexGrid : MonoBehaviour {
 
     }
 
-    private void CreateCell(int z, int x, int i)
+	private void Update()
+	{
+        if ( Input.GetMouseButton(0) ) {
+            HandleInput();
+        }
+	}
+
+    void HandleInput() {
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(inputRay, out hit)) {
+            TouchCell(hit.point);
+        }
+    }
+
+    void TouchCell (Vector3 position) {
+        position = transform.InverseTransformPoint(position);
+        Debug.Log("touched at " + position);
+    }
+
+	private void CreateCell(int z, int x, int i)
     {
         Vector3 position;
         position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
