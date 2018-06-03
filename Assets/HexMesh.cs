@@ -52,9 +52,16 @@ public class HexMesh : MonoBehaviour {
             center + HexMetrics.GetFirstCorner(direction),
             center + HexMetrics.GetSecondCorner(direction)
         );
-        HexCell neighbor = cell.GetNeighbor(direction) ?? cell;
+        HexCell prevNeighbor = cell.GetNeighbor(direction.Previous()) ?? cell;
+        HexCell neighbor     = cell.GetNeighbor(direction)            ?? cell;
+        HexCell nextNeighbor = cell.GetNeighbor(direction.Next())     ?? cell;
         Color edgeColor = (cell.color + neighbor.color) * 0.5f; // avg colors
-        AddTriangleColor(cell.color, edgeColor, edgeColor);
+
+        AddTriangleColor(
+            cell.color,
+            (cell.color + prevNeighbor.color + neighbor.color) / 3f,
+            (cell.color + neighbor.color + nextNeighbor.color) / 3f
+        );
     }
 
 
