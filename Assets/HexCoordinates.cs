@@ -23,8 +23,7 @@ public struct HexCoordinates
         return new HexCoordinates(x - z / 2, z);
     }
 
-    public static HexCoordinates FromPosition(Vector3 position)
-    {
+    public static HexCoordinates FromPosition(Vector3 position) {
         float x = position.x / (HexMetrics.innerRadius * 2f);
         float y = -x;
 
@@ -61,8 +60,7 @@ public struct HexCoordinates
         return new HexCoordinates(iX, iZ);
     }
 
-    public override string ToString()
-	{
+    public override string ToString() {
         return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
 
