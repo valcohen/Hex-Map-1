@@ -8,6 +8,16 @@ public class HexMetrics {
     public const float blendFactor      = 1f - solidFactor;
     public const float elevationStep    = 5f;
 
+    /*
+     *       __/|
+     *    __/   |
+     *   /______|
+     */
+    public const int   terracesPerSlope = 2;
+    public const int   terraceSteps     = terracesPerSlope * 2 + 1;
+    public const float horizontalTerraceStepSize = 1f / terraceSteps;
+    public const float verticalTerraceStepSize   = 1f / (terracesPerSlope + 1);
+
     static Vector3[] corners = {
         new Vector3(0f,             0f,  outerRadius),
         new Vector3(innerRadius,    0f,  0.5f * outerRadius),
@@ -46,4 +56,21 @@ public class HexMetrics {
         return (corners[(int)direction] + corners[(int)direction + 1]) 
             * blendFactor;
     }
+
+    public static Vector3 TerraceLerp(Vector3 a, Vector3 b, int step) {
+        float h = step * HexMetrics.horizontalTerraceStepSize;
+        a.x += (b.x - a.x) * h;
+        a.z += (b.z - a.z) * h;
+        float v = ((step + 1) / 2) * HexMetrics.verticalTerraceStepSize; // only odd steps
+        a.y += (b.y - a.y) * v;
+
+        return a;
+    }
+
+    public static Color TerraceLerp(Color a, Color b, int step) {
+        float h = step * HexMetrics.horizontalTerraceStepSize;
+
+        return Color.Lerp(a, b, h);
+    }
+
 }
