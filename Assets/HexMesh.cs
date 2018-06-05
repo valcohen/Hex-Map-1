@@ -177,6 +177,11 @@ public class HexMesh : MonoBehaviour {
                 );
                 return;
             }
+            // slope-cliff cases (SCS, SCC)
+            TriangulateCornerTerracesCliff(
+                bottom, bottomCell, left, leftCell, right, rightCell
+            );
+            return;
         }
         if (rightEdgeType == HexEdgeType.Slope) {
             // FFS
@@ -195,7 +200,7 @@ public class HexMesh : MonoBehaviour {
 
     void TriangulateCornerTerraces(
         Vector3 begin, HexCell beginCell, 
-        Vector3 left, HexCell leftCell, 
+        Vector3 left,  HexCell leftCell, 
         Vector3 right, HexCell rightCell
     ) {
         Vector3 v3 = HexMetrics.TerraceLerp(begin, left, 1);
@@ -224,6 +229,14 @@ public class HexMesh : MonoBehaviour {
         // final (top) step
         AddQuad(v3, v4, left, right);
         AddQuadColor(c3, c4, leftCell.color, rightCell.color);
+    }
+
+    void TriangulateCornerTerracesCliff (
+        Vector3 begin, HexCell beginCell,
+        Vector3 left,  HexCell leftCell,
+        Vector3 right, HexCell rightCell
+    ) {
+        
     }
 
     void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3) {
