@@ -90,7 +90,17 @@ public class HexMesh : MonoBehaviour {
             AddQuadColor(cell.color, neighbor.color);
         }
 
-        // add triangle to fill corners
+        /* 
+         * add triangle to fill corners
+         * find bottom (lowest) cell and left and right neighbors
+         *
+         *  R  |  B  |  L | R  |  B | L
+         *     V     |    V    |    V
+         *   / L \   |  / B \  |  / R \
+         *           |         |
+         *   ccwise      no       cwise
+         *            rotation
+         */
         HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
         if (direction <= HexDirection.E && nextNeighbor != null) {
             Vector3 v5 = v2 + HexMetrics.GetBridge(direction.Next());
@@ -152,11 +162,27 @@ public class HexMesh : MonoBehaviour {
         HexEdgeType leftEdgeType  = bottomCell.GetEdgeType(leftCell);
         HexEdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
 
-        // slope, slope, flat (SSF)
         if (leftEdgeType == HexEdgeType.Slope) {
+            // slope, slope, flat (SSF)
             if (rightEdgeType == HexEdgeType.Slope) {
                 TriangulateCornerTerraces(
                     bottom, bottomCell, left, leftCell, right, rightCell
+                );
+                return;
+            }
+            // SFS
+            if (rightEdgeType == HexEdgeType.Flat) {
+                TriangulateCornerTerraces(
+                    left, leftCell, right, rightCell, bottom, bottomCell
+                );
+                return;
+            }
+        }
+        if (rightEdgeType == HexEdgeType.Slope) {
+            // FFS
+            if (leftEdgeType == HexEdgeType.Flat) {
+                TriangulateCornerTerraces(
+                    right, rightCell, bottom, bottomCell, left, leftCell
                 );
                 return;
             }
