@@ -236,7 +236,32 @@ public class HexMesh : MonoBehaviour {
         Vector3 left,  HexCell leftCell,
         Vector3 right, HexCell rightCell
     ) {
-        
+        // get boundary point 1 elevation level above bottom cell
+        float b = 1f / (rightCell.Elevation - beginCell.Elevation);
+        Vector3 boundary = Vector3.Lerp(begin, right, b);
+        Color boundaryColor = Color.Lerp(beginCell.color, rightCell.color, b);
+
+        Vector3 v2 = HexMetrics.TerraceLerp(begin, left, 1);
+        Color   c2 = HexMetrics.TerraceLerp(beginCell.color, leftCell.color, 1);
+
+        // first step
+        AddTriangle(begin, v2, boundary);
+        AddTriangleColor(beginCell.color, c2, boundaryColor);
+
+        // intermediate steps
+        for (int i = 2; i < HexMetrics.terraceSteps; i++) {
+            Vector3 v1 = v2;
+            Color   c1 = c2;
+            v2 = HexMetrics.TerraceLerp(begin, left, i);
+            c2 = HexMetrics.TerraceLerp(beginCell.color, leftCell.color, i);
+
+            AddTriangle(v1, v2, boundary);
+            AddTriangleColor(c1, c2, boundaryColor);
+        }
+
+        // last step
+        AddTriangle(v2, left, boundary);
+        AddTriangleColor(c2, leftCell.color, boundaryColor);
     }
 
     void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3) {
