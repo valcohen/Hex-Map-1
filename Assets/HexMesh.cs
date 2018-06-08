@@ -162,57 +162,69 @@ public class HexMesh : MonoBehaviour {
         HexEdgeType leftEdgeType  = bottomCell.GetEdgeType(leftCell);
         HexEdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
 
-        if (leftEdgeType == HexEdgeType.Slope) {
+        if (leftEdgeType == HexEdgeType.Slope)
+        {
             // slope, slope, flat (SSF)
-            if (rightEdgeType == HexEdgeType.Slope) {
+            if (rightEdgeType == HexEdgeType.Slope)
+            {
                 TriangulateCornerTerraces(
                     bottom, bottomCell, left, leftCell, right, rightCell
                 );
-                return;
             }
             // SFS
-            if (rightEdgeType == HexEdgeType.Flat) {
+            else if (rightEdgeType == HexEdgeType.Flat)
+            {
                 TriangulateCornerTerraces(
                     left, leftCell, right, rightCell, bottom, bottomCell
                 );
-                return;
             }
             // slope-cliff cases (SCS, SCC)
-            TriangulateCornerTerracesCliff(
-                bottom, bottomCell, left, leftCell, right, rightCell
-            );
-            return;
+            else
+            {
+                TriangulateCornerTerracesCliff(
+                    bottom, bottomCell, left, leftCell, right, rightCell
+                );
+            }
         }
-        if (rightEdgeType == HexEdgeType.Slope) {
+        else if (rightEdgeType == HexEdgeType.Slope)
+        {
             // FFS
-            if (leftEdgeType == HexEdgeType.Flat) {
+            if (leftEdgeType == HexEdgeType.Flat)
+            {
                 TriangulateCornerTerraces(
                     right, rightCell, bottom, bottomCell, left, leftCell
                 );
-                return;
             }
             // slope-cliff cases (CSS, CSC)
-            TriangulateCornerCliffTerraces(
-                bottom, bottomCell, left, leftCell, right, rightCell
-            );
-            return;
+            else
+            {
+                TriangulateCornerCliffTerraces(
+                    bottom, bottomCell, left, leftCell, right, rightCell
+                );
+            }
         }
         // cliff-cliff cases (CCSR, CCSL)
-        if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope) {
-            if (leftCell.Elevation < rightCell.Elevation) {
+        else if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope)
+        {
+            if (leftCell.Elevation < rightCell.Elevation)
+            {
                 TriangulateCornerCliffTerraces(
                     right, rightCell, bottom, bottomCell, left, leftCell
                 );
-            } else {
+            }
+            else
+            {
                 TriangulateCornerTerracesCliff(
                     left, leftCell, right, rightCell, bottom, bottomCell
                 );
             }
-            return;
         }
-
-        AddTriangle(bottom, left, right);
-        AddTriangleColor(bottomCell.color, leftCell.color, rightCell.color);
+        // all remaining corner cases (FFF, CCF, CCCR, CCCL)
+        else
+        {
+            AddTriangle(bottom, left, right);
+            AddTriangleColor(bottomCell.color, leftCell.color, rightCell.color);
+        }
     }
 
     void TriangulateCornerTerraces (
