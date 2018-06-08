@@ -191,6 +191,11 @@ public class HexMesh : MonoBehaviour {
                 );
                 return;
             }
+            // slope-cliff cases (CSS, CSC)
+            TriangulateCornerCliffTerraces(
+                bottom, bottomCell, left, leftCell, right, rightCell
+            );
+            return;
         }
 
 
@@ -198,7 +203,7 @@ public class HexMesh : MonoBehaviour {
         AddTriangleColor(bottomCell.color, leftCell.color, rightCell.color);
     }
 
-    void TriangulateCornerTerraces(
+    void TriangulateCornerTerraces (
         Vector3 begin, HexCell beginCell, 
         Vector3 left,  HexCell leftCell, 
         Vector3 right, HexCell rightCell
@@ -231,7 +236,7 @@ public class HexMesh : MonoBehaviour {
         AddQuadColor(c3, c4, leftCell.color, rightCell.color);
     }
 
-    void TriangulateCornerTerracesCliff(
+    void TriangulateCornerTerracesCliff (
         Vector3 begin, HexCell beginCell,
         Vector3 left, HexCell leftCell,
         Vector3 right, HexCell rightCell
@@ -255,7 +260,35 @@ public class HexMesh : MonoBehaviour {
             AddTriangle(left, right, boundary);
             AddTriangleColor(leftCell.color, rightCell.color, boundaryColor);
         }
+    }
 
+    void TriangulateCornerCliffTerraces (
+        Vector3 begin, HexCell beginCell,
+        Vector3 left, HexCell leftCell,
+        Vector3 right, HexCell rightCell
+    ) {
+        // fill bottom half
+        // get boundary point 1 elevation level above bottom cell
+        float b = 1f / (leftCell.Elevation - beginCell.Elevation);
+        Vector3 boundary = Vector3.Lerp(begin, left, b);
+        Color boundaryColor = Color.Lerp(beginCell.color, leftCell.color, b);
+
+        TriangulateBoundaryTriangle(
+            right, rightCell, begin, beginCell, boundary, boundaryColor
+        );
+
+        // fill top half
+        if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope)
+        {
+            TriangulateBoundaryTriangle(
+                left, leftCell, right, rightCell, boundary, boundaryColor
+            );
+        }
+        else
+        {
+            AddTriangle(left, right, boundary);
+            AddTriangleColor(leftCell.color, rightCell.color, boundaryColor);
+        }
     }
 
     void TriangulateBoundaryTriangle (
