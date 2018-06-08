@@ -16,8 +16,7 @@ public class HexGrid : MonoBehaviour {
     HexCell[]       cells;
     HexMesh         hexMesh;
 
-	private void Awake()
-	{
+	void Awake() {
         gridCanvas  = GetComponentInChildren<Canvas>();
         hexMesh     = GetComponentInChildren<HexMesh>();
 
@@ -30,24 +29,22 @@ public class HexGrid : MonoBehaviour {
         }
 	}
 
-    private void Start() {
+    void Start() {
         hexMesh.Triangulate(cells);
-
     }
 
-    public void ColorCell (Vector3 position, Color color) {
+    public void Refresh() {
+        hexMesh.Triangulate(cells);
+    }
+
+    public HexCell GetCell (Vector3 position) {
         position = transform.InverseTransformPoint(position);
         HexCoordinates coordinates = HexCoordinates.FromPosition(position);
         int index = coordinates.X + coordinates.Z * width + coordinates.Z / 2;
-        HexCell cell = cells[index];
-        cell.color = color;
-        hexMesh.Triangulate(cells);
-
-        Debug.Log("Touched at " + coordinates.ToString());
+        return cells[index];
     }
 
-    private void CreateCell(int z, int x, int i)
-    {
+    void CreateCell(int z, int x, int i) {
         Vector3 position;
         position.x = (x + z * 0.5f - z / 2) * (HexMetrics.innerRadius * 2f);
         position.y = 0f;
@@ -84,5 +81,6 @@ public class HexGrid : MonoBehaviour {
         label.rectTransform.SetParent(gridCanvas.transform, false);
         label.rectTransform.anchoredPosition = new Vector2(position.x, position.z);
         label.text = cell.coordinates.ToStringOnSeparateLines();
+        cell.uiRect = label.rectTransform;
     }
 }
