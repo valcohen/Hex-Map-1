@@ -57,17 +57,27 @@ public class HexMesh : MonoBehaviour {
         Vector3 v1 = center + HexMetrics.GetFirstSolidCorner(direction);
         Vector3 v2 = center + HexMetrics.GetSecondSolidCorner(direction);
 
-        // add triangle
-        AddTriangle(center, v1, v2);
+        // add two intermdiate points to increase perturbation
+        Vector3 e1 = Vector3.Lerp(v1, v2, 1f / 3f);
+        Vector3 e2 = Vector3.Lerp(v1, v2, 2f / 3f);
+
+        // add triangles
+        AddTriangle(center, v1, e1);
+        AddTriangle(center, e1, e2);
+        AddTriangle(center, e2, v2);
+
+        AddTriangleColor(cell.color);
+        AddTriangleColor(cell.color);
         AddTriangleColor(cell.color);
 
         if (direction <= HexDirection.SE) {
-            TriangulateConnection(direction, cell, v1, v2);
+            TriangulateConnection(direction, cell, v1, e1, e2, v2);
         }
     }
 
     void TriangulateConnection(
-        HexDirection direction, HexCell cell, Vector3 v1, Vector3 v2
+        HexDirection direction, HexCell cell, 
+        Vector3 v1, Vector3 e1, Vector3 e2, Vector3 v2
     ) {
         HexCell neighbor = cell.GetNeighbor(direction);
         if (neighbor == null) { 
@@ -80,13 +90,21 @@ public class HexMesh : MonoBehaviour {
         Vector3 v4 = v2 + bridge;
         v3.y = v4.y = neighbor.Position.y;
 
+        Vector3 e3 = Vector3.Lerp(v3, v4, 1f / 3f);
+        Vector3 e4 = Vector3.Lerp(v3, v4, 2f / 3f);
+
         if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
         {
             TriangulateEdgeTerraces(v1, v2, cell, v3, v4, neighbor);
         }
         else
         {
-            AddQuad(v1, v2, v3, v4);
+            AddQuad(v1, e1, v3, e3);
+            AddQuad(e1, e2, e3, e4);
+            AddQuad(e2, v2, e4, v4);
+
+            AddQuadColor(cell.color, neighbor.color);
+            AddQuadColor(cell.color, neighbor.color);
             AddQuadColor(cell.color, neighbor.color);
         }
 
