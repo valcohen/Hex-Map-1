@@ -20,7 +20,7 @@ public class HexMesh : MonoBehaviour {
         colors       = new List<Color>();
     }
 
-    public void Triangulate(HexCell[] cells)
+    public void Triangulate (HexCell[] cells)
     {
         hexMesh.Clear();
         vertices.Clear();
@@ -38,7 +38,7 @@ public class HexMesh : MonoBehaviour {
         meshCollider.sharedMesh = hexMesh;
     }
 
-    void Triangulate(HexCell cell) {
+    void Triangulate (HexCell cell) {
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
             Triangulate(d, cell);
         }
@@ -52,32 +52,22 @@ public class HexMesh : MonoBehaviour {
      *       \|/
      *        v center
      */
-    void Triangulate(HexDirection direction, HexCell cell) {
+    void Triangulate (HexDirection direction, HexCell cell) {
         Vector3 center = cell.Position;
-        Vector3 v1 = center + HexMetrics.GetFirstSolidCorner(direction);
-        Vector3 v2 = center + HexMetrics.GetSecondSolidCorner(direction);
+        EdgeVertices edge = new EdgeVertices(
+            center + HexMetrics.GetFirstSolidCorner(direction),
+            center + HexMetrics.GetSecondSolidCorner(direction)
+        );
 
-        // add two intermdiate points to increase perturbation
-        Vector3 e1 = Vector3.Lerp(v1, v2, 1f / 3f);
-        Vector3 e2 = Vector3.Lerp(v1, v2, 2f / 3f);
-
-        // add triangles
-        AddTriangle(center, v1, e1);
-        AddTriangle(center, e1, e2);
-        AddTriangle(center, e2, v2);
-
-        AddTriangleColor(cell.color);
-        AddTriangleColor(cell.color);
-        AddTriangleColor(cell.color);
+        TriangulateEdgeFan(center, edge, cell.color);
 
         if (direction <= HexDirection.SE) {
-            TriangulateConnection(direction, cell, v1, e1, e2, v2);
+            TriangulateConnection(direction, cell, edge);
         }
     }
 
-    void TriangulateConnection(
-        HexDirection direction, HexCell cell, 
-        Vector3 v1, Vector3 e1, Vector3 e2, Vector3 v2
+    void TriangulateConnection (
+        HexDirection direction, HexCell cell, EdgeVertices e1
     ) {
         HexCell neighbor = cell.GetNeighbor(direction);
         if (neighbor == null) { 
@@ -86,26 +76,17 @@ public class HexMesh : MonoBehaviour {
 
         // add "bridge" quad to blend triangle edge with neighbor
         Vector3 bridge = HexMetrics.GetBridge(direction);
-        Vector3 v3 = v1 + bridge;
-        Vector3 v4 = v2 + bridge;
-        v3.y = v4.y = neighbor.Position.y;
+        bridge.y = neighbor.Position.y - cell.Position.y;
+        EdgeVertices e2 = new EdgeVertices(
+            e1.v1 + bridge,
+            e1.v4 + bridge
+        );
 
-        Vector3 e3 = Vector3.Lerp(v3, v4, 1f / 3f);
-        Vector3 e4 = Vector3.Lerp(v3, v4, 2f / 3f);
-
-        if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
-        {
-            TriangulateEdgeTerraces(v1, v2, cell, v3, v4, neighbor);
+        if (cell.GetEdgeType(direction) == HexEdgeType.Slope) {
+            TriangulateEdgeTerraces(e1, cell, e2, neighbor);
         }
-        else
-        {
-            AddQuad(v1, e1, v3, e3);
-            AddQuad(e1, e2, e3, e4);
-            AddQuad(e2, v2, e4, v4);
-
-            AddQuadColor(cell.color, neighbor.color);
-            AddQuadColor(cell.color, neighbor.color);
-            AddQuadColor(cell.color, neighbor.color);
+        else {
+            TriangulateEdgeStrip(e1, cell.color, e2, neighbor.color);
         }
 
         /* 
@@ -121,55 +102,57 @@ public class HexMesh : MonoBehaviour {
          */
         HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
         if (direction <= HexDirection.E && nextNeighbor != null) {
-            Vector3 v5 = v2 + HexMetrics.GetBridge(direction.Next());
+            Vector3 v5 = e1.v4 + HexMetrics.GetBridge(direction.Next());
             v5.y = nextNeighbor.Position.y;
 
             if (cell.Elevation <= neighbor.Elevation) {
                 if (cell.Elevation <= nextNeighbor.Elevation) {
-                    TriangulateCorner(v2, cell, v4, neighbor, v5, nextNeighbor);
+                    TriangulateCorner(
+                        e1.v4, cell, e2.v4, neighbor, v5, nextNeighbor
+                    );
                 } 
                 else { // nxt is lower, rotate cc-wise to keep properly oriented
-                    TriangulateCorner(v5, nextNeighbor, v2, cell, v4, neighbor);
+                    TriangulateCorner(
+                        v5, nextNeighbor, e1.v4, cell, e2.v4, neighbor
+                    );
                 }
             }
             else if (neighbor.Elevation <= nextNeighbor.Elevation) {
-                TriangulateCorner(v4, neighbor, v5, nextNeighbor, v2, cell);
+                TriangulateCorner(
+                    e2.v4, neighbor, v5, nextNeighbor, e1.v4, cell)
+                ;
             }
             else {
-                TriangulateCorner(v5, nextNeighbor, v2, cell, v4, neighbor);
+                TriangulateCorner(
+                    v5, nextNeighbor, e1.v4, cell, e2.v4, neighbor
+                );
             }
         }
     }
 
     void TriangulateEdgeTerraces(
-        Vector3 beginLeft, Vector3 beginRight, HexCell beginCell, 
-        Vector3 endLeft,   Vector3 endRight,   HexCell endCell
+        EdgeVertices begin, HexCell beginCell, 
+        EdgeVertices end,   HexCell endCell
     ) {
-        Vector3 v3 = HexMetrics.TerraceLerp(beginLeft,  endLeft,  1);
-        Vector3 v4 = HexMetrics.TerraceLerp(beginRight, endRight, 1);
-        Color   c2 = HexMetrics.TerraceLerp(beginCell.color, endCell.color, 1);
+        EdgeVertices e2 = EdgeVertices.TerraceLerp(begin, end, 1);
+        Color        c2 = HexMetrics.TerraceLerp(beginCell.color, endCell.color, 1);
 
         // first step
-        AddQuad(beginLeft, beginRight, v3, v4);
-        AddQuadColor(beginCell.color, c2);
+        TriangulateEdgeStrip(begin, beginCell.color, e2, c2);
 
         // intermediate steps
         for (int i = 2; i < HexMetrics.terraceSteps; i++) {
-            Vector3 v1 = v3;
-            Vector3 v2 = v4;
-            Color   c1 = c2;
+            EdgeVertices e1 = e2;
+            Color        c1 = c2;
 
-            v3 = HexMetrics.TerraceLerp(beginLeft,  endLeft,  i);
-            v4 = HexMetrics.TerraceLerp(beginRight, endRight, i);
+            e2 = EdgeVertices.TerraceLerp(begin, end, i);
             c2 = HexMetrics.TerraceLerp(beginCell.color, endCell.color, i);
 
-            AddQuad(v1, v2, v3, v4);
-            AddQuadColor(c1, c2);
+            TriangulateEdgeStrip(e1, c1, e2, c2);
         }
 
         // last step
-        AddQuad(v3, v4, endLeft, endRight);
-        AddQuadColor(c2, endCell.color);
+        TriangulateEdgeStrip(e2, c2, end, endCell.color);
     }
 
     void TriangulateCorner (
@@ -367,6 +350,29 @@ public class HexMesh : MonoBehaviour {
         // last step
         AddTriangle(v2, left, boundary);
         AddTriangleColor(c2, leftCell.color, boundaryColor);
+    }
+
+    void TriangulateEdgeFan (Vector3 center, EdgeVertices edge, Color color) {
+        AddTriangle(center, edge.v1, edge.v2);
+        AddTriangle(center, edge.v2, edge.v3);
+        AddTriangle(center, edge.v3, edge.v4);
+
+        AddTriangleColor(color);
+        AddTriangleColor(color);
+        AddTriangleColor(color);
+    }
+
+    void TriangulateEdgeStrip (
+        EdgeVertices e1, Color c1, 
+        EdgeVertices e2, Color c2
+    ) {
+        AddQuad(e1.v1, e1.v2, e2.v1, e2.v2);
+        AddQuad(e1.v2, e1.v3, e2.v2, e2.v3);
+        AddQuad(e1.v3, e1.v4, e2.v3, e2.v4);
+
+        AddQuadColor(c1, c2);
+        AddQuadColor(c1, c2);
+        AddQuadColor(c1, c2);
     }
 
     void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3) {
