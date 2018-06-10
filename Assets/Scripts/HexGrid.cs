@@ -8,6 +8,8 @@ public class HexGrid : MonoBehaviour {
     int cellCountX = 6;
     int cellCountZ = 6;
 
+    public HexGridChunk chunkPrefab;
+
     public HexCell  cellPrefab;
     public Text     cellLabelPrefab;
 
@@ -16,6 +18,7 @@ public class HexGrid : MonoBehaviour {
     public Texture2D noiseSource;
 
     Canvas          gridCanvas;
+    HexGridChunk[]  chunks;
     HexCell[]       cells;
     HexMesh         hexMesh;
 
@@ -28,7 +31,19 @@ public class HexGrid : MonoBehaviour {
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
 
+        CreateChunks();
         CreateCells();
+    }
+
+    void CreateChunks () {
+        chunks = new HexGridChunk[chunkCountX * chunkCountZ];
+
+        for (int z = 0, i = 0; z < chunkCountZ; z++) {
+            for (int x = 0; x < chunkCountX; x++) {
+                HexGridChunk chunk = chunks[i++] = Instantiate(chunkPrefab);
+                chunk.transform.SetParent(this.transform);
+            }
+        }
     }
 
     void CreateCells () {
