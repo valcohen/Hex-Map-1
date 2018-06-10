@@ -14,15 +14,25 @@ public class HexCell : MonoBehaviour {
             // raise the cell
             Vector3 position = transform.localPosition;
             position.y = value * HexMetrics.elevationStep;
+            position.y += (
+                HexMetrics.SampleNoise(position).y * 2f - 1f) *
+                HexMetrics.elevationPerturbStrength;
+
             transform.localPosition = position;
 
             // raise the label
             Vector3 uiPosition = uiRect.localPosition;
-            uiPosition.z = elevation * -HexMetrics.elevationStep;   // Z cuz canvas is rotated
+            uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
             uiRect.localPosition = uiPosition;
         }
     }
     int elevation;
+
+    public Vector3 Position {
+        get {
+            return transform.localPosition;
+        }
+    }
 
     public RectTransform uiRect;
 
