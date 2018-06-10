@@ -4,9 +4,9 @@ public class HexMetrics {
 
     public const float outerRadius      = 10f;
     public const float innerRadius      = outerRadius * 0.866025404f; // .866 == sqrt(3) / 2
-    public const float solidFactor      = 0.75f; // 0 = all border, 1 = all hex
+    public const float solidFactor      = 0.8f; // 0 = all border, 1 = all hex
     public const float blendFactor      = 1f - solidFactor;
-    public const float elevationStep    = 5f;
+    public const float elevationStep    = 3f;
 
     /*
      *       __/|
@@ -21,7 +21,7 @@ public class HexMetrics {
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
 
-    public const float cellPerturbStrength  = 5f;
+    public const float cellPerturbStrength  = 4f;
     public const float elevationPerturbStrength = 1.5f;
 
     static Vector3[] corners = {
