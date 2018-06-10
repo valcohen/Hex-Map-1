@@ -2,6 +2,9 @@
 
 public class HexMetrics {
 
+    public const int   chunkSizeX = 5;    // chunks of hex cells, for large maps
+    public const int   chunkSizeZ = 5;
+
     public const float outerRadius      = 10f;
     public const float innerRadius      = outerRadius * 0.866025404f; // .866 == sqrt(3) / 2
     public const float solidFactor      = 0.8f; // 0 = all border, 1 = all hex
