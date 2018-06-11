@@ -17,16 +17,11 @@ public class HexGrid : MonoBehaviour {
 
     public Texture2D noiseSource;
 
-    Canvas          gridCanvas;
     HexGridChunk[]  chunks;
     HexCell[]       cells;
-    HexMesh         hexMesh;
 
     void Awake() {
         HexMetrics.noiseSource = noiseSource;
-
-        gridCanvas = GetComponentInChildren<Canvas>();
-        hexMesh = GetComponentInChildren<HexMesh>();
 
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
@@ -56,16 +51,8 @@ public class HexGrid : MonoBehaviour {
         }
 	}
 
-    void Start() {
-        hexMesh.Triangulate(cells);
-    }
-
     void OnEnable() {
         HexMetrics.noiseSource = noiseSource;
-    }
-
-    public void Refresh() {
-        hexMesh.Triangulate(cells);
     }
 
     public HexCell GetCell (Vector3 position) {
@@ -82,7 +69,7 @@ public class HexGrid : MonoBehaviour {
         position.z = z * (HexMetrics.outerRadius * 1.5f);
 
         HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-        cell.transform.SetParent(transform, false);
+        // cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.color = defaultColor;
@@ -109,11 +96,23 @@ public class HexGrid : MonoBehaviour {
         }
 
         Text label = Instantiate<Text>(cellLabelPrefab);
-        label.rectTransform.SetParent(gridCanvas.transform, false);
+        // label.rectTransform.SetParent(gridCanvas.transform, false);
         label.rectTransform.anchoredPosition = new Vector2(position.x, position.z);
         label.text = cell.coordinates.ToStringOnSeparateLines();
         cell.uiRect = label.rectTransform;
 
         cell.Elevation = 0;
+
+        AddCellToChunk(x, z, cell);
+    }
+
+    void AddCellToChunk (int x, int z, HexCell cell) {
+        int chunkX = x / HexMetrics.chunkSizeX;
+        int chunkZ = z / HexMetrics.chunkSizeZ;
+        HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
+
+        int localX = x - chunkX * HexMetrics.chunkSizeX;
+        int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
+        chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
     }
 }
