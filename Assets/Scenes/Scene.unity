@@ -1038,6 +1038,8 @@ MonoBehaviour:
   stickMaxZoom: -45
   swivelMinZoom: 90
   swivelMaxZoom: 45
+  moveSpeedMinZoom: 400
+  moveSpeedMaxZoom: 100
 --- !u!1 &780239698
 GameObject:
   m_ObjectHideFlags: 0
