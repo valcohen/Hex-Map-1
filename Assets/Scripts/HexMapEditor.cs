@@ -11,6 +11,7 @@ public class HexMapEditor : MonoBehaviour {
 
     bool applyColor;
     bool applyElevation;
+    int brushSize;
 
 	private void Awake() {
         SelectColor(-1);
@@ -54,5 +55,9 @@ public class HexMapEditor : MonoBehaviour {
 
     public void SetApplyElevation(bool toggle) {
         applyElevation = toggle;
+    }
+
+    public void SetBrushSize(float size) {
+        brushSize = (int)size;
     }
 }
