@@ -90,4 +90,35 @@ public class HexCell : MonoBehaviour {
             }
         }
     }
+
+    /*
+     * Rivers. Possible cell configurations:
+     * 
+     *         / \     / \
+     *        |   |   |  -|
+     *         \ /     \ /
+     * 
+     *     / \     / \     / \
+     *    | +-|   | +-|   |---|
+     *     \ \     / /     \ /
+     */
+
+    bool hasIncomingRiver, hasOutgoingRiver;
+    HexDirection incomingRiver, outgoingRiver;
+
+    public bool HasIncomingRiver { get { return hasIncomingRiver; } }
+    public bool HasOutgoingRiver { get { return hasOutgoingRiver; } }
+
+    public HexDirection IncomingRiver { get { return incomingRiver; } }
+    public HexDirection OutgoingRiver { get { return outgoingRiver; } }
+
+    public bool HasRiver { get { return hasIncomingRiver || hasOutgoingRiver; } }
+    public bool HasRiverBeginOrEnd { get { return hasIncomingRiver != hasOutgoingRiver; } }
+
+    public bool HasRiverThroughEdge (HexDirection direction) {
+        return
+            (hasIncomingRiver && incomingRiver == direction) ||
+            (hasOutgoingRiver && outgoingRiver == direction);
+    }
+
 }
