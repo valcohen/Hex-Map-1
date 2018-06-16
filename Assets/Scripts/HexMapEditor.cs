@@ -86,6 +86,8 @@ public class HexMapEditor : MonoBehaviour {
     }
 
     void EditCell(HexCell cell) {
+        if (cell == null) { return; }
+
         if (applyColor) {
             cell.Color = activeColor;
         }
