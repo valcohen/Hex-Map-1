@@ -91,6 +91,10 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    void RefreshSelfOnly () {
+        this.chunk.Refresh();
+    }
+
     /*
      * Rivers. Possible cell configurations:
      * 
@@ -121,4 +125,28 @@ public class HexCell : MonoBehaviour {
             (hasOutgoingRiver && outgoingRiver == direction);
     }
 
+
+    public void RemoveOutgoingRiver () {
+        if (!hasOutgoingRiver) { return; }
+
+        hasOutgoingRiver = false;
+        this.RefreshSelfOnly();
+
+        // We don't currently support rivers that flow out of the map,
+        // so no need to check whether neighbor exists.
+        HexCell neighbor = GetNeighbor(outgoingRiver);
+        neighbor.hasIncomingRiver = false;
+        neighbor.RefreshSelfOnly();
+    }
+
+    public void RemoveIncomingRiver () {
+        if (!hasIncomingRiver) { return; }
+
+        hasIncomingRiver = false;
+        this.RefreshSelfOnly();
+
+        HexCell neighbor = GetNeighbor(incomingRiver);
+        neighbor.hasIncomingRiver = false;
+        neighbor.RefreshSelfOnly();
+    }
 }
