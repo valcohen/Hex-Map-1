@@ -118,4 +118,13 @@ public class HexMapEditor : MonoBehaviour {
     public void ShowUI (bool visible) {
         hexGrid.ShowUI(visible);
     }
+
+    enum OptionalToggle {
+        Ignore, Yes, No
+    }
+    OptionalToggle riverMode;
+
+    public void SetRiverMode (int mode) {
+        riverMode = (OptionalToggle)mode;
+    }
 }
