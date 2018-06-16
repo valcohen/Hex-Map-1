@@ -40,6 +40,21 @@ public class HexCell : MonoBehaviour {
             uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
             uiRect.localPosition = uiPosition;
 
+
+            // prevent uphill rivers
+            if (
+                hasOutgoingRiver && 
+                elevation < GetNeighbor(outgoingRiver).elevation
+            ) {
+                RemoveOutgoingRiver();    
+            }
+            if (
+                hasIncomingRiver &&
+                elevation > GetNeighbor(incomingRiver).elevation
+            ) {
+                RemoveIncomingRiver();
+            }
+
             Refresh();
         }
     }
@@ -147,6 +162,31 @@ public class HexCell : MonoBehaviour {
 
         HexCell neighbor = GetNeighbor(incomingRiver);
         neighbor.hasIncomingRiver = false;
+        neighbor.RefreshSelfOnly();
+    }
+
+    public void SetOutgoingRiver (HexDirection direction) {
+        if (hasOutgoingRiver && outgoingRiver == direction) { return; }
+
+        HexCell neighbor = GetNeighbor(direction);
+        // don't set river if no neighbor or if neighbor is uphill
+        if (!neighbor || elevation < neighbor.elevation) { return; }
+
+        // clean up existing rivers
+        RemoveOutgoingRiver();
+        if (hasIncomingRiver && incomingRiver == direction) {
+            RemoveIncomingRiver();
+        }
+
+        // set our outgoing river
+        hasOutgoingRiver = true;
+        outgoingRiver = direction;
+        RefreshSelfOnly();
+
+        // set neighbor's incoming river
+        neighbor.RemoveIncomingRiver();
+        neighbor.hasIncomingRiver = true;
+        neighbor.incomingRiver = direction.Opposite();
         neighbor.RefreshSelfOnly();
     }
 }
