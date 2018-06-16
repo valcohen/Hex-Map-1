@@ -165,6 +165,11 @@ public class HexCell : MonoBehaviour {
         neighbor.RefreshSelfOnly();
     }
 
+    public void RemoveRiver() {
+        this.RemoveOutgoingRiver();
+        this.RemoveIncomingRiver();
+    }
+
     public void SetOutgoingRiver (HexDirection direction) {
         if (hasOutgoingRiver && outgoingRiver == direction) { return; }
 
