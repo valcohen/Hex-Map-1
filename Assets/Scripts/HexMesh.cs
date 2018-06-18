@@ -65,7 +65,12 @@ public class HexMesh : MonoBehaviour {
                 // drop middle edge vertex to streambed height
                 edge.v3.y = cell.StreamBedY;
 
-                TriangulateWithRiver(direction, cell, center, edge);
+                if (cell.HasRiverBeginOrEnd) {
+                    TriangulateWithRiverBeginOrEnd(direction, cell, center, edge);
+                }
+                else {
+                    TriangulateWithRiver(direction, cell, center, edge);
+                }
             }
         } else {
             TriangulateEdgeFan(center, edge, cell.Color);    
@@ -194,6 +199,21 @@ public class HexMesh : MonoBehaviour {
         AddQuadColor(cell.Color);
         AddQuadColor(cell.Color);
         AddTriangleColor(cell.Color);
+    }
+
+    void TriangulateWithRiverBeginOrEnd (
+        HexDirection direction, HexCell cell, Vector3 center, EdgeVertices e
+    ) {
+        EdgeVertices m = new EdgeVertices(
+            Vector3.Lerp (center, e.v1, 0.5f),
+            Vector3.Lerp (center, e.v5, 0.5f)
+        );
+
+        // set middle vertex to streambed height
+        m.v3.y = e.v3.y;
+
+        TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
+        TriangulateEdgeFan(center, m, cell.Color);
     }
 
     void TriangulateCorner (
