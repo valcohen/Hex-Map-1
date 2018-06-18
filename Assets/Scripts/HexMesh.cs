@@ -159,7 +159,41 @@ public class HexMesh : MonoBehaviour {
     void TriangulateWithRiver (
         HexDirection direction, HexCell cell, Vector3 center, EdgeVertices e
     ) {
-        
+        // To create a channel across the cell, stretch the center into 
+        // a line with same width as channel.
+
+        // Outer half:
+        // Find left vertex by moving 1/4 the way from the center 
+        // to the 1st corner of the previous part.
+        Vector3 centerL = center +
+            HexMetrics.GetFirstSolidCorner(direction.Previous()) * 0.25f;
+
+        // Same for the right vertex, but use 2nd corner of next part
+        Vector3 centerR = center +
+            HexMetrics.GetSecondSolidCorner(direction.Next()) * 0.25f;
+
+        // Middle line: create edge vertices between center & edge
+        EdgeVertices m = new EdgeVertices(
+            Vector3.Lerp(centerL, e.v1, 0.5f),
+            Vector3.Lerp(centerR, e.v5, 0.5f),
+            1f / 6f     // compensate for pinched channels
+        );
+
+        // Lower channel bottom
+        m.v3.y = center.y = e.v3.y;
+
+        TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
+
+        // Inner half:
+        AddTriangle(centerL, m.v1, m.v2);
+        AddQuad(centerL, center, m.v2, m.v3);
+        AddQuad(center, centerR, m.v3, m.v4);
+        AddTriangle(centerR, m.v4, m.v5);
+
+        AddTriangleColor(cell.Color);
+        AddQuadColor(cell.Color);
+        AddQuadColor(cell.Color);
+        AddTriangleColor(cell.Color);
     }
 
     void TriangulateCorner (
@@ -486,6 +520,13 @@ public class HexMesh : MonoBehaviour {
         colors.Add(c2);
         colors.Add(c3);
         colors.Add(c4);
+    }
+
+    void AddQuadColor(Color color) {
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
+        colors.Add(color);
     }
 
     Vector3 Perturb (Vector3 position) {
