@@ -39,7 +39,6 @@ public class HexMapEditor : MonoBehaviour {
 
             if (previousCell && previousCell != currentCell) {
                 ValidateDrag(currentCell);
-                Debug.Log("ValidateDrag: " + isDrag);
             } else {
                 isDrag = false;
             }

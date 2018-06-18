@@ -59,6 +59,11 @@ public class HexMesh : MonoBehaviour {
             center + HexMetrics.GetSecondSolidCorner(direction)
         );
 
+        if (cell.HasRiverThroughEdge(direction)) {
+            // drop middle edge vertex to streambed height
+            edge.v3.y = cell.StreamBedY;
+        }
+
         TriangulateEdgeFan(center, edge, cell.Color);
 
         if (direction <= HexDirection.SE) {
@@ -81,6 +86,11 @@ public class HexMesh : MonoBehaviour {
             e1.v1 + bridge,
             e1.v5 + bridge
         );
+
+        if (cell.HasRiverThroughEdge(direction)) {
+            // drop middle edge vertex to streambedheight
+            e2.v3.y = neighbor.StreamBedY;
+        }
 
         if (cell.GetEdgeType(direction) == HexEdgeType.Slope) {
             TriangulateEdgeTerraces(e1, cell, e2, neighbor);

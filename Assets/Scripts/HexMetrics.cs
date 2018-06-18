@@ -21,6 +21,8 @@ public class HexMetrics {
     public const float horizontalTerraceStepSize = 1f / terraceSteps;
     public const float verticalTerraceStepSize   = 1f / (terracesPerSlope + 1);
 
+    public const float streamBedElevationOffset = -1f;
+
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
 

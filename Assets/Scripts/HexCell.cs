@@ -60,6 +60,14 @@ public class HexCell : MonoBehaviour {
     }
     int elevation = int.MinValue;
 
+    public float StreamBedY {
+        get {
+            return
+                (elevation + HexMetrics.streamBedElevationOffset) *
+                HexMetrics.elevationStep;
+        }
+    }
+
     public Vector3 Position {
         get {
             return transform.localPosition;
