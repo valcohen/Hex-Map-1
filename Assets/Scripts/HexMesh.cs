@@ -59,12 +59,17 @@ public class HexMesh : MonoBehaviour {
             center + HexMetrics.GetSecondSolidCorner(direction)
         );
 
-        if (cell.HasRiverThroughEdge(direction)) {
-            // drop middle edge vertex to streambed height
-            edge.v3.y = cell.StreamBedY;
-        }
+        if (cell.HasRiver) {
+            if (cell.HasRiverThroughEdge(direction))
+            {
+                // drop middle edge vertex to streambed height
+                edge.v3.y = cell.StreamBedY;
 
-        TriangulateEdgeFan(center, edge, cell.Color);
+                TriangulateWithRiver(direction, cell, center, edge);
+            }
+        } else {
+            TriangulateEdgeFan(center, edge, cell.Color);    
+        }
 
         if (direction <= HexDirection.SE) {
             TriangulateConnection(direction, cell, edge);
@@ -138,6 +143,23 @@ public class HexMesh : MonoBehaviour {
                 );
             }
         }
+    }
+
+    /*
+     *  To accommodate river through center, 
+     *  create trapzoid instead of triangle. 
+     *  
+     *   e.v1 ______________ e.v5
+     *        \  /| /| /|  /
+     *    m.v1 \/_|/_|/_|// m.v5
+     *          \ | /| /|/
+     *           \|/_|/_| 
+     *         cL   ctr  cR
+     */
+    void TriangulateWithRiver (
+        HexDirection direction, HexCell cell, Vector3 center, EdgeVertices e
+    ) {
+        
     }
 
     void TriangulateCorner (
