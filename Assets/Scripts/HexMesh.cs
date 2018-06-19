@@ -72,6 +72,9 @@ public class HexMesh : MonoBehaviour {
                     TriangulateWithRiver(direction, cell, center, edge);
                 }
             }
+            else {
+                TriangulateAdjacentToRiver(direction, cell, center, edge);
+            }
         } else {
             TriangulateEdgeFan(center, edge, cell.Color);    
         }
@@ -239,6 +242,42 @@ public class HexMesh : MonoBehaviour {
 
         // set middle vertex to streambed height
         m.v3.y = e.v3.y;
+
+        TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
+        TriangulateEdgeFan(center, m, cell.Color);
+    }
+
+    void TriangulateAdjacentToRiver (
+        HexDirection direction, HexCell cell, Vector3 center, EdgeVertices e
+    ) {
+        // check if inside the curve and move center toward edge
+        if (cell.HasRiverThroughEdge(direction.Next())) {
+            if (cell.HasRiverThroughEdge(direction.Previous())) {
+                center += HexMetrics.GetSolidEdgeMiddle(direction) *
+                (HexMetrics.innerToOuter * 0.5f);
+            }
+            // if river in next direction but not previous, check if it's
+            // a straight river & move center towards 1st corner.
+            else if (
+                cell.HasRiverThroughEdge(direction.Previous2())
+            ) {
+                center += HexMetrics.GetFirstSolidCorner(direction) * 0.25f;
+            }
+        }
+        // has a river in previous direction & it's straight; 
+        // move center towards next solid corner
+        else if (
+            cell.HasRiverThroughEdge(direction.Previous()) &&
+            cell.HasRiverThroughEdge(direction.Next2())
+        ) {
+            center += HexMetrics.GetSecondSolidCorner(direction) * 0.25f;
+        }
+
+
+        EdgeVertices m = new EdgeVertices(
+            Vector3.Lerp(center, e.v1, 0.5f),
+            Vector3.Lerp(center, e.v5, 0.5f)
+        );
 
         TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
         TriangulateEdgeFan(center, m, cell.Color);
