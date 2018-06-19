@@ -183,12 +183,24 @@ public class HexMesh : MonoBehaviour {
         else if (cell.HasRiverThroughEdge(direction.Next())) {
             centerL = center;
             centerR = Vector3.Lerp(center, e.v5, 2f / 3f);
-        } else if (cell.HasRiverThroughEdge(direction.Previous())) {
+        }
+        else if (cell.HasRiverThroughEdge(direction.Previous())) {
             centerL = Vector3.Lerp(center, e.v1, 2f / 3f);
             centerR = center;
-        } else {
-            // collapse center line to a point
-            centerL = centerR = center;
+        }
+        // Handle two-step turns
+        else if (cell.HasRiverThroughEdge(direction.Next2())) {
+            centerL = center;
+            centerR = center +
+                HexMetrics.GetSolidEdgeMiddle(direction.Next()) * 
+                (0.5f * HexMetrics.innerToOuter);
+        }
+
+        else {
+            centerL = center +
+                HexMetrics.GetSolidEdgeMiddle(direction.Previous()) * 
+                (0.5f * HexMetrics.innerToOuter);
+            centerR = center;
         }
 
         center = Vector3.Lerp(centerL, centerR, 0.5f);

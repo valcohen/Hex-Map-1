@@ -1,12 +1,16 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class HexMetrics {
 
     public const int   chunkSizeX = 5;    // chunks of hex cells, for large maps
     public const int   chunkSizeZ = 5;
 
+    public const float outerToInner = 0.866025404f; // .866 == sqrt(3) / 2
+    public const float innerToOuter = 1f / outerToInner;
+
     public const float outerRadius      = 10f;
-    public const float innerRadius      = outerRadius * 0.866025404f; // .866 == sqrt(3) / 2
+    public const float innerRadius      = outerRadius * outerToInner;
     public const float solidFactor      = 0.8f; // 0 = all border, 1 = all hex
     public const float blendFactor      = 1f - solidFactor;
     public const float elevationStep    = 3f;
@@ -100,5 +104,11 @@ public class HexMetrics {
             position.x * noiseScale, 
             position.z * noiseScale
         );
+    }
+
+    public static Vector3 GetSolidEdgeMiddle (HexDirection direction) {
+        return
+            (corners[(int)direction] + corners[(int)direction + 1]) *
+            (0.5f * solidFactor);
     }
 }
