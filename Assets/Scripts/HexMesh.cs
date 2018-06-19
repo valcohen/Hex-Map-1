@@ -166,16 +166,32 @@ public class HexMesh : MonoBehaviour {
     ) {
         // To create a channel across the cell, stretch the center into 
         // a line with same width as channel.
+        Vector3 centerL, centerR;
 
         // Outer half:
-        // Find left vertex by moving 1/4 the way from the center 
-        // to the 1st corner of the previous part.
-        Vector3 centerL = center +
-            HexMetrics.GetFirstSolidCorner(direction.Previous()) * 0.25f;
+        if (cell.HasRiverThroughEdge(direction.Opposite())) {
+            // Find left vertex by moving 1/4 the way from the center 
+            // to the 1st corner of the previous part.
+            centerL = center +
+                HexMetrics.GetFirstSolidCorner(direction.Previous()) * 0.25f;
 
-        // Same for the right vertex, but use 2nd corner of next part
-        Vector3 centerR = center +
-            HexMetrics.GetSecondSolidCorner(direction.Next()) * 0.25f;
+            // Same for the right vertex, but use 2nd corner of next part
+            centerR = center +
+                HexMetrics.GetSecondSolidCorner(direction.Next()) * 0.25f;
+        }
+        // Handle one-step turns
+        else if (cell.HasRiverThroughEdge(direction.Next())) {
+            centerL = center;
+            centerR = Vector3.Lerp(center, e.v5, 2f / 3f);
+        } else if (cell.HasRiverThroughEdge(direction.Previous())) {
+            centerL = Vector3.Lerp(center, e.v1, 2f / 3f);
+            centerR = center;
+        } else {
+            // collapse center line to a point
+            centerL = centerR = center;
+        }
+
+        center = Vector3.Lerp(centerL, centerR, 0.5f);
 
         // Middle line: create edge vertices between center & edge
         EdgeVertices m = new EdgeVertices(
