@@ -651,6 +651,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useCollider: 1
   useColors: 1
+  useUVCoordinates: 0
 --- !u!1 &160253672
 GameObject:
   m_ObjectHideFlags: 0
