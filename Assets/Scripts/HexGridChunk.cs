@@ -280,6 +280,24 @@ public class HexGridChunk : MonoBehaviour {
 
         TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
         TriangulateEdgeFan(center, m, cell.Color);
+
+        bool reversed = cell.HasIncomingRiver;
+        TriangulateRiverQuad(
+            m.v2, m.v4, e.v2, e.v4, cell.RiverSurfaceY, reversed
+        );
+
+        center.y = m.v2.y = m.v4.y = cell.RiverSurfaceY;
+        rivers.AddTriangle(center, m.v2, m.v4);
+        if (reversed) {
+            rivers.AddTriangleUV(
+                new Vector2(0.5f, 1f), new Vector2(1f, 0f), new Vector2(0f, 0f)
+            );
+        }
+        else {
+            rivers.AddTriangleUV(
+                new Vector2(0.5f, 0f), new Vector2(0f, 1f), new Vector2(1f, 1f)
+            );
+        }
     }
 
     void TriangulateAdjacentToRiver(
