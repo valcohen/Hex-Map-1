@@ -121,6 +121,11 @@ public class HexGridChunk : MonoBehaviour {
         {
             // drop middle edge vertex to streambedheight
             e2.v3.y = neighbor.StreamBedY;
+
+            TriangulateRiverQuad(e1.v2, e1.v4, e2.v2, e2.v4,
+                cell.RiverSurfaceY, neighbor.RiverSurfaceY,
+                cell.HasIncomingRiver && cell.IncomingRiver == direction
+            );
         }
 
         if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
@@ -346,9 +351,10 @@ public class HexGridChunk : MonoBehaviour {
      */
     void TriangulateRiverQuad (
         Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
-        float y, bool reversed
+        float y1, float y2, bool reversed
     ) {
-        v1.y = v2.y = v3.y = v4.y = y;
+        v1.y = v2.y = y1;
+        v3.y = v4.y = y2;
         rivers.AddQuad(v1, v2, v3, v4);
 
         if (reversed) {
@@ -356,6 +362,13 @@ public class HexGridChunk : MonoBehaviour {
         } else {
             rivers.AddQuadUV(0f, 1f, 0f, 1f);    // left to right, bottom to top
         }
+    }
+
+    void TriangulateRiverQuad (
+        Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
+        float y, bool reversed
+    ) {
+        TriangulateRiverQuad(v1, v2, v3, v4, y, y, reversed);
     }
 
     void TriangulateCorner(
