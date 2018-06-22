@@ -6,10 +6,11 @@ using UnityEngine;
 public class HexMesh : MonoBehaviour {
 
     Mesh            hexMesh;
-    List<Vector3>   vertices;
-    List<int>       triangles;
     MeshCollider    meshCollider;
-    List<Color>     colors;
+
+    [NonSerialized] List<Vector3>   vertices;
+    [NonSerialized] List<int>       triangles;
+    [NonSerialized] List<Color>     colors;
 
     void Awake() {
         GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
@@ -104,15 +105,20 @@ public class HexMesh : MonoBehaviour {
 
     public void Clear () {
         hexMesh.Clear();
-        vertices.Clear();
-        triangles.Clear();
-        colors.Clear();
+        vertices  = ListPool<Vector3>.Get();
+        triangles = ListPool<int>.Get();
+        colors    = ListPool<Color>.Get();
     }
 
     public void Apply () {
         hexMesh.SetVertices(vertices);
+        ListPool<Vector3>.Add(vertices);
+
         hexMesh.SetColors(colors);
+        ListPool<Color>.Add(colors);
+
         hexMesh.SetTriangles(triangles, 0);
+        ListPool<int>.Add(triangles);
 
         hexMesh.RecalculateNormals();
 
