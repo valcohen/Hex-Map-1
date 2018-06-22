@@ -41,6 +41,10 @@
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
+
+            if (IN.uv_MainTex.y < 0) {
+                IN.uv_MainTex.y += 1;       // stay positive so V coords wrap
+            }
             o.Albedo.rg = IN.uv_MainTex;    // UV coords map to RG channels
 		}
 		ENDCG
