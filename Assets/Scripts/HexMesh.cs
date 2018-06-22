@@ -5,20 +5,27 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class HexMesh : MonoBehaviour {
 
+    public bool useCollider, useColors, useUVCoordinates;
+
     Mesh            hexMesh;
     MeshCollider    meshCollider;
 
     [NonSerialized] List<Vector3>   vertices;
     [NonSerialized] List<int>       triangles;
     [NonSerialized] List<Color>     colors;
+    [NonSerialized] List<Vector2>   uvs;
 
     void Awake() {
         GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-        meshCollider = gameObject.AddComponent<MeshCollider>();
+        if (useCollider) {
+            meshCollider = gameObject.AddComponent<MeshCollider>();
+        }
         hexMesh.name = "Hex Mesh";
         vertices     = new List<Vector3>();
         triangles    = new List<int>();
-        colors       = new List<Color>();
+        if (useColors) {
+            colors = new List<Color>();
+        }
     }
 
     public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3) {
@@ -55,6 +62,12 @@ public class HexMesh : MonoBehaviour {
         colors.Add(c1);
         colors.Add(c2);
         colors.Add(c3);
+    }
+
+    public void AddTriangleUV (Vector2 uv1, Vector2 uv2, Vector2 uv3) {
+        uvs.Add(uv1);
+        uvs.Add(uv2);
+        uvs.Add(uv3);
     }
 
     /*
@@ -103,25 +116,56 @@ public class HexMesh : MonoBehaviour {
         colors.Add(color);
     }
 
+    public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)    {
+        uvs.Add(uv1);
+        uvs.Add(uv2);
+        uvs.Add(uv3);
+        uvs.Add(uv4);
+    }
+
+    /*
+     *  used when a quad and its texture are aligned, e.g. river water
+     */
+    public void AddQuadUV (float uMin, float uMax, float vMin, float vMax) {
+        uvs.Add(new Vector2(uMin, vMin));
+        uvs.Add(new Vector2(uMax, vMin));
+        uvs.Add(new Vector2(uMin, vMax));
+        uvs.Add(new Vector2(uMax, vMax));
+    }
+
     public void Clear () {
         hexMesh.Clear();
         vertices  = ListPool<Vector3>.Get();
         triangles = ListPool<int>.Get();
-        colors    = ListPool<Color>.Get();
+        if (useColors) {
+            colors = ListPool<Color>.Get();
+        }
+        if (useUVCoordinates) {
+            uvs = ListPool<Vector2>.Get();
+        }
     }
 
     public void Apply () {
         hexMesh.SetVertices(vertices);
         ListPool<Vector3>.Add(vertices);
 
-        hexMesh.SetColors(colors);
-        ListPool<Color>.Add(colors);
-
         hexMesh.SetTriangles(triangles, 0);
         ListPool<int>.Add(triangles);
 
+        if (useColors) {
+            hexMesh.SetColors(colors);
+            ListPool<Color>.Add(colors);
+        }
+
+        if (useUVCoordinates) {
+            hexMesh.SetUVs(0, uvs);
+            ListPool<Vector2>.Add(uvs);
+        }
+
         hexMesh.RecalculateNormals();
 
-        meshCollider.sharedMesh = hexMesh;
+        if (useCollider) {
+            meshCollider.sharedMesh = hexMesh;
+        }
     }
 }
