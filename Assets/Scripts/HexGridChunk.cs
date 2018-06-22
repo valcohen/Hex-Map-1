@@ -262,8 +262,9 @@ public class HexGridChunk : MonoBehaviour {
         terrain.AddQuadColor(cell.Color);
         terrain.AddTriangleColor(cell.Color);
 
-        TriangulateRiverQuad(centerL, centerR, m.v2, m.v4, cell.RiverSurfaceY);
-        TriangulateRiverQuad(m.v2,    m.v4,    e.v2, e.v4, cell.RiverSurfaceY);
+        bool reversed = cell.IncomingRiver == direction;
+        TriangulateRiverQuad(centerL, centerR, m.v2, m.v4, cell.RiverSurfaceY, reversed);
+        TriangulateRiverQuad(m.v2,    m.v4,    e.v2, e.v4, cell.RiverSurfaceY, reversed);
     }
 
     void TriangulateWithRiverBeginOrEnd(
@@ -321,13 +322,22 @@ public class HexGridChunk : MonoBehaviour {
         TriangulateEdgeFan(center, m, cell.Color);
     }
 
+    /*
+     * U = 0 at left of river, 1 at right when looking downstream
+     * V goes from 0 to 1 in the direction of the flow
+     */
     void TriangulateRiverQuad (
         Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
-        float y
+        float y, bool reversed
     ) {
         v1.y = v2.y = v3.y = v4.y = y;
         rivers.AddQuad(v1, v2, v3, v4);
-        rivers.AddQuadUV(0f, 1f, 0f, 1f);    // left to right, bottom to top
+
+        if (reversed) {
+            rivers.AddQuadUV(1f, 0f, 1f, 0f);    // right to left, top to bottom
+        } else {
+            rivers.AddQuadUV(0f, 1f, 0f, 1f);    // left to right, bottom to top
+        }
     }
 
     void TriangulateCorner(
