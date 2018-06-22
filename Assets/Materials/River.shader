@@ -34,17 +34,17 @@
 		UNITY_INSTANCING_BUFFER_END(Props)
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+            float2 uv = IN.uv_MainTex;
+            uv.x *= 0.0625;     // scale U by 1/16th to compensate for stretched V
+            uv.y -= _Time.y * 0.25;    // _Time.y holds unmodified time. Slow to 1/4 cycle per second, 1 cycle= 4 secs
+            float4 noise = tex2D(_MainTex, uv);
+
+			fixed4 c = _Color * noise.r;
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
-
-            IN.uv_MainTex.y -= _Time.y;     // _Time.y holds unmodified time
-            IN.uv_MainTex.y = frac(IN.uv_MainTex.y);
-            o.Albedo.rg = IN.uv_MainTex;    // UV coords map to RG channels
 		}
 		ENDCG
 	}
