@@ -42,9 +42,8 @@
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
 
-            if (IN.uv_MainTex.y < 0) {
-                IN.uv_MainTex.y += 1;       // stay positive so V coords wrap
-            }
+            IN.uv_MainTex.y -= _Time.y;     // _Time.y holds unmodified time
+            IN.uv_MainTex.y = frac(IN.uv_MainTex.y);
             o.Albedo.rg = IN.uv_MainTex;    // UV coords map to RG channels
 		}
 		ENDCG
