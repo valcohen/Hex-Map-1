@@ -6,12 +6,12 @@
 		_Metallic ("Metallic", Range(0,1)) = 0.0
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Transparent" "Queue"="Transparent" }
 		LOD 200
 
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		// Physically based Standard lighting model, transparent, no shadows
+		#pragma surface surf Standard alpha
 
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
@@ -50,7 +50,9 @@
             uv2.y -= _Time.y * 0.23;    
             float4 noise2 = tex2D(_MainTex, uv2);
 
-			fixed4 c = _Color * (noise.r * noise2.a); // use diff. channels to avoid overlap
+            // use material color as base color; noise increases brightness & opacity
+            // use different noise channels to avoid overlap
+			fixed4 c = saturate(_Color + noise.r * noise2.a); 
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
