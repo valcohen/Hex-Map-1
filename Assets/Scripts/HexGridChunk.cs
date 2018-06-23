@@ -785,7 +785,7 @@ public class HexGridChunk : MonoBehaviour {
                     !hasRoadThroughEdge &&
                     !cell.HasRoadThroughEdge(direction.Next())
                 ) {
-                    return;
+                    return;     // prune isolated road part
                 }
                 corner = HexMetrics.GetSecondSolidCorner(direction);
             }
@@ -809,7 +809,36 @@ public class HexGridChunk : MonoBehaviour {
         {
             roadCenter -= HexMetrics.GetFirstCorner(cell.IncomingRiver) * 0.2f;
         }
-
+        // avoid inside of curved rivers
+        else if (previousHasRiver && nextHasRiver) {
+            if (!hasRoadThroughEdge) { return; }    // prune isolated road part
+            Vector3 offset = HexMetrics.GetSolidEdgeMiddle(direction) *
+                HexMetrics.innerToOuter;
+            roadCenter += offset * 0.7f;
+            center += offset * 0.5f;
+        }
+        // avoid outside of curved rivers
+        else {
+            HexDirection middle;
+            if (previousHasRiver) {
+                middle = direction.Next();
+            }
+            else if (nextHasRiver) {
+                middle = direction.Previous();
+            }
+            else {
+                middle = direction;
+            }
+            // prune roads
+            if (
+                !cell.HasRoadThroughEdge(middle) &&
+                !cell.HasRoadThroughEdge(middle.Previous()) &&
+                !cell.HasRoadThroughEdge(middle.Next())
+            ) {
+                return;
+            }
+            roadCenter += HexMetrics.GetSolidEdgeMiddle(middle) * 0.25f;
+        }
 
         Vector3 mL = Vector3.Lerp(roadCenter, e.v1, interpolators.x);
         Vector3 mR = Vector3.Lerp(roadCenter, e.v5, interpolators.y);
