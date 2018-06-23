@@ -765,14 +765,41 @@ public class HexGridChunk : MonoBehaviour {
         HexDirection direction, HexCell cell, Vector3 center, EdgeVertices e
     ) {
         bool hasRoadThroughEdge = cell.HasRoadThroughEdge(direction);
+        bool previousHasRiver = cell.HasRiverThroughEdge(direction.Previous());
+        bool nextHasRiver = cell.HasRiverThroughEdge(direction.Next());
+
         Vector2 interpolators = GetRoadInterpolators(direction, cell);
         Vector3 roadCenter = center;
 
-        // avoid rivers; move road center 1/3 toward middle edge opposite river
+        // avoid rivers ends; move road center 1/3 toward middle edge opposite river
         if (cell.HasRiverBeginOrEnd) {
             roadCenter += HexMetrics.GetSolidEdgeMiddle(
                 cell.RiverBeginOrEndDirection.Opposite()
             ) * (1f / 3f);
+        }
+        // avoid straight rivers; move road center halfway away
+        else if (cell.IncomingRiver == cell.OutgoingRiver.Opposite()) {
+            Vector3 corner;
+            if (previousHasRiver) {
+                if (
+                    !hasRoadThroughEdge &&
+                    !cell.HasRoadThroughEdge(direction.Next())
+                ) {
+                    return;
+                }
+                corner = HexMetrics.GetSecondSolidCorner(direction);
+            }
+            else {
+                if (
+                    !hasRoadThroughEdge &&
+                    !cell.HasRoadThroughEdge(direction.Previous())
+                ) {
+                    return;
+                }
+                corner = HexMetrics.GetFirstSolidCorner(direction);
+            }
+            roadCenter += corner * 0.5f;
+            center     += corner * 0.25f;
         }
 
         Vector3 mL = Vector3.Lerp(roadCenter, e.v1, interpolators.x);
@@ -781,10 +808,10 @@ public class HexGridChunk : MonoBehaviour {
         TriangulateRoad(roadCenter, mL, mR, e, hasRoadThroughEdge);
 
         // fill triangular gaps where rivers are adjacent to roads
-        if (cell.HasRiverThroughEdge(direction.Previous())) {
+        if (previousHasRiver) {
             TriangulateRoadEdge(roadCenter, center, mL);
         }
-        if (cell.HasRiverThroughEdge(direction.Next())) {
+        if (nextHasRiver) {
             TriangulateRoadEdge(roadCenter, mR, center);
         }
     }
