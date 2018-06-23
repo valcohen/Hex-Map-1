@@ -55,10 +55,22 @@ public class HexCell : MonoBehaviour {
                 RemoveIncomingRiver();
             }
 
+            // prevent invalid roads
+            for (int i = 0; i < roads.Length; i++) {
+                if (roads[i] && GetElevationDifference((HexDirection)i) > maxRoadSlope ) {
+                    SetRoad(i, false);
+                }
+            }
+
             Refresh();
         }
     }
     int elevation = int.MinValue;
+
+    public int GetElevationDifference (HexDirection direction) {
+        int difference = elevation - GetNeighbor(direction).elevation;
+        return difference >= 0 ? difference : -difference;
+    }
 
     public float StreamBedY {
         get {
@@ -150,12 +162,17 @@ public class HexCell : MonoBehaviour {
     public bool HasRiver { get { return hasIncomingRiver || hasOutgoingRiver; } }
     public bool HasRiverBeginOrEnd { get { return hasIncomingRiver != hasOutgoingRiver; } }
 
+    public HexDirection RiverBeginOrEndDirection {
+        get {
+            return hasIncomingRiver ? incomingRiver : outgoingRiver;
+        }
+    }
+
     public bool HasRiverThroughEdge (HexDirection direction) {
         return
             (hasIncomingRiver && incomingRiver == direction) ||
             (hasOutgoingRiver && outgoingRiver == direction);
     }
-
 
     public void RemoveOutgoingRiver () {
         if (!hasOutgoingRiver) { return; }
@@ -202,12 +219,58 @@ public class HexCell : MonoBehaviour {
         // set our outgoing river
         hasOutgoingRiver = true;
         outgoingRiver = direction;
-        RefreshSelfOnly();
 
         // set neighbor's incoming river
         neighbor.RemoveIncomingRiver();
         neighbor.hasIncomingRiver = true;
         neighbor.incomingRiver = direction.Opposite();
-        neighbor.RefreshSelfOnly();
+
+        SetRoad((int)direction, false);
+    }
+
+    /*
+     * Roads.
+     */
+
+    [SerializeField]
+    bool[] roads = new bool[6];
+    int maxRoadSlope = 1;
+
+    public bool HasRoadThroughEdge (HexDirection direction) {
+        return roads[(int)direction];
+    }
+
+    public bool HasRoads {
+        get {
+            for (int i = 0; i < roads.Length; i++) {
+                if (roads[i]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public void RemoveRoads () {
+        for (int i = 0; i < neighbors.Length; i++) {
+            if (roads[i]) {
+                SetRoad(i, false);
+            }
+        }
+    }
+
+    public void AddRoad (HexDirection direction) {
+        if (!roads[(int)direction] && !HasRiverThroughEdge(direction)
+            && GetElevationDifference(direction) <= maxRoadSlope
+        ) {
+            SetRoad((int)direction, true);
+        }
+    }
+
+    void SetRoad (int i, bool state) {
+        roads[i] = state;
+        neighbors[i].roads[(int)((HexDirection)i).Opposite()] = state;
+        neighbors[i].RefreshSelfOnly();
+        RefreshSelfOnly();
     }
 }
