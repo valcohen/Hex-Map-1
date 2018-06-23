@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class HexGridChunk : MonoBehaviour {
 
-    public HexMesh terrain, rivers, roads;
+    public HexMesh terrain, rivers, roads, water;
 
     HexCell[] cells;
     Canvas    gridCanvas;
@@ -39,6 +39,7 @@ public class HexGridChunk : MonoBehaviour {
         terrain.Clear();
         rivers.Clear();
         roads.Clear();
+        water.Clear();
 
         for (int i = 0; i < cells.Length; i++) {
             Triangulate(cells[i]);
@@ -47,6 +48,7 @@ public class HexGridChunk : MonoBehaviour {
         terrain.Apply();
         rivers.Apply();
         roads.Apply();
+        water.Apply();
     }
 
     void Triangulate(HexCell cell) {
