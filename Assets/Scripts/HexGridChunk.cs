@@ -197,10 +197,11 @@ public class HexGridChunk : MonoBehaviour {
         TriangulateEdgeFan(center, e, cell.Color);
 
         if (cell.HasRoads) {
+            Vector2 interpolators = GetRoadInterpolators(direction, cell);
             TriangulateRoad(
                 center,
-                Vector3.Lerp(center, e.v1, 0.5f),
-                Vector3.Lerp(center, e.v5, 0.5f),
+                Vector3.Lerp(center, e.v1, interpolators.x),
+                Vector3.Lerp(center, e.v5, interpolators.y),
                 e, cell.HasRoadThroughEdge(direction)
             );
         }
@@ -736,5 +737,23 @@ public class HexGridChunk : MonoBehaviour {
         roads.AddTriangleUV(
             new Vector2(1f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f)
         );
+    }
+
+    /*
+     * v2.x = left interpolator, v2.y = right interpolator
+     * use larger intrpolator (wider midpoint) if there's an adjacent road
+     */
+    Vector2 GetRoadInterpolators (HexDirection direction, HexCell cell) {
+        Vector2 interpolators;
+        if (cell.HasRoadThroughEdge(direction)) {
+            interpolators.x = interpolators.y = 0.5f;
+        }
+        else {
+            interpolators.x =
+                cell.HasRoadThroughEdge(direction.Previous()) ? 0.5f : 0.25f;
+            interpolators.y =
+                cell.HasRoadThroughEdge(direction.Next())     ? 0.5f : 0.25f;
+        }
+        return interpolators;
     }
 }
