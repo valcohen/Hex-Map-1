@@ -40,10 +40,41 @@ public class HexCell : MonoBehaviour {
             uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
             uiRect.localPosition = uiPosition;
 
+
+            // prevent uphill rivers
+            if (
+                hasOutgoingRiver && 
+                elevation < GetNeighbor(outgoingRiver).elevation
+            ) {
+                RemoveOutgoingRiver();    
+            }
+            if (
+                hasIncomingRiver &&
+                elevation > GetNeighbor(incomingRiver).elevation
+            ) {
+                RemoveIncomingRiver();
+            }
+
             Refresh();
         }
     }
     int elevation = int.MinValue;
+
+    public float StreamBedY {
+        get {
+            return
+                (elevation + HexMetrics.streamBedElevationOffset) *
+                HexMetrics.elevationStep;
+        }
+    }
+
+    public float RiverSurfaceY {
+        get {
+            return
+                (elevation + HexMetrics.riverSurfaceElevationOffset) *
+                HexMetrics.elevationStep;
+        }
+    }
 
     public Vector3 Position {
         get {
@@ -89,5 +120,94 @@ public class HexCell : MonoBehaviour {
                 }
             }
         }
+    }
+
+    void RefreshSelfOnly () {
+        this.chunk.Refresh();
+    }
+
+    /*
+     * Rivers. Possible cell configurations:
+     * 
+     *         / \     / \
+     *        |   |   |  -|
+     *         \ /     \ /
+     * 
+     *     / \     / \     / \
+     *    | +-|   | +-|   |---|
+     *     \ \     / /     \ /
+     */
+
+    bool hasIncomingRiver, hasOutgoingRiver;
+    HexDirection incomingRiver, outgoingRiver;
+
+    public bool HasIncomingRiver { get { return hasIncomingRiver; } }
+    public bool HasOutgoingRiver { get { return hasOutgoingRiver; } }
+
+    public HexDirection IncomingRiver { get { return incomingRiver; } }
+    public HexDirection OutgoingRiver { get { return outgoingRiver; } }
+
+    public bool HasRiver { get { return hasIncomingRiver || hasOutgoingRiver; } }
+    public bool HasRiverBeginOrEnd { get { return hasIncomingRiver != hasOutgoingRiver; } }
+
+    public bool HasRiverThroughEdge (HexDirection direction) {
+        return
+            (hasIncomingRiver && incomingRiver == direction) ||
+            (hasOutgoingRiver && outgoingRiver == direction);
+    }
+
+
+    public void RemoveOutgoingRiver () {
+        if (!hasOutgoingRiver) { return; }
+
+        hasOutgoingRiver = false;
+        this.RefreshSelfOnly();
+
+        // We don't currently support rivers that flow out of the map,
+        // so no need to check whether neighbor exists.
+        HexCell neighbor = GetNeighbor(outgoingRiver);
+        neighbor.hasIncomingRiver = false;
+        neighbor.RefreshSelfOnly();
+    }
+
+    public void RemoveIncomingRiver () {
+        if (!hasIncomingRiver) { return; }
+
+        hasIncomingRiver = false;
+        this.RefreshSelfOnly();
+
+        HexCell neighbor = GetNeighbor(incomingRiver);
+        neighbor.hasIncomingRiver = false;
+        neighbor.RefreshSelfOnly();
+    }
+
+    public void RemoveRiver() {
+        this.RemoveOutgoingRiver();
+        this.RemoveIncomingRiver();
+    }
+
+    public void SetOutgoingRiver (HexDirection direction) {
+        if (hasOutgoingRiver && outgoingRiver == direction) { return; }
+
+        HexCell neighbor = GetNeighbor(direction);
+        // don't set river if no neighbor or if neighbor is uphill
+        if (!neighbor || elevation < neighbor.elevation) { return; }
+
+        // clean up existing rivers
+        RemoveOutgoingRiver();
+        if (hasIncomingRiver && incomingRiver == direction) {
+            RemoveIncomingRiver();
+        }
+
+        // set our outgoing river
+        hasOutgoingRiver = true;
+        outgoingRiver = direction;
+        RefreshSelfOnly();
+
+        // set neighbor's incoming river
+        neighbor.RemoveIncomingRiver();
+        neighbor.hasIncomingRiver = true;
+        neighbor.incomingRiver = direction.Opposite();
+        neighbor.RefreshSelfOnly();
     }
 }
