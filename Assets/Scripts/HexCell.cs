@@ -162,6 +162,12 @@ public class HexCell : MonoBehaviour {
     public bool HasRiver { get { return hasIncomingRiver || hasOutgoingRiver; } }
     public bool HasRiverBeginOrEnd { get { return hasIncomingRiver != hasOutgoingRiver; } }
 
+    public HexDirection RiverBeginOrEndDirection {
+        get {
+            return hasIncomingRiver ? incomingRiver : outgoingRiver;
+        }
+    }
+
     public bool HasRiverThroughEdge (HexDirection direction) {
         return
             (hasIncomingRiver && incomingRiver == direction) ||
