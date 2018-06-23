@@ -6,14 +6,17 @@ public class HexMapEditor : MonoBehaviour {
     public Color[]  colors;
     public HexGrid  hexGrid;
 
-    private Color   activeColor;
-    private int     activeElevation;
+    Color   activeColor;
+    int     activeElevation;
+    int     activeWaterLevel;
 
     bool applyColor;
-    bool applyElevation;
+    bool applyElevation = true;
+    bool applyWaterLevel = true;
+
     int brushSize;
 
-    private void Awake() {
+    void Awake() {
         SelectColor(-1);
     }
 
@@ -21,7 +24,7 @@ public class HexMapEditor : MonoBehaviour {
     HexDirection dragDirection;
     HexCell previousCell;
 
-    private void Update() {
+    void Update() {
         if (Input.GetMouseButton(0) && 
             !EventSystem.current.IsPointerOverGameObject()
         ) {
@@ -125,6 +128,9 @@ public class HexMapEditor : MonoBehaviour {
         if (applyElevation) {
             cell.Elevation = activeElevation;
         }
+        if (applyWaterLevel) {
+            cell.WaterLevel = activeWaterLevel;
+        }
 
         if (riverMode == OptionalToggle.No) {
             cell.RemoveRiver();
@@ -181,5 +187,13 @@ public class HexMapEditor : MonoBehaviour {
 
     public void SetRoadMode (int mode) {
         roadMode = (OptionalToggle)mode;
+    }
+
+    public void SetApplyWaterLevel (bool toggle) {
+        applyWaterLevel = toggle;
+    }
+
+    public void SetWaterLevel (float level) {
+        activeWaterLevel = (int)level;
     }
 }
