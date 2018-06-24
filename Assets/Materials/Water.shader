@@ -43,8 +43,18 @@
             uv2.x += _Time.y;
             float4 noise2 = tex2D(_MainTex, uv2 * 0.025);
 
+            float blendWave = sin(
+                (IN.worldPos.x + IN.worldPos.z) * 0.1 + 
+                (noise1.y + noise2.z) + _Time.y
 
-            float waves = noise1.z + noise2.x;
+            );
+
+            blendWave *= blendWave; // sine varies from -1:1, but we need 0:1. square the wave to get it.
+
+            float waves = 
+                lerp(noise1.z, noise1.w, blendWave) +
+                lerp(noise2.x, noise2.y, blendWave);
+
             waves = smoothstep(0.75, 2, waves); // map 3/4 : 2 to 0 : 1
 
             fixed4 c = saturate(_Color + waves); 
