@@ -919,10 +919,11 @@ public class HexGridChunk : MonoBehaviour {
         water.AddTriangle(center, e1.v3, e1.v4);
         water.AddTriangle(center, e1.v4, e1.v5);
 
-        Vector3 bridge = HexMetrics.GetWaterBridge(direction);
+        Vector3 center2 = neighbor.Position;
+        center2.y = center.y;
         EdgeVertices e2 = new EdgeVertices(
-            e1.v1 + bridge,
-            e1.v5 + bridge
+            center2 + HexMetrics.GetSecondSolidCorner(direction.Opposite()),
+            center2 + HexMetrics.GetFirstSolidCorner(direction.Opposite())
         );
         waterShore.AddQuad(e1.v1, e1.v2, e2.v1, e2.v2);
         waterShore.AddQuad(e1.v2, e1.v3, e2.v2, e2.v3);
@@ -936,9 +937,13 @@ public class HexGridChunk : MonoBehaviour {
 
         HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
         if (nextNeighbor != null) {
-            waterShore.AddTriangle(
-                e1.v5, e2.v5, e1.v5 + HexMetrics.GetWaterBridge(direction.Next())
-            );
+            Vector3 v3 = nextNeighbor.Position +
+                (nextNeighbor.IsUnderwater
+                    ? HexMetrics.GetFirstWaterCorner(direction.Previous())
+                    : HexMetrics.GetFirstSolidCorner(direction.Previous())
+                );
+            v3.y = center.y;
+            waterShore.AddTriangle(e1.v5, e2.v5,v3);
             waterShore.AddTriangleUV(
                 new Vector2(0f, 0f),
                 new Vector2(0f, 1f),
