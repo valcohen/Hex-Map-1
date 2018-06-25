@@ -133,11 +133,34 @@ public class HexGridChunk : MonoBehaviour {
             // drop middle edge vertex to streambedheight
             e2.v3.y = neighbor.StreamBedY;
 
-            if (!cell.IsUnderwater && !neighbor.IsUnderwater) 
+            if (!cell.IsUnderwater)
             {
-                TriangulateRiverQuad(e1.v2, e1.v4, e2.v2, e2.v4,
-                    cell.RiverSurfaceY, neighbor.RiverSurfaceY, 0.8f,
-                    cell.HasIncomingRiver && cell.IncomingRiver == direction
+                if (!neighbor.IsUnderwater)
+                {
+                    {
+                        TriangulateRiverQuad(e1.v2, e1.v4, e2.v2, e2.v4,
+                            cell.RiverSurfaceY, neighbor.RiverSurfaceY, 0.8f,
+                            cell.HasIncomingRiver && cell.IncomingRiver == direction
+                        );
+                    }
+                }
+                else if (cell.Elevation > neighbor.WaterLevel) {
+                    TriangulateWaterfallInWater(
+                        e1.v2, e1.v4, e2.v2, e2.v4,
+                        cell.RiverSurfaceY, neighbor.RiverSurfaceY,
+                        neighbor.WaterSurfaceY
+                    );
+                }
+            }
+            // we're underwater but neighbor isn't
+            else if (
+                !neighbor.IsUnderwater &&
+                neighbor.Elevation > cell.WaterLevel
+            ) {
+                TriangulateWaterfallInWater(
+                    e2.v4, e2.v2, e1.v4, e1.v1,
+                    neighbor.RiverSurfaceY, cell.RiverSurfaceY,
+                    cell.WaterSurfaceY
                 );
             }
         }
@@ -961,5 +984,34 @@ public class HexGridChunk : MonoBehaviour {
                 new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f)
             );
         }
+    }
+
+    /*
+     *   y1 + *
+     *      |  \
+     *      +---*----+ waterY 
+     *      |   ^\   |
+     *      |     \  |
+     *   y2 +------*-+
+     */
+    void TriangulateWaterfallInWater (
+        Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4,
+        float y1, float y2, float waterY
+    ) {
+        v1.y = v2.y = y1;
+        v3.y = v4.y = y2;
+
+        // move bottom vertices up to water level
+        v1 = HexMetrics.Perturb(v1);
+        v2 = HexMetrics.Perturb(v2);
+        v3 = HexMetrics.Perturb(v3);
+        v4 = HexMetrics.Perturb(v4);
+
+        float t = (waterY - y2) / (y1 - y2);
+        v3 = Vector3.Lerp(v3, v1, t);
+        v4 = Vector3.Lerp(v4, v2, t);
+
+        rivers.AddQuadUnperturbed(v1, v2, v3, v4);
+        rivers.AddQuadUV(0f, 1f, 0.8f, 1f);
     }
 }
