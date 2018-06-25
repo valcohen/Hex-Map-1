@@ -16,6 +16,8 @@
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
 
+        #include "Water.cginc"
+
 		sampler2D _MainTex;
 
 		struct Input {
@@ -34,25 +36,9 @@
 		UNITY_INSTANCING_BUFFER_END(Props)
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-            // _Time.y holds unmodified time. 
-
-            float2 uv = IN.uv_MainTex;
-            // scale U by 1/16th to compensate for stretched V. 
-            // move slowly horizontally 
-            uv.x = uv.x * 0.0625 + _Time.y * 0.005;
-            // Slow to 1/4 cycle per second, 1 cycle= 4 secs
-            uv.y -= _Time.y * 0.25;    
-            float4 noise = tex2D(_MainTex, uv);
-
-            // use slightly different timing values for 2nd texture
-            float2 uv2 = IN.uv_MainTex;
-            uv2.x = uv2.x * 0.0625 + _Time.y * 0.0052;
-            uv2.y -= _Time.y * 0.23;    
-            float4 noise2 = tex2D(_MainTex, uv2);
-
-            // use material color as base color; noise increases brightness & opacity
-            // use different noise channels to avoid overlap
-			fixed4 c = saturate(_Color + noise.r * noise2.a); 
+            float river = River(IN.uv_MainTex, _MainTex);
+        
+			fixed4 c = saturate(_Color + river); 
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
