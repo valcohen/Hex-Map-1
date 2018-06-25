@@ -133,10 +133,13 @@ public class HexGridChunk : MonoBehaviour {
             // drop middle edge vertex to streambedheight
             e2.v3.y = neighbor.StreamBedY;
 
-            TriangulateRiverQuad(e1.v2, e1.v4, e2.v2, e2.v4,
-                cell.RiverSurfaceY, neighbor.RiverSurfaceY, 0.8f,
-                cell.HasIncomingRiver && cell.IncomingRiver == direction
-            );
+            if (!cell.IsUnderwater && !neighbor.IsUnderwater) 
+            {
+                TriangulateRiverQuad(e1.v2, e1.v4, e2.v2, e2.v4,
+                    cell.RiverSurfaceY, neighbor.RiverSurfaceY, 0.8f,
+                    cell.HasIncomingRiver && cell.IncomingRiver == direction
+                );
+            }
         }
 
         if (cell.GetEdgeType(direction) == HexEdgeType.Slope)
@@ -299,13 +302,16 @@ public class HexGridChunk : MonoBehaviour {
         terrain.AddQuadColor(cell.Color);
         terrain.AddTriangleColor(cell.Color);
 
-        bool reversed = cell.IncomingRiver == direction;
-        TriangulateRiverQuad(
-            centerL, centerR, m.v2, m.v4, cell.RiverSurfaceY, 0.4f, reversed
-        );
-        TriangulateRiverQuad(
-            m.v2,    m.v4,    e.v2, e.v4, cell.RiverSurfaceY, 0.6f, reversed
-        );
+        if (!cell.IsUnderwater)
+        {
+            bool reversed = cell.IncomingRiver == direction;
+            TriangulateRiverQuad(
+                centerL, centerR, m.v2, m.v4, cell.RiverSurfaceY, 0.4f, reversed
+            );
+            TriangulateRiverQuad(
+                m.v2, m.v4, e.v2, e.v4, cell.RiverSurfaceY, 0.6f, reversed
+            );
+        }
     }
 
     void TriangulateWithRiverBeginOrEnd(
@@ -322,26 +328,31 @@ public class HexGridChunk : MonoBehaviour {
         TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
         TriangulateEdgeFan(center, m, cell.Color);
 
-        bool reversed = cell.HasIncomingRiver;
-        TriangulateRiverQuad(
-            m.v2, m.v4, e.v2, e.v4, cell.RiverSurfaceY, 0.6f, reversed
-        );
+        if (!cell.IsUnderwater)
+        {
+            bool reversed = cell.HasIncomingRiver;
+            TriangulateRiverQuad(
+                m.v2, m.v4, e.v2, e.v4, cell.RiverSurfaceY, 0.6f, reversed
+            );
 
-        center.y = m.v2.y = m.v4.y = cell.RiverSurfaceY;
-        rivers.AddTriangle(center, m.v2, m.v4);
-        if (reversed) {
-            rivers.AddTriangleUV(
-                new Vector2(0.5f, 0.4f), 
-                new Vector2(1.0f, 0.2f), 
-                new Vector2(0.0f, 0.2f)
-            );
-        }
-        else {
-            rivers.AddTriangleUV(
-                new Vector2(0.5f, 0.4f), 
-                new Vector2(0.0f, 0.6f), 
-                new Vector2(1.0f, 0.6f)
-            );
+            center.y = m.v2.y = m.v4.y = cell.RiverSurfaceY;
+            rivers.AddTriangle(center, m.v2, m.v4);
+            if (reversed)
+            {
+                rivers.AddTriangleUV(
+                    new Vector2(0.5f, 0.4f),
+                    new Vector2(1.0f, 0.2f),
+                    new Vector2(0.0f, 0.2f)
+                );
+            }
+            else
+            {
+                rivers.AddTriangleUV(
+                    new Vector2(0.5f, 0.4f),
+                    new Vector2(0.0f, 0.6f),
+                    new Vector2(1.0f, 0.6f)
+                );
+            }
         }
     }
 
