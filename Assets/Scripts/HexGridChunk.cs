@@ -1043,12 +1043,15 @@ public class HexGridChunk : MonoBehaviour {
 
         estuaries.AddQuadUV(
             new Vector2(0f, 1f), new Vector2(0f, 0f), 
-            new Vector2(0f, 1f), new Vector2(0f, 0f)
+            new Vector2(1f, 1f), new Vector2(0f, 0f)
         );
         estuaries.AddTriangleUV(
-            new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 1f)
+            new Vector2(0f, 0f), new Vector2(1f, 1f), new Vector2(1f, 1f)
         );
-        estuaries.AddQuadUV(0f, 0f, 0f, 1f);
+        estuaries.AddQuadUV(
+            new Vector2(0f, 0f), new Vector2(0f, 0f),
+            new Vector2(1f, 1f), new Vector2(0f, 1f)
+        );
 
         // support river flow effect using UV2
         /*
