@@ -1027,6 +1027,7 @@ public class HexGridChunk : MonoBehaviour {
     void TriangulateEstuary (EdgeVertices e1, EdgeVertices e2) {
         waterShore.AddTriangle(e2.v1, e1.v2, e1.v1);
         waterShore.AddTriangle(e2.v5, e1.v5, e1.v4);
+
         waterShore.AddTriangleUV(
             new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(0f, 0f)
         );
@@ -1048,5 +1049,32 @@ public class HexGridChunk : MonoBehaviour {
             new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 1f)
         );
         estuaries.AddQuadUV(0f, 0f, 0f, 1f);
+
+        // support river flow effect using UV2
+        /*
+         *   1   1      0   0
+         *  0.8 0.8    0.8 0.8   match river's V coord which go from 0.8 to 1
+         *   +---+------+---+
+         *    \  |\    /|  /
+         *     \ | \  / | /
+         *      \|__\/__|/
+         *      1  0.5  1
+         *     1.1 1.1 1.1       shore connection is 50% larger
+         *                       than regular conns, so end at 1.1
+         */
+        estuaries.AddQuadUV2(
+            new Vector2(1f, 0.8f), new Vector2(1f, 1.1f),
+            new Vector2(1f, 0.8f), new Vector2(0.5f, 1.1f)
+        );
+        estuaries.AddTriangleUV2(
+            new Vector2(0.5f, 1.1f), 
+            new Vector2(1f, 0.8f), 
+            new Vector2(0f, 0.8f)
+        );
+        estuaries.AddQuadUV2(
+            new Vector2(0.5f, 1.1f), new Vector2(0f, 1.1f),
+            new Vector2(0f, 0.8f), new Vector2(0f, 0.8f)
+        );
+
     }
 }
