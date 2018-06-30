@@ -58,14 +58,21 @@ public class HexGridChunk : MonoBehaviour {
         features.Apply();
     }
 
+    /*
+     * Triangulate the hex cell by triangulating each of its six component tris
+     */
     void Triangulate(HexCell cell) {
         for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
             Triangulate(d, cell);
         }
-        features.AddFeature(cell.Position);
+        if (!cell.IsUnderwater && !cell.HasRiver && !cell.HasRoads) {
+            features.AddFeature(cell.Position);
+        }
     }
 
     /*
+     *   Triangulate one of the six triangles tha make up the hex cell
+     * 
      *   v3-+-+-+-v4
      *    \ |X|X| /
      *     v1-+-v2
@@ -104,6 +111,10 @@ public class HexGridChunk : MonoBehaviour {
         else
         {
             TriangulateWithoutRiver(direction, cell, center, edge);
+
+            if (!cell.IsUnderwater && !cell.HasRoadThroughEdge(direction)) {
+                features.AddFeature((center + edge.v1 + edge.v5) * (1f / 3f));
+            }
         }
 
         if (direction <= HexDirection.SE)
@@ -427,6 +438,10 @@ public class HexGridChunk : MonoBehaviour {
 
         TriangulateEdgeStrip(m, cell.Color, e, cell.Color);
         TriangulateEdgeFan(center, m, cell.Color);
+
+        if (!cell.IsUnderwater && !cell.HasRoadThroughEdge(direction)) {
+            features.AddFeature((center + e.v1 + e.v5) * (1f / 3f));
+        }
     }
 
     /*
