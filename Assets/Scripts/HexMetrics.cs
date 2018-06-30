@@ -33,8 +33,10 @@ public class HexMetrics {
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
 
-    public const float cellPerturbStrength = 0f; //4f;
+    public const float cellPerturbStrength = 4f;
+    // public const float cellPerturbStrength = 0f;
     public const float elevationPerturbStrength = 1.5f;
+    //public const float elevationPerturbStrength = 0f;
 
     static Vector3[] corners = {
         new Vector3(0f,             0f,  outerRadius),
