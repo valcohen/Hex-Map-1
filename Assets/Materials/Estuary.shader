@@ -52,6 +52,7 @@
             float water = lerp(shoreWater, river, IN.uv_MainTex.x);
 
             fixed4 c = saturate(_Color + water); // fixed4(IN.riverUV, 1, 1); 
+            // fixed4 c = fixed4(IN.riverUV, 1, 1); 
 			o.Albedo = c.rgb;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;

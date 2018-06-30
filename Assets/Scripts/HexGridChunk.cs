@@ -160,7 +160,7 @@ public class HexGridChunk : MonoBehaviour {
                 neighbor.Elevation > cell.WaterLevel
             ) {
                 TriangulateWaterfallInWater(
-                    e2.v4, e2.v2, e1.v4, e1.v1,
+                    e2.v4, e2.v2, e1.v4, e1.v2,
                     neighbor.RiverSurfaceY, cell.RiverSurfaceY,
                     cell.WaterSurfaceY
                 );
@@ -924,7 +924,7 @@ public class HexGridChunk : MonoBehaviour {
         water.AddTriangle(center, c1, c2);
 
         // connect adjacent water cells with a single quad
-        if (direction <= HexDirection.SE) {
+        if (direction <= HexDirection.SE && neighbor != null) {
 
             Vector3 bridge = HexMetrics.GetWaterBridge(direction);
             Vector3 e1 = c1 + bridge;
@@ -986,7 +986,7 @@ public class HexGridChunk : MonoBehaviour {
                     : HexMetrics.GetFirstSolidCorner(direction.Previous())
                 );
             v3.y = center.y;
-            waterShore.AddTriangle(e1.v5, e2.v5,v3);
+            waterShore.AddTriangle(e1.v5, e2.v5, v3);
             waterShore.AddTriangleUV(
                 new Vector2(0f, 0f),
                 new Vector2(0f, 1f),
