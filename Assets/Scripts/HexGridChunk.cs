@@ -1052,18 +1052,19 @@ public class HexGridChunk : MonoBehaviour {
 
         // support river flow effect using UV2
         /*
-         *   1   1      0   0
-         *  0.8 0.8    0.8 0.8   match river's V coord which go from 0.8 to 1
-         *   +---+------+---+
-         *    \  |\    /|  /
-         *     \ | \  / | /
-         *      \|__\/__|/
-         *      1  0.5  1
-         *     1.1 1.1 1.1       shore connection is 50% larger
-         *                       than regular conns, so end at 1.1
+         *  1.5   1        0  -0.5  widen U so river flow spreads into water
+         *  0.8  0.8      0.8  0.8  match river's V coord which go from 0.8 to 1
+         *   +----+--.-.-.--+----+
+         *    \  .|\ . . . /|.  /
+         *     \. | \. . ./ | ./
+         *      \ | .\ . /. | /
+         *       \|.__\./__.|/
+         *      0.7   0.5  0.3      widen flow
+         *      1.15  1.1  1.15     shore connection is 50% larger
+         *                          than regular conns, so end at 1.1
          */
         estuaries.AddQuadUV2(
-            new Vector2(1f, 0.8f), new Vector2(1f, 1.1f),
+            new Vector2(1.5f, 1f), new Vector2(0.7f, 1.15f),
             new Vector2(1f, 0.8f), new Vector2(0.5f, 1.1f)
         );
         estuaries.AddTriangleUV2(
@@ -1072,8 +1073,8 @@ public class HexGridChunk : MonoBehaviour {
             new Vector2(0f, 0.8f)
         );
         estuaries.AddQuadUV2(
-            new Vector2(0.5f, 1.1f), new Vector2(0f, 1.1f),
-            new Vector2(0f, 0.8f), new Vector2(0f, 0.8f)
+            new Vector2(0.5f, 1.1f), new Vector2(0.3f, 1.15f),
+            new Vector2(0f, 0.8f), new Vector2(-0.5f, 1f)
         );
 
     }
