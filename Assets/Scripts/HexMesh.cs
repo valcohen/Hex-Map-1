@@ -138,6 +138,17 @@ public class HexMesh : MonoBehaviour {
         colors.Add(color);
     }
 
+    /*
+     *  used when a quad and its texture are aligned, e.g. river water
+     */
+    public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
+    {
+        uvs.Add(new Vector2(uMin, vMin));
+        uvs.Add(new Vector2(uMax, vMin));
+        uvs.Add(new Vector2(uMin, vMax));
+        uvs.Add(new Vector2(uMax, vMax));
+    }
+
     public void AddQuadUV(Vector2 uv1, Vector2 uv2, Vector2 uv3, Vector2 uv4)    {
         uvs.Add(uv1);
         uvs.Add(uv2);
@@ -158,17 +169,6 @@ public class HexMesh : MonoBehaviour {
         uv2s.Add(uv2);
         uv2s.Add(uv3);
         uv2s.Add(uv4);
-    }
-
-    /*
-     *  used when a quad and its texture are aligned, e.g. river water
-     */
-    public void AddQuadUV(float uMin, float uMax, float vMin, float vMax)
-    {
-        uvs.Add(new Vector2(uMin, vMin));
-        uvs.Add(new Vector2(uMax, vMin));
-        uvs.Add(new Vector2(uMin, vMax));
-        uvs.Add(new Vector2(uMax, vMax));
     }
 
     public void Clear () {

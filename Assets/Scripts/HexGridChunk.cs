@@ -962,7 +962,7 @@ public class HexGridChunk : MonoBehaviour {
             center2 + HexMetrics.GetFirstSolidCorner(direction.Opposite())
         );
 
-        if (cell.HasRoadThroughEdge(direction))
+        if (cell.HasRiverThroughEdge(direction))
         {
             TriangulateEstuary(e1, e2);
         }
@@ -1030,5 +1030,23 @@ public class HexGridChunk : MonoBehaviour {
         waterShore.AddTriangleUV(
             new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(0f, 0f)
         );
+        waterShore.AddTriangleUV(
+            new Vector2(0f, 1f), new Vector2(0f, 0f), new Vector2(0f, 0f)
+        );
+
+        // fill gap with tri between river end and middle of water edge
+        // fill entire trapezoid by adding quad on both sides of middle triangle
+        estuaries.AddQuad(e2.v1, e1.v2, e2.v2, e1.v3);  // rotate left side orientation to get symmetrical geometry
+        estuaries.AddTriangle(e1.v3, e2.v2, e2.v4);
+        estuaries.AddQuad(e1.v3, e1.v4, e2.v4, e2.v5);
+
+        estuaries.AddQuadUV(
+            new Vector2(0f, 1f), new Vector2(0f, 0f), 
+            new Vector2(0f, 1f), new Vector2(0f, 0f)
+        );
+        estuaries.AddTriangleUV(
+            new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(0f, 1f)
+        );
+        estuaries.AddQuadUV(0f, 0f, 0f, 1f);
     }
 }
