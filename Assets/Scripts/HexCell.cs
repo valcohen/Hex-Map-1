@@ -305,4 +305,21 @@ public class HexCell : MonoBehaviour {
         neighbors[i].RefreshSelfOnly();
         RefreshSelfOnly();
     }
+
+    /*
+     * Features - Buildings
+     */
+    public int UrbanLevel {
+        get {
+            return urbanLevel;
+        }
+        set {
+            if (urbanLevel != value) {
+                urbanLevel = value;
+                RefreshSelfOnly();
+            }
+        }
+    }
+
+    int urbanLevel;
 }

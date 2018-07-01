@@ -16,9 +16,9 @@ public class HexFeatureManager : MonoBehaviour {
 
     public void Apply () {}
 
-    public void AddFeature(Vector3 position) {
+    public void AddFeature(HexCell cell,  Vector3 position) {
         HexHash hash = HexMetrics.SampleHashGrid(position);
-        if (hash.a >= 0.5f) { return; }
+        if (hash.a >= cell.UrbanLevel * 0.25f) { return; }
 
         Transform instance = Instantiate(featurePrefab);
 
