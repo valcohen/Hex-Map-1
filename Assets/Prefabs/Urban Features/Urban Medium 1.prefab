@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33765048618133924}
   - component: {fileID: 23161546761527522}
   m_Layer: 0
-  m_Name: Feature Cube
+  m_Name: Urban Medium 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36,7 +36,7 @@ Transform:
   m_GameObject: {fileID: 1421158986061822}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 1.5, y: 2, z: 1.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
