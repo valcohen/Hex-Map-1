@@ -196,6 +196,8 @@ public class HexGridChunk : MonoBehaviour {
             );
         }
 
+        features.AddWall(e1, cell, e2, neighbor);
+
         /* 
          * add triangle to fill corners
          * find bottom (lowest) cell and left and right neighbors
@@ -1121,4 +1123,5 @@ public class HexGridChunk : MonoBehaviour {
         }
 
     }
+
 }

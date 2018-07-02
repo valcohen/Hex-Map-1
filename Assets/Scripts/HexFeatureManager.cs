@@ -5,6 +5,8 @@ public class HexFeatureManager : MonoBehaviour {
     public HexFeatureCollection[] 
         urbanCollections, farmCollections, plantCollections;
 
+    public HexMesh walls;
+
     Transform container;
 
     public void Clear () {
@@ -13,9 +15,12 @@ public class HexFeatureManager : MonoBehaviour {
         }
         container = new GameObject("Features Container").transform;
         container.SetParent(transform, false);
+        walls.Clear();
     }
 
-    public void Apply () {}
+    public void Apply () {
+        walls.Apply();
+    }
 
     public void AddFeature(HexCell cell,  Vector3 position) {
         HexHash hash = HexMetrics.SampleHashGrid(position);
@@ -79,4 +84,40 @@ public class HexFeatureManager : MonoBehaviour {
         }
         return null;
     }
+
+    /*
+     * Walls
+     *              _____
+     *             /     \
+     *     ____ L /  far  \
+     *    /     \+\  ngbr /
+     *   /  near \+\_____/
+     *   \  cell / R       
+     *    \_____/ 
+     */
+    public void AddWall(
+        EdgeVertices near, HexCell nearCell,
+        EdgeVertices far, HexCell farCell
+    )
+    {
+        if (true || nearCell.Walled != farCell.Walled) {
+            Debug.Log("adding a wall...");
+            AddWallSegment(near.v1, far.v1, near.v5, far.v5);
+        }
+    }
+
+    void AddWallSegment (
+        Vector3 nearLeft, Vector3 farLeft, Vector3 nearRight, Vector3 farRight
+    ) {
+        Vector3 left = Vector3.Lerp(nearLeft, farLeft, 0.5f);
+        Vector3 right = Vector3.Lerp(nearRight, farRight, 0.5f);
+
+        Vector3 v1, v2, v3, v4;
+        v1 = v2 = left;
+        v3 = v4 = right;
+        v3.y = v4.y = left.y + HexMetrics.wallHeight;
+        walls.AddQuad(v1, v2, v3, v4);  // add a wall facing into our cell
+        walls.AddQuad(v2, v1, v3, v3);  // add another facing the neighbor cell
+    }
+
 }

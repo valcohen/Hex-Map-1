@@ -29,6 +29,8 @@ public class HexMetrics {
     public const float waterFactor                  = 0.6f; // expand hex border at shore
     public const float waterBlendFactor             = 1f - waterFactor;
 
+    public const float wallHeight = 3f;
+
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
 

@@ -148,7 +148,7 @@ public class HexMapEditor : MonoBehaviour {
         if (roadMode == OptionalToggle.No) {
             cell.RemoveRoads();
         }
-        if (walledMode == OptionalToggle.Ignore) {
+        if (walledMode != OptionalToggle.Ignore) {
             cell.Walled = walledMode == OptionalToggle.Yes;
         }
 
