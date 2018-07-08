@@ -111,12 +111,25 @@ public class HexFeatureManager : MonoBehaviour {
         Vector3 left = Vector3.Lerp(nearLeft, farLeft, 0.5f);
         Vector3 right = Vector3.Lerp(nearRight, farRight, 0.5f);
 
+        Vector3 leftThicknessOffset =
+            HexMetrics.WallThicknessOffset(nearLeft, farLeft);
+        Vector3 rightThicknessOffset =
+            HexMetrics.WallThicknessOffset(nearRight, farRight);
+
         Vector3 v1, v2, v3, v4;
-        v1 = v3 = left;
-        v2 = v4 = right;
+        v1 = v3 = left - leftThicknessOffset;
+        v2 = v4 = right - rightThicknessOffset;
         v3.y = v4.y = left.y + HexMetrics.wallHeight;
         walls.AddQuad(v1, v2, v3, v4);  // add a wall facing into our cell
+
+        Vector3 t1 = v3, t2 = v4;
+
+        v1 = v3 = left + leftThicknessOffset;
+        v2 = v4 = right + rightThicknessOffset;
+        v3.y = v4.y = left.y + HexMetrics.wallHeight;
         walls.AddQuad(v2, v1, v4, v3);  // add another facing the neighbor cell
+
+        walls.AddQuad(t1, t2, v3, v4);  // put a top on the wall
     }
 
 }

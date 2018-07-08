@@ -30,6 +30,7 @@ public class HexMetrics {
     public const float waterBlendFactor             = 1f - waterFactor;
 
     public const float wallHeight = 3f;
+    public const float wallThickness = 0.75f;
 
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
@@ -175,5 +176,13 @@ public class HexMetrics {
 
     public static float[] GetFeatureThresholds (int level) {
         return featureThresholds[level];
+    }
+
+    public static Vector3 WallThicknessOffset (Vector3 near, Vector3 far) {
+        Vector3 offset;
+        offset.x = far.x = near.x;
+        offset.y = 0;
+        offset.z = far.z - near.z;
+        return offset.normalized * (wallThickness * 0.5f);
     }
 }
