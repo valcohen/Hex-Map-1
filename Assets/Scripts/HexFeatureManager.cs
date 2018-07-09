@@ -7,6 +7,7 @@ public class HexFeatureManager : MonoBehaviour {
 
     public HexMesh walls;
     public Transform wallTower, bridge;
+    public Transform[] special;
 
     Transform container;
 
