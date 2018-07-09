@@ -312,8 +312,19 @@ public class HexFeatureManager : MonoBehaviour {
         roadCenter1 = HexMetrics.Perturb(roadCenter1);
         roadCenter2 = HexMetrics.Perturb(roadCenter2);
         Transform instance = Instantiate(bridge);
+
+        // position
         instance.localPosition = (roadCenter1 + roadCenter2) * 0.5f;
+
+        // rotation
         instance.forward = roadCenter2 - roadCenter1;
+
+        // scale length of bridge to adjust to perturbed terrain
+        float length = Vector3.Distance(roadCenter1, roadCenter2);
+        instance.localScale = new Vector3(
+            1f, 1f, length * (1f / HexMetrics.bridgeDesignLength)
+        );
+
         instance.SetParent(container, false);
     }
 

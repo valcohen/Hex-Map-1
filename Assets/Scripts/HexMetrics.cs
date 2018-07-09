@@ -35,6 +35,7 @@ public class HexMetrics {
     public const float wallElevationOffset  = verticalTerraceStepSize;
     public const float wallTowerThreshold   = 0.5f;
 
+    public const float bridgeDesignLength   = 7f;
 
     public static Texture2D noiseSource;
     public const float noiseScale           = 0.003f;
