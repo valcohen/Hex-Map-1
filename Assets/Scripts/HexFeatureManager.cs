@@ -6,6 +6,7 @@ public class HexFeatureManager : MonoBehaviour {
         urbanCollections, farmCollections, plantCollections;
 
     public HexMesh walls;
+    public Transform wallTower;
 
     Transform container;
 
