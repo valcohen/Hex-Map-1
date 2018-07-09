@@ -370,4 +370,24 @@ public class HexCell : MonoBehaviour {
         }
     }
     bool walled;
+
+    /*
+     * Special features
+     */
+    public int SpecialIndex {
+        get {
+            return specialIndex;
+        }
+        set {
+            if (specialIndex != value) {
+                specialIndex = value;
+                RefreshSelfOnly();
+            }
+        }
+    }
+    int specialIndex;
+
+    public bool IsSpecial {
+        get { return specialIndex > 0; }
+    }
 }
