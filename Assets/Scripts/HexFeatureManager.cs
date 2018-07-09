@@ -308,4 +308,13 @@ public class HexFeatureManager : MonoBehaviour {
         walls.AddTriangleUnperturbed(pointTop, v3, v4);
     }
 
+    public void AddBridge (Vector3 roadCenter1, Vector3 roadCenter2) {
+        roadCenter1 = HexMetrics.Perturb(roadCenter1);
+        roadCenter2 = HexMetrics.Perturb(roadCenter2);
+        Transform instance = Instantiate(bridge);
+        instance.localPosition = (roadCenter1 + roadCenter2) * 0.5f;
+        instance.forward = roadCenter2 - roadCenter1;
+        instance.SetParent(container, false);
+    }
+
 }
