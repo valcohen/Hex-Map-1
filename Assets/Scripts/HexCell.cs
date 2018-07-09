@@ -295,6 +295,7 @@ public class HexCell : MonoBehaviour {
 
     public void AddRoad (HexDirection direction) {
         if (!roads[(int)direction] && !HasRiverThroughEdge(direction)
+            && !IsSpecial && !GetNeighbor(direction).IsSpecial
             && GetElevationDifference(direction) <= maxRoadSlope
         ) {
             SetRoad((int)direction, true);
@@ -383,6 +384,7 @@ public class HexCell : MonoBehaviour {
         set {
             if (specialIndex != value && !HasRiver) {
                 specialIndex = value;
+                RemoveRoads();
                 RefreshSelfOnly();
             }
         }

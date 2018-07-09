@@ -25,6 +25,8 @@ public class HexFeatureManager : MonoBehaviour {
     }
 
     public void AddFeature(HexCell cell,  Vector3 position) {
+        if (cell.IsSpecial) { return; }
+
         HexHash hash = HexMetrics.SampleHashGrid(position);
 
         Transform prefab = PickPrefab(
