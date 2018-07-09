@@ -13,7 +13,7 @@ public class HexGrid : MonoBehaviour {
     public HexCell  cellPrefab;
     public Text     cellLabelPrefab;
 
-    public Color    defaultColor = Color.white;
+    public Color[]  colors;
 
     public Texture2D noiseSource;
 
@@ -25,6 +25,7 @@ public class HexGrid : MonoBehaviour {
     void Awake() {
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
+        HexMetrics.colors = colors;
 
         cellCountX = chunkCountX * HexMetrics.chunkSizeX;
         cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
@@ -34,8 +35,12 @@ public class HexGrid : MonoBehaviour {
     }
 
     void OnEnable() {
-        HexMetrics.noiseSource = noiseSource;
-        HexMetrics.InitializeHashGrid(seed);
+        if (!HexMetrics.noiseSource) {
+            HexMetrics.noiseSource = noiseSource;
+            HexMetrics.InitializeHashGrid(seed);
+            HexMetrics.colors = colors;
+        }
+
     }
 
     void CreateChunks () {
@@ -94,7 +99,6 @@ public class HexGrid : MonoBehaviour {
         // cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
-        cell.Color = defaultColor;
         cell.name = "Cell " + cell.coordinates.ToString();
 
         if (x > 0) {    // skip 1st col, set West neighbor
