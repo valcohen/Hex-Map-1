@@ -229,11 +229,13 @@ public class HexCell : MonoBehaviour {
         // set our outgoing river
         hasOutgoingRiver = true;
         outgoingRiver = direction;
+        specialIndex = 0;   // if we have a river, disable full-cell special features
 
         // set neighbor's incoming river
         neighbor.RemoveIncomingRiver();
         neighbor.hasIncomingRiver = true;
         neighbor.incomingRiver = direction.Opposite();
+        neighbor.specialIndex = 0;
 
         SetRoad((int)direction, false);
     }
@@ -379,7 +381,7 @@ public class HexCell : MonoBehaviour {
             return specialIndex;
         }
         set {
-            if (specialIndex != value) {
+            if (specialIndex != value && !HasRiver) {
                 specialIndex = value;
                 RefreshSelfOnly();
             }

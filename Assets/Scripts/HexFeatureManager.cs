@@ -329,4 +329,17 @@ public class HexFeatureManager : MonoBehaviour {
         instance.SetParent(container, false);
     }
 
+    public void AddSpecialFeature (HexCell cell, Vector3 position) {
+        Transform instance = Instantiate(special[cell.SpecialIndex - 1]);
+
+        // position
+        instance.localPosition = HexMetrics.Perturb(position);
+
+        // rotation
+        HexHash hash = HexMetrics.SampleHashGrid(position);
+        instance.localRotation = Quaternion.Euler(0f, 360f * hash.e, 0f);
+
+        instance.SetParent(container, false);
+
+    }
 }
