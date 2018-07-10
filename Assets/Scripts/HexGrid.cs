@@ -39,7 +39,7 @@ public class HexGrid : MonoBehaviour {
 
     }
 
-    public void CreateMap (int x, int z) {
+    public bool CreateMap (int x, int z) {
         if (
                 x <= 0 || x % HexMetrics.chunkSizeX != 0
             ||  x <= 0 || z % HexMetrics.chunkSizeZ != 0
@@ -49,7 +49,7 @@ public class HexGrid : MonoBehaviour {
                            + HexMetrics.chunkSizeX + ", " 
                            + HexMetrics.chunkSizeZ + "."
             );
-            return;
+            return false;
         }
 
         if (chunks != null) {
@@ -65,6 +65,8 @@ public class HexGrid : MonoBehaviour {
 
         CreateChunks();
         CreateCells();
+
+        return true;
     }
 
     void CreateChunks () {
@@ -171,12 +173,28 @@ public class HexGrid : MonoBehaviour {
      */
 
     public void Save(BinaryWriter writer) {
+        writer.Write(cellCountX);
+        writer.Write(cellCountZ);
+
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Save(writer);
         }
     }
 
-    public void Load(BinaryReader reader) {
+    public void Load(BinaryReader reader, int header) {
+        int x = 20, z = 15;         // default values for version 0
+        if (header >= 1) {
+            x = reader.ReadInt32();
+            z = reader.ReadInt32();
+        }
+
+        // skip creating new map if loading one of the current size
+        if (x != cellCountX || z != cellCountZ) {
+            if (!CreateMap(x, z)) {
+                return;
+            }
+        }
+
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Load(reader);
         }
