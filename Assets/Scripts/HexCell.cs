@@ -414,21 +414,21 @@ public class HexCell : MonoBehaviour {
     public void Save (BinaryWriter writer) {
         Debug.Log("Save cell " + this.name);
 
-        writer.Write(terrainTypeIndex);
-        writer.Write(elevation);
-        writer.Write(waterLevel);
-        writer.Write(urbanLevel);
-        writer.Write(farmLevel);
-        writer.Write(plantLevel);
-        writer.Write(specialIndex);
+        writer.Write((byte)terrainTypeIndex);
+        writer.Write((byte)elevation);
+        writer.Write((byte)waterLevel);
+        writer.Write((byte)urbanLevel);
+        writer.Write((byte)farmLevel);
+        writer.Write((byte)plantLevel);
+        writer.Write((byte)specialIndex);
 
         writer.Write(walled);
 
         writer.Write(hasIncomingRiver);
-        writer.Write((int)incomingRiver);
+        writer.Write((byte)incomingRiver);
 
         writer.Write(hasOutgoingRiver);
-        writer.Write((int)outgoingRiver);
+        writer.Write((byte)outgoingRiver);
 
         for (int i = 0; i < roads.Length; i++) {
             writer.Write(roads[i]);
@@ -438,22 +438,22 @@ public class HexCell : MonoBehaviour {
     public void Load (BinaryReader reader) {
         Debug.Log("Load cell " + this.name);
 
-        terrainTypeIndex = reader.ReadInt32();
-        elevation       = reader.ReadInt32();
+        terrainTypeIndex = reader.ReadByte();
+        elevation       = reader.ReadByte();
         RefreshPosition();
-        waterLevel      = reader.ReadInt32();
-        urbanLevel      = reader.ReadInt32();
-        farmLevel       = reader.ReadInt32();
-        plantLevel      = reader.ReadInt32();
-        specialIndex    = reader.ReadInt32();
+        waterLevel      = reader.ReadByte();
+        urbanLevel      = reader.ReadByte();
+        farmLevel       = reader.ReadByte();
+        plantLevel      = reader.ReadByte();
+        specialIndex    = reader.ReadByte();
 
         walled = reader.ReadBoolean();
 
         hasIncomingRiver = reader.ReadBoolean();
-        incomingRiver = (HexDirection)reader.ReadInt32();
+        incomingRiver = (HexDirection)reader.ReadByte();
 
         hasOutgoingRiver = reader.ReadBoolean();
-        outgoingRiver = (HexDirection)reader.ReadInt32();
+        outgoingRiver = (HexDirection)reader.ReadByte();
 
         for (int i = 0; i < roads.Length; i++) {
             roads[i] = reader.ReadBoolean();
