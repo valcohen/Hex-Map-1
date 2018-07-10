@@ -1,4 +1,4 @@
-using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -141,4 +141,25 @@ public class HexGrid : MonoBehaviour {
         int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
         chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
     }
+
+    /*
+     * IO
+     */
+
+    public void Save(BinaryWriter writer) {
+        for (int i = 0; i < cells.Length; i++) {
+            cells[i].Save(writer);
+        }
+    }
+
+    public void Load(BinaryReader reader) {
+        for (int i = 0; i < cells.Length; i++) {
+            cells[i].Load(reader);
+        }
+
+        for (int i = 0; i < chunks.Length; i++) {
+            chunks[i].Refresh();
+        }
+    }
+
 }

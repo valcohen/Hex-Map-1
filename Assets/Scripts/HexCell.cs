@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 
 public class HexCell : MonoBehaviour {
     
@@ -398,5 +399,17 @@ public class HexCell : MonoBehaviour {
 
     public bool IsSpecial {
         get { return specialIndex > 0; }
+    }
+
+    /*
+     * IO
+     */
+
+    public void Save (BinaryWriter writer) {
+        Debug.Log("Save cell " + this.name);
+    }
+
+    public void Load (BinaryReader reader) {
+        Debug.Log("Load cell " + this.name);
     }
 }
