@@ -63,6 +63,14 @@ public class HexMapEditor : MonoBehaviour {
         isDrag = false;
     }
 
+    public void Save () {
+        Debug.Log("Save: " +  Application.persistentDataPath);
+    }
+
+    public void Load () {
+        Debug.Log("Load");
+    }
+
     /*
      * axes          
      * x: --    \  / y
