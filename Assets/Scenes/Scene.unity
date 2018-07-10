@@ -983,6 +983,7 @@ GameObject:
   - component: {fileID: 127971740}
   - component: {fileID: 127971739}
   - component: {fileID: 127971738}
+  - component: {fileID: 127971742}
   m_Layer: 5
   m_Name: Save Load Menu
   m_TagString: Untagged
@@ -1079,6 +1080,21 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0
+--- !u!114 &127971742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 127971736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d134baa5329f8449e9871bd1f64d1321, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  menuLabel: {fileID: 84821323}
+  actionButtonLabel: {fileID: 1203752931}
+  nameInput: {fileID: 202762850}
+  hexGrid: {fileID: 411347303}
 --- !u!1 &160253672
 GameObject:
   m_ObjectHideFlags: 0
@@ -4422,7 +4438,7 @@ GameObject:
   - component: {fileID: 680445032}
   - component: {fileID: 680445031}
   m_Layer: 5
-  m_Name: Savel Button
+  m_Name: Action Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6776,16 +6792,16 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1069095398}
-        m_MethodName: Save
-        m_Mode: 1
+      - m_Target: {fileID: 127971742}
+        m_MethodName: Open
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
@@ -10029,7 +10045,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 127971738}
+      - m_Target: {fileID: 127971742}
         m_MethodName: Close
         m_Mode: 1
         m_Arguments:
@@ -12888,9 +12904,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1069095398}
-        m_MethodName: Load
-        m_Mode: 1
+      - m_Target: {fileID: 127971742}
+        m_MethodName: Open
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
