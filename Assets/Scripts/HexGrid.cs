@@ -27,7 +27,7 @@ public class HexGrid : MonoBehaviour {
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
         HexMetrics.colors = colors;
-        CreateMap();
+        CreateMap(cellCountX, cellCountZ);
     }
 
     void OnEnable() {
@@ -39,13 +39,27 @@ public class HexGrid : MonoBehaviour {
 
     }
 
-    public void CreateMap () {
+    public void CreateMap (int x, int z) {
+        if (
+                x <= 0 || x % HexMetrics.chunkSizeX != 0
+            ||  x <= 0 || z % HexMetrics.chunkSizeZ != 0
+        ) {
+            Debug.LogError("Unsupported map size: " + x + "," + z 
+                           + " does not divide into chunk size "
+                           + HexMetrics.chunkSizeX + ", " 
+                           + HexMetrics.chunkSizeZ + "."
+            );
+            return;
+        }
+
         if (chunks != null) {
             for (int i = 0; i < chunks.Length; i++) {
                 Destroy(chunks[i].gameObject);
             }
         }
 
+        cellCountX = x;
+        cellCountZ = z;
         chunkCountX = cellCountX / HexMetrics.chunkSizeX;
         chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
 
