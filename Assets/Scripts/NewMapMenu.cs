@@ -6,10 +6,12 @@ public class NewMapMenu : MonoBehaviour {
 
     public void Open () {
         gameObject.SetActive(true);
-    }
+        HexMapCamera.Locked = true;
+}
 
     public void Close () {
         gameObject.SetActive(false);
+        HexMapCamera.Locked = false;
     }
 
     public void CreateSmallMap () {
@@ -26,6 +28,7 @@ public class NewMapMenu : MonoBehaviour {
 
     void CreateMap (int x, int z) {
         hexGrid.CreateMap(x, z);
+        HexMapCamera.ValidatePosition();
         Close();
     }
 }

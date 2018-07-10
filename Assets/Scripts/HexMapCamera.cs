@@ -12,7 +12,18 @@ public class HexMapCamera : MonoBehaviour {
     float zoom = 1f;
     float rotationAngle;
 
+    static HexMapCamera instance;
+
+    public static bool Locked {
+        set { instance.enabled = !value; }
+    }
+
+    public static void ValidatePosition () {
+        instance.AdjustPosition(0f, 0f);
+    }
+
     void Awake() {
+        instance = this;
         swivel  = transform.GetChild(0);
         stick   = swivel.GetChild(0);
     }
