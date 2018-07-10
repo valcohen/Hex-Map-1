@@ -424,15 +424,27 @@ public class HexCell : MonoBehaviour {
 
         writer.Write(walled);
 
-        writer.Write(hasIncomingRiver);
-        writer.Write((byte)incomingRiver);
-
-        writer.Write(hasOutgoingRiver);
-        writer.Write((byte)outgoingRiver);
-
-        for (int i = 0; i < roads.Length; i++) {
-            writer.Write(roads[i]);
+        if (hasIncomingRiver) {
+            writer.Write((byte)(incomingRiver + 128));    // 128 == has a river
+        } else {
+            writer.Write((byte)0);
         }
+
+        if (hasOutgoingRiver) {
+            writer.Write((byte)(outgoingRiver + 128));
+        }
+        else {
+            writer.Write((byte)0);
+        }
+
+        int roadFlags = 0;
+        for (int i = 0; i < roads.Length; i++) {
+            if (roads[i]) {
+                roadFlags |= 1 << i;
+            }
+        }
+        writer.Write((byte)roadFlags);
+
     }
 
     public void Load (BinaryReader reader) {
@@ -449,14 +461,27 @@ public class HexCell : MonoBehaviour {
 
         walled = reader.ReadBoolean();
 
-        hasIncomingRiver = reader.ReadBoolean();
-        incomingRiver = (HexDirection)reader.ReadByte();
+        byte riverData = reader.ReadByte();
+        if (riverData >= 128) {     // 128 == has a river
+            hasIncomingRiver = true;
+            incomingRiver = (HexDirection)(riverData - 128);
+        }
+        else {
+            hasIncomingRiver = false;
+        }
 
-        hasOutgoingRiver = reader.ReadBoolean();
-        outgoingRiver = (HexDirection)reader.ReadByte();
+        riverData = reader.ReadByte();
+        if (riverData >= 128) {
+            hasOutgoingRiver = true;
+            outgoingRiver = (HexDirection)(riverData - 128);
+        }
+        else {
+            hasOutgoingRiver = false;
+        }
 
+        int roadFlags = reader.ReadByte();
         for (int i = 0; i < roads.Length; i++) {
-            roads[i] = reader.ReadBoolean();
+            roads[i] = (roadFlags & (1 << i)) != 0;
         }
     }
 }
