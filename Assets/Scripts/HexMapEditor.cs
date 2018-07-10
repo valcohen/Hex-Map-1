@@ -71,6 +71,7 @@ public class HexMapEditor : MonoBehaviour {
         using (BinaryWriter writer = 
             new BinaryWriter(File.Open(path, FileMode.Create))
         ) {
+            writer.Write(0);        // file format version number
             hexGrid.Save(writer);
         }
 
@@ -83,7 +84,13 @@ public class HexMapEditor : MonoBehaviour {
         using (BinaryReader reader =
                new BinaryReader(File.OpenRead(path))
         ) {
-            hexGrid.Load(reader);
+            int header = reader.ReadInt32();     // read file format version number
+            if (header == 0) {
+                hexGrid.Load(reader);
+            }
+            else {
+                Debug.LogWarning("Unkown map format: " + header);
+            }
         }
 
     }
