@@ -1,26 +1,21 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class HexMapEditor : MonoBehaviour {
 
-    public Color[]  colors;
     public HexGrid  hexGrid;
 
-    Color   activeColor;
-    int     activeElevation;
-    int     activeWaterLevel;
-    int     activeUrbanLevel, activeFarmLevel, activePlantLevel, activeSpecialIndex;
+    int activeElevation;
+    int activeWaterLevel;
+    int activeUrbanLevel, activeFarmLevel, activePlantLevel, activeSpecialIndex;
+    int activeTerrainTypeIndex;
 
-    bool applyColor;
     bool applyElevation = true;
     bool applyWaterLevel = true;
     bool applyUrbanLevel, applyFarmLevel, applyPlantLevel, applySpecialIndex;
 
     int brushSize;
-
-    void Awake() {
-        SelectColor(-1);
-    }
 
     bool isDrag;
     HexDirection dragDirection;
@@ -67,6 +62,37 @@ public class HexMapEditor : MonoBehaviour {
             }
         }
         isDrag = false;
+    }
+
+    public void Save () {
+        string path = Path.Combine(Application.persistentDataPath, "test.map");
+        Debug.Log("Save " + path);
+
+        using (BinaryWriter writer = 
+            new BinaryWriter(File.Open(path, FileMode.Create))
+        ) {
+            writer.Write(0);        // file format version number
+            hexGrid.Save(writer);
+        }
+
+    }
+
+    public void Load () {
+        string path = Path.Combine(Application.persistentDataPath, "test.map");
+        Debug.Log("Load " + path);
+
+        using (BinaryReader reader =
+               new BinaryReader(File.OpenRead(path))
+        ) {
+            int header = reader.ReadInt32();     // read file format version number
+            if (header == 0) {
+                hexGrid.Load(reader);
+            }
+            else {
+                Debug.LogWarning("Unkown map format: " + header);
+            }
+        }
+
     }
 
     /*
@@ -124,9 +150,10 @@ public class HexMapEditor : MonoBehaviour {
     void EditCell(HexCell cell) {
         if (cell == null) { return; }
 
-        if (applyColor) {
-            cell.Color = activeColor;
+        if (activeTerrainTypeIndex >= 0) {
+            cell.TerrainTypeIndex = activeTerrainTypeIndex;
         }
+
         if (applyElevation) {
             cell.Elevation = activeElevation;
         }
@@ -165,13 +192,6 @@ public class HexMapEditor : MonoBehaviour {
                     otherCell.AddRoad(dragDirection);
                 }
             }
-        }
-    }
-
-    public void SelectColor(int index) {
-        applyColor = index >= 0;
-        if (applyColor) {
-            activeColor = colors[index];
         }
     }
 
@@ -252,4 +272,7 @@ public class HexMapEditor : MonoBehaviour {
         activeSpecialIndex = (int)index;
     }
 
+    public void SetTerrainTypeInde (int index) {
+        activeTerrainTypeIndex = index;
+    }
 }
