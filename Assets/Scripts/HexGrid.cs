@@ -26,12 +26,7 @@ public class HexGrid : MonoBehaviour {
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
         HexMetrics.colors = colors;
-
-        cellCountX = chunkCountX * HexMetrics.chunkSizeX;
-        cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
-
-        CreateChunks();
-        CreateCells();
+        CreateMap();
     }
 
     void OnEnable() {
@@ -41,6 +36,20 @@ public class HexGrid : MonoBehaviour {
             HexMetrics.colors = colors;
         }
 
+    }
+
+    public void CreateMap () {
+        if (chunks != null) {
+            for (int i = 0; i < chunks.Length; i++) {
+                Destroy(chunks[i].gameObject);
+            }
+        }
+
+        cellCountX = chunkCountX * HexMetrics.chunkSizeX;
+        cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
+
+        CreateChunks();
+        CreateCells();
     }
 
     void CreateChunks () {
