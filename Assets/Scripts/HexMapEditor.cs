@@ -64,38 +64,6 @@ public class HexMapEditor : MonoBehaviour {
         isDrag = false;
     }
 
-    public void Save () {
-        string path = Path.Combine(Application.persistentDataPath, "test.map");
-        Debug.Log("Save " + path);
-
-        using (BinaryWriter writer = 
-            new BinaryWriter(File.Open(path, FileMode.Create))
-        ) {
-            writer.Write(1);        // file format version number
-            hexGrid.Save(writer);
-        }
-
-    }
-
-    public void Load () {
-        string path = Path.Combine(Application.persistentDataPath, "test.map");
-        Debug.Log("Load " + path);
-
-        using (BinaryReader reader =
-               new BinaryReader(File.OpenRead(path))
-        ) {
-            int header = reader.ReadInt32();     // read file format version number
-            if (header <= 1) {
-                hexGrid.Load(reader, header);
-                HexMapCamera.ValidatePosition();
-            }
-            else {
-                Debug.LogWarning("Unkown map format: " + header);
-            }
-        }
-
-    }
-
     /*
      * axes          
      * x: --    \  / y
