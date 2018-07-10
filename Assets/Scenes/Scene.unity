@@ -2289,8 +2289,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb095c1fa001643ea95275eb638da379, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkCountX: 4
-  chunkCountZ: 3
+  cellCountX: 20
+  cellCountZ: 15
   chunkPrefab: {fileID: 114357898114420830, guid: cf19f6a86332c4ee0ba95a02e9adca48,
     type: 2}
   cellPrefab: {fileID: 114261984642461292, guid: 813586ead99a347829b8fa807d87fabc,

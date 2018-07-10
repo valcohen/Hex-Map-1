@@ -4,9 +4,10 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour {
 
-    public int chunkCountX = 4, chunkCountZ = 3;
-    int cellCountX = 6;
-    int cellCountZ = 6;
+
+    public int cellCountX = 20;
+    public int cellCountZ = 15;
+    int chunkCountX, chunkCountZ;
 
     public HexGridChunk chunkPrefab;
 
@@ -45,8 +46,8 @@ public class HexGrid : MonoBehaviour {
             }
         }
 
-        cellCountX = chunkCountX * HexMetrics.chunkSizeX;
-        cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
+        chunkCountX = cellCountX / HexMetrics.chunkSizeX;
+        chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
 
         CreateChunks();
         CreateCells();
