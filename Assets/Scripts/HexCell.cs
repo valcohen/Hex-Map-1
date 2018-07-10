@@ -26,32 +26,21 @@ public class HexCell : MonoBehaviour {
 
     public int Elevation {
         get { return elevation;  }
-        set {
-            if (elevation == value) {
-                return;
-            }
+        set
+        {
+            if (elevation == value) { return; }
+
             elevation = value;
 
-            // raise the cell
-            Vector3 position = transform.localPosition;
-            position.y = value * HexMetrics.elevationStep;
-            position.y += (
-                HexMetrics.SampleNoise(position).y * 2f - 1f) *
-                HexMetrics.elevationPerturbStrength;
-
-            transform.localPosition = position;
-
-            // raise the label
-            Vector3 uiPosition = uiRect.localPosition;
-            uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
-            uiRect.localPosition = uiPosition;
-
+            RefreshPosition();
 
             ValidateRivers();
 
             // prevent invalid roads
-            for (int i = 0; i < roads.Length; i++) {
-                if (roads[i] && GetElevationDifference((HexDirection)i) > maxRoadSlope ) {
+            for (int i = 0; i < roads.Length; i++)
+            {
+                if (roads[i] && GetElevationDifference((HexDirection)i) > maxRoadSlope)
+                {
                     SetRoad(i, false);
                 }
             }
@@ -59,6 +48,23 @@ public class HexCell : MonoBehaviour {
             Refresh();
         }
     }
+
+    void RefreshPosition () {
+        // raise the cell
+        Vector3 position = transform.localPosition;
+        position.y = elevation * HexMetrics.elevationStep;
+        position.y += (
+            HexMetrics.SampleNoise(position).y * 2f - 1f) *
+            HexMetrics.elevationPerturbStrength;
+
+        transform.localPosition = position;
+
+        // raise the label
+        Vector3 uiPosition = uiRect.localPosition;
+        uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
+        uiRect.localPosition = uiPosition;
+    }
+
     int elevation = int.MinValue;
 
     public int GetElevationDifference (HexDirection direction) {
@@ -407,9 +413,50 @@ public class HexCell : MonoBehaviour {
 
     public void Save (BinaryWriter writer) {
         Debug.Log("Save cell " + this.name);
+
+        writer.Write(terrainTypeIndex);
+        writer.Write(elevation);
+        writer.Write(waterLevel);
+        writer.Write(urbanLevel);
+        writer.Write(farmLevel);
+        writer.Write(plantLevel);
+        writer.Write(specialIndex);
+
+        writer.Write(walled);
+
+        writer.Write(hasIncomingRiver);
+        writer.Write((int)incomingRiver);
+
+        writer.Write(hasOutgoingRiver);
+        writer.Write((int)outgoingRiver);
+
+        for (int i = 0; i < roads.Length; i++) {
+            writer.Write(roads[i]);
+        }
     }
 
     public void Load (BinaryReader reader) {
         Debug.Log("Load cell " + this.name);
+
+        terrainTypeIndex = reader.ReadInt32();
+        elevation       = reader.ReadInt32();
+        RefreshPosition();
+        waterLevel      = reader.ReadInt32();
+        urbanLevel      = reader.ReadInt32();
+        farmLevel       = reader.ReadInt32();
+        plantLevel      = reader.ReadInt32();
+        specialIndex    = reader.ReadInt32();
+
+        walled = reader.ReadBoolean();
+
+        hasIncomingRiver = reader.ReadBoolean();
+        incomingRiver = (HexDirection)reader.ReadInt32();
+
+        hasOutgoingRiver = reader.ReadBoolean();
+        outgoingRiver = (HexDirection)reader.ReadInt32();
+
+        for (int i = 0; i < roads.Length; i++) {
+            roads[i] = reader.ReadBoolean();
+        }
     }
 }
