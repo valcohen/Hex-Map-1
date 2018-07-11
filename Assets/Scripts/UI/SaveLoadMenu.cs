@@ -1,11 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.IO;
 
 public class SaveLoadMenu : MonoBehaviour {
 
     public Text menuLabel, actionButtonLabel;
+
     public InputField nameInput;
+
+    public RectTransform listContent;
+
+    public SaveLoadItem itemPrefab;
 
     public HexGrid hexGrid;
 
@@ -23,6 +29,7 @@ public class SaveLoadMenu : MonoBehaviour {
             actionButtonLabel.text = "Load";
         }
 
+        FillList();
         gameObject.SetActive(true);
         HexMapCamera.Locked = true;
     }
@@ -45,6 +52,10 @@ public class SaveLoadMenu : MonoBehaviour {
         Close();
     }
 
+    public void SelectItem (string name) {
+        nameInput.text = name;
+    }
+
     string GetSelectedPath () {
         string mapName = nameInput.text.Trim();
         if (mapName.Length == 0) {
@@ -63,7 +74,6 @@ public class SaveLoadMenu : MonoBehaviour {
             writer.Write(1);        // file format version number
             hexGrid.Save(writer);
         }
-
     }
 
     void Load (string path) {
@@ -92,5 +102,21 @@ public class SaveLoadMenu : MonoBehaviour {
 
     }
 
+    void FillList () {
+        for (int i = 0; i < listContent.childCount; i++) {
+            Destroy(listContent.GetChild(i).gameObject);
+        }
+
+        string[] paths =
+            Directory.GetFiles(Application.persistentDataPath, "*.map");
+        Array.Sort(paths);
+
+        for (int i = 0; i < paths.Length; i++) {
+            SaveLoadItem item = Instantiate(itemPrefab);
+            item.menu = this;
+            item.MapName = Path.GetFileNameWithoutExtension(paths[i]);
+            item.transform.SetParent(listContent, false);
+        }
+    }
 
 }
