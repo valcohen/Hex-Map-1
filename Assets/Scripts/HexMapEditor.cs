@@ -184,10 +184,6 @@ public class HexMapEditor : MonoBehaviour {
         brushSize = (int)size;
     }
 
-    public void ShowUI (bool visible) {
-        hexGrid.ShowUI(visible);
-    }
-
     enum OptionalToggle {
         Ignore, Yes, No
     }
@@ -264,5 +260,6 @@ public class HexMapEditor : MonoBehaviour {
 
     public void SetEditMode (bool toggle) {
         editMode = toggle;
+        hexGrid.ShowUI(!toggle);    // hide labels when in edit mode, else show them
     }
 }
