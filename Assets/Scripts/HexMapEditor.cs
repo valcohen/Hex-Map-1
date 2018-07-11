@@ -22,6 +22,8 @@ public class HexMapEditor : MonoBehaviour {
     HexDirection dragDirection;
     HexCell previousCell;
 
+    bool editMode;
+
     void Awake() {
         terrainMaterial.DisableKeyword("GRID_ON");
     }
@@ -47,8 +49,9 @@ public class HexMapEditor : MonoBehaviour {
             } else {
                 isDrag = false;
             }
-
-            EditCells(currentCell);
+            if (editMode) {
+                EditCells(currentCell);
+            }
             previousCell = currentCell;
         } else {
             previousCell = null;
@@ -257,5 +260,9 @@ public class HexMapEditor : MonoBehaviour {
         else {
             terrainMaterial.DisableKeyword("GRID_ON");
         }
+    }
+
+    public void SetEditMode (bool toggle) {
+        editMode = toggle;
     }
 }
