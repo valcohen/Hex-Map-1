@@ -45,8 +45,6 @@ public class HexMetrics {
     public const float elevationPerturbStrength = 1.5f;
     //public const float elevationPerturbStrength = 0f;
 
-    public static Color[] colors;
-
     static Vector3[] corners = {
         new Vector3(0f,             0f,  outerRadius),
         new Vector3(innerRadius,    0f,  0.5f * outerRadius),
