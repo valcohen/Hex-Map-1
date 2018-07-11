@@ -200,4 +200,13 @@ public class HexGrid : MonoBehaviour {
         }
     }
 
+    /*
+     * Distances
+     */
+
+    public void FindDistancesTo (HexCell cell) {
+        for (int i = 0; i < cells.Length; i++) {
+            cells[i].Distance = 0;
+        }
+    }
 }
