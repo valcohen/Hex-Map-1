@@ -412,7 +412,6 @@ public class HexCell : MonoBehaviour {
      */
 
     public void Save (BinaryWriter writer) {
-        Debug.Log("Save cell " + this.name);
 
         writer.Write((byte)terrainTypeIndex);
         writer.Write((byte)elevation);
@@ -448,7 +447,6 @@ public class HexCell : MonoBehaviour {
     }
 
     public void Load (BinaryReader reader) {
-        Debug.Log("Load cell " + this.name);
 
         terrainTypeIndex = reader.ReadByte();
         elevation       = reader.ReadByte();
