@@ -564,7 +564,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: B
+  m_Text: Mud
 --- !u!222 &60488227
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2944,12 +2944,6 @@ MonoBehaviour:
     type: 2}
   cellLabelPrefab: {fileID: 114694338733823388, guid: f250093849c5f40c1abd6d8cc2f9f573,
     type: 2}
-  colors:
-  - {r: 1, g: 0.89851844, b: 0, a: 1}
-  - {r: 0.09162349, g: 0.6132076, b: 0.054957267, a: 1}
-  - {r: 0.23589355, g: 0.29346094, b: 0.8773585, a: 1}
-  - {r: 0.9056604, g: 0.43907443, b: 0.15806337, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
   noiseSource: {fileID: 2800000, guid: 7538ac1484cbc47bdaae85c38ee6b27f, type: 3}
   seed: 0
 --- !u!4 &411347304
@@ -3282,7 +3276,7 @@ GameObject:
   - component: {fileID: 459978136}
   - component: {fileID: 459978137}
   m_Layer: 5
-  m_Name: ToggleBlue
+  m_Name: ToggleMud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3499,9 +3493,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'W
-
-'
+  m_Text: Snw
 --- !u!222 &478751648
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4408,7 +4400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14960839, g: 0.24974623, b: 0.7735849, a: 1}
+  m_Color: {r: 0.6509434, g: 0.6213972, b: 0.5987451, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -5130,7 +5122,7 @@ GameObject:
   - component: {fileID: 780499949}
   - component: {fileID: 780499950}
   m_Layer: 5
-  m_Name: ToggleGreen
+  m_Name: ToggleGrass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5530,7 +5522,7 @@ GameObject:
   - component: {fileID: 827350117}
   - component: {fileID: 827350118}
   m_Layer: 5
-  m_Name: ToggleOrange
+  m_Name: ToggleStone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6606,7 +6598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -7496,7 +7488,7 @@ GameObject:
   - component: {fileID: 1080396884}
   - component: {fileID: 1080396885}
   m_Layer: 5
-  m_Name: ToggleWhite
+  m_Name: ToggleSnow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8871,9 +8863,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Y
-
-'
+  m_Text: Snd
 --- !u!222 &1227797790
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9646,7 +9636,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'G
+  m_Text: 'Grs
 
 '
 --- !u!222 &1341458211
@@ -10430,7 +10420,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.96657693, b: 0, a: 1}
+  m_Color: {r: 0.8773585, g: 0.821659, b: 0.5338644, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -10834,7 +10824,7 @@ GameObject:
   - component: {fileID: 1557706631}
   - component: {fileID: 1557706632}
   m_Layer: 5
-  m_Name: ToggleYellow
+  m_Name: ToggleSand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11445,7 +11435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.009653807, a: 1}
+  m_Color: {r: 0.43090293, g: 0.5471698, b: 0.31229973, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -13390,7 +13380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.990566, g: 0.58490276, b: 0, a: 1}
+  m_Color: {r: 0.5188679, g: 0.39914405, b: 0.22761656, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -14087,9 +14077,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'O
-
-'
+  m_Text: Stn
 --- !u!222 &2109335609
 CanvasRenderer:
   m_ObjectHideFlags: 0

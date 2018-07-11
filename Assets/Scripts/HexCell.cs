@@ -5,11 +5,6 @@ public class HexCell : MonoBehaviour {
     
     public HexCoordinates coordinates;
 
-    public Color Color {
-        get {
-            return HexMetrics.colors[terrainTypeIndex];
-        }
-    }
     int terrainTypeIndex;
 
     public int TerrainTypeIndex {

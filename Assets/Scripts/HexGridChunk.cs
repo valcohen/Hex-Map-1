@@ -642,7 +642,7 @@ public class HexGridChunk : MonoBehaviour {
 
         // first (bottom) step
         terrain.AddTriangle(begin, v3, v4);
-        terrain.AddTriangleColor(beginCell.Color, c3, c4);
+        terrain.AddTriangleColor(color1, c3, c4);
         terrain.AddTriangleTerrainTypes(types);
 
         // intermediate steps
