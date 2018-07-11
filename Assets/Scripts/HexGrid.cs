@@ -1,3 +1,4 @@
+using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -178,6 +179,8 @@ public class HexGrid : MonoBehaviour {
     }
 
     public void Load(BinaryReader reader, int header) {
+        StopAllCoroutines();        // stop distance searches
+
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
             x = reader.ReadInt32();
@@ -205,8 +208,15 @@ public class HexGrid : MonoBehaviour {
      */
 
     public void FindDistancesTo (HexCell cell) {
+        StopAllCoroutines();
+        StartCoroutine(Search(cell));
+    }
+
+    IEnumerator Search (HexCell cell) {
+        var delay = new WaitForSeconds(1 / 60f);
         for (int i = 0; i < cells.Length; i++) {
-            cells[i].Distance = 
+            yield return delay;
+            cells[i].Distance =
                 cell.coordinates.DistanceTo(cells[i].coordinates);
         }
     }
