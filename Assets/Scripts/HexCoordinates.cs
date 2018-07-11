@@ -61,6 +61,20 @@ public struct HexCoordinates
         return new HexCoordinates(iX, iZ);
     }
 
+    public int DistanceTo (HexCoordinates other) {
+        int dX = Math.Abs(X - other.x);
+        int dY = Math.Abs(Y - other.Y);
+        int dZ = Math.Abs(z - other.z);
+
+        int largest = 0;
+
+        if (dX > largest) largest = dX;
+        if (dY > largest) largest = dY;
+        if (dZ > largest) largest = dZ;
+
+        return largest;
+    }
+
     public override string ToString() {
         return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
