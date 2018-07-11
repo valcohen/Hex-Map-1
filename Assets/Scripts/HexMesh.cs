@@ -6,11 +6,12 @@ using UnityEngine;
 public class HexMesh : MonoBehaviour {
 
     public bool useCollider, useColors, useUVCoordinates, useUV2Coordinates;
+    public bool useTerrainTypes;
 
     Mesh            hexMesh;
     MeshCollider    meshCollider;
 
-    [NonSerialized] List<Vector3>   vertices;
+    [NonSerialized] List<Vector3>   vertices, terrainTypes;
     [NonSerialized] List<int>       triangles;
     [NonSerialized] List<Color>     colors;
     [NonSerialized] List<Vector2>   uvs, uv2s;
@@ -171,9 +172,25 @@ public class HexMesh : MonoBehaviour {
         uv2s.Add(uv4);
     }
 
+    public void AddTriangleTerrainTypes (Vector3 types) {
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+    }
+
+    public void AddQuadTerrainTypes (Vector3 types) {
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+        terrainTypes.Add(types);
+    }
+
     public void Clear () {
         hexMesh.Clear();
         vertices  = ListPool<Vector3>.Get();
+        if (useTerrainTypes) {
+            terrainTypes = ListPool<Vector3>.Get();
+        }
         triangles = ListPool<int>.Get();
         if (useColors) {
             colors = ListPool<Color>.Get();
@@ -190,6 +207,10 @@ public class HexMesh : MonoBehaviour {
         hexMesh.SetVertices(vertices);
         ListPool<Vector3>.Add(vertices);
 
+        if (useTerrainTypes) {
+            hexMesh.SetUVs(2, terrainTypes);
+            ListPool<Vector3>.Add(terrainTypes);
+        }
         hexMesh.SetTriangles(triangles, 0);
         ListPool<int>.Add(triangles);
 
