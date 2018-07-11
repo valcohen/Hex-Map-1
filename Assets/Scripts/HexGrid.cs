@@ -228,10 +228,17 @@ public class HexGrid : MonoBehaviour {
             HexCell current = frontier.Dequeue();
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
-                if (neighbor != null && neighbor.Distance == int.MaxValue) {
-                    neighbor.Distance = current.Distance + 1;
-                    frontier.Enqueue(neighbor);
+                if (neighbor == null || neighbor.Distance != int.MaxValue) {
+                    continue;       // skip null or visited cells
                 }
+                if (neighbor.IsUnderwater) { 
+                    continue;       // skip to avoid water
+                }
+                if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+                    continue;
+                }
+                neighbor.Distance = current.Distance + 1;
+                frontier.Enqueue(neighbor);
             }
         }
     }
