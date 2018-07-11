@@ -17,6 +17,8 @@
 		// Use shader model 3.5 target, to enable texture arrays
 		#pragma target 3.5
 
+        #pragma multi_compile _ GRID_ON
+
 		UNITY_DECLARE_TEX2DARRAY(_MainTex);
 
 		struct Input {
@@ -54,11 +56,13 @@
                 GetTerrainColor(IN, 1) +
                 GetTerrainColor(IN, 2);
 
-            float2 gridUV = IN.worldPos.xz;
-            gridUV.x *= 1 / (4 * 8.66025404);   // inner radius = 5 * sqrt(3), * 4 to move 2 cells right
-            gridUV.y *= 1 / (2 * 15.0);         // fwd dist = 15, 2x to move 2 cells up
-
-            fixed4 grid = tex2D(_GridTex, gridUV);
+            fixed4 grid = 1;
+            #if defined(GRID_ON)
+                float2 gridUV = IN.worldPos.xz;
+                gridUV.x *= 1 / (4 * 8.66025404);   // inner radius = 5 * sqrt(3), * 4 to move 2 cells right
+                gridUV.y *= 1 / (2 * 15.0);         // fwd dist = 15, 2x to move 2 cells up
+                grid = tex2D(_GridTex, gridUV);
+            #endif
 
 			o.Albedo = c.rgb * grid * _Color;
 			// Metallic and smoothness come from slider variables

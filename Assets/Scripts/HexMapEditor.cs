@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class HexMapEditor : MonoBehaviour {
 
     public HexGrid  hexGrid;
+    public Material terrainMaterial;
 
     int activeElevation;
     int activeWaterLevel;
@@ -20,6 +21,10 @@ public class HexMapEditor : MonoBehaviour {
     bool isDrag;
     HexDirection dragDirection;
     HexCell previousCell;
+
+    void Awake() {
+        terrainMaterial.DisableKeyword("GRID_ON");
+    }
 
     void Update() {
         if (Input.GetMouseButton(0) && 
@@ -243,5 +248,14 @@ public class HexMapEditor : MonoBehaviour {
 
     public void SetTerrainTypeInde (int index) {
         activeTerrainTypeIndex = index;
+    }
+
+    public void ShowGrid (bool visible) {
+        if (visible) {
+            terrainMaterial.EnableKeyword("GRID_ON");
+        }
+        else {
+            terrainMaterial.DisableKeyword("GRID_ON");
+        }
     }
 }
