@@ -360,6 +360,13 @@ public class HexGridChunk : MonoBehaviour {
         terrain.AddQuadColor(color1);
         terrain.AddTriangleColor(color1);
 
+        Vector3 types;
+        types.x = types.y = types.z = cell.TerrainTypeIndex;
+        terrain.AddTriangleTerrainTypes(types);
+        terrain.AddQuadTerrainTypes(types);
+        terrain.AddQuadTerrainTypes(types);
+        terrain.AddTriangleTerrainTypes(types);
+
         if (!cell.IsUnderwater)
         {
             bool reversed = cell.IncomingRiver == direction;
