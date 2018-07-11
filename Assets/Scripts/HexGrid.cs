@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -213,11 +214,25 @@ public class HexGrid : MonoBehaviour {
     }
 
     IEnumerator Search (HexCell cell) {
-        var delay = new WaitForSeconds(1 / 60f);
         for (int i = 0; i < cells.Length; i++) {
+            cells[i].Distance = int.MaxValue;   // max = cell has not been visited
+        }
+
+        var delay    = new WaitForSeconds(1 / 60f);
+        var frontier = new Queue<HexCell>();
+        cell.Distance = 0;
+        frontier.Enqueue(cell);
+
+        while (frontier.Count > 0) {
             yield return delay;
-            cells[i].Distance =
-                cell.coordinates.DistanceTo(cells[i].coordinates);
+            HexCell current = frontier.Dequeue();
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+                HexCell neighbor = current.GetNeighbor(d);
+                if (neighbor != null && neighbor.Distance == int.MaxValue) {
+                    neighbor.Distance = current.Distance + 1;
+                    frontier.Enqueue(neighbor);
+                }
+            }
         }
     }
 }
