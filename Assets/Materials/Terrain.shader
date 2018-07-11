@@ -11,7 +11,7 @@
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows
+		#pragma surface surf Standard fullforwardshadows vertex:vert
 
 		// Use shader model 3.5 target, to enable texture arrays
 		#pragma target 3.5
@@ -21,7 +21,13 @@
 		struct Input {
             float4 color : COLOR;
             float3 worldPos;
+            float3 terrain;
 		};
+
+        void vert (inout appdata_full v, out Input data) {
+            UNITY_INITIALIZE_OUTPUT(Input, data);
+            data.terrain = v.texcoord2.xyz;
+        }
 
 		half _Glossiness;
 		half _Metallic;
@@ -34,9 +40,17 @@
 			// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
+        float4 GetTerrainColor (Input IN, int index) {
+            float3 uvw = float3(IN.worldPos.xz * 0.02, IN.terrain[index]);
+            float4 c = UNITY_SAMPLE_TEX2DARRAY(_MainTex, uvw);
+            return c * IN.color[index];
+        }
+
 		void surf (Input IN, inout SurfaceOutputStandard o) {
-			float2 uv = IN.worldPos.xz * 0.02;      // tile ~4 cells
-			fixed4 c = UNITY_SAMPLE_TEX2DARRAY(_MainTex, float3(uv, 0));
+			fixed4 c = 
+                GetTerrainColor(IN, 0) +
+                GetTerrainColor(IN, 1) +
+                GetTerrainColor(IN, 2);
 			o.Albedo = c.rgb * _Color;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
