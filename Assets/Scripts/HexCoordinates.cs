@@ -39,13 +39,14 @@ public struct HexCoordinates
         int iZ = Mathf.RoundToInt(-x - y);
 
         if (iX + iY + iZ != 0) {
+            /*
             Debug.LogWarning(String.Format(
                 "rounding error! {0} ({1}), {2} ({3}), {4} ({5})", 
                 x, iX, 
                 y, iY, 
                 (-x - y), iZ
             ));
-
+            */
             float dX = Mathf.Abs(x - iX);
             float dY = Mathf.Abs(y - iY);
             float dZ = Mathf.Abs(-x -y - iZ);
