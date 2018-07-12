@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,7 +43,7 @@ public class HexGrid : MonoBehaviour {
                 x <= 0 || x % HexMetrics.chunkSizeX != 0
             ||  x <= 0 || z % HexMetrics.chunkSizeZ != 0
         ) {
-            Debug.LogError("Unsupported map size: " + x + "," + z 
+            UnityEngine.Debug.LogError("Unsupported map size: " + x + "," + z 
                            + " does not divide into chunk size "
                            + HexMetrics.chunkSizeX + ", " 
                            + HexMetrics.chunkSizeZ + "."
@@ -214,12 +215,17 @@ public class HexGrid : MonoBehaviour {
     }
 
     IEnumerator Search (HexCell cell) {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Distance = int.MaxValue;   // max = cell has not been visited
         }
 
         var delay    = new WaitForSeconds(1 / 60f);
         var frontier = new List<HexCell>();
+        int cellsProcessed = 1;
+
         cell.Distance = 0;
         frontier.Add(cell);
 
@@ -272,8 +278,14 @@ public class HexGrid : MonoBehaviour {
                 }
 
                 frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
-                Debug.Log("Frontier count: " +  frontier.Count);
+
+                cellsProcessed++;
+                UnityEngine.Debug.Log("Frontier count: " +  frontier.Count);
             }
         }
+        stopwatch.Stop();
+        UnityEngine.Debug.Log("Search complete: " + cellsProcessed 
+                              + " cells in " + stopwatch.Elapsed);
+
     }
 }
