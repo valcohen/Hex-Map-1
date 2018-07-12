@@ -236,16 +236,29 @@ public class HexGrid : MonoBehaviour {
                 if (neighbor.IsUnderwater) { 
                     continue;
                 }
-                if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+                HexEdgeType edgeType = current.GetEdgeType(neighbor);
+                if ( edgeType == HexEdgeType.Cliff) {
                     continue;
                 }
 
                 int distance = current.Distance;
+                // road travel costs 1
                 if (current.HasRoadThroughEdge(d)) {
                     distance += 1;
                 }
+                // don't allow travel thru walls
+                else if (current.Walled != neighbor.Walled) {
+                    continue;
+                }
+                // offroad flats cost 5, everything else costs 10
                 else {
-                    distance += 10;
+                    distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+
+                    // slow own when moving thru features
+                    distance +=   neighbor.UrbanLevel 
+                                + neighbor.FarmLevel
+                                + neighbor.PlantLevel
+                                + neighbor.SpecialIndex;
                 }
 
                 // not yet visited
