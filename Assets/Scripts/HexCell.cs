@@ -178,12 +178,12 @@ public class HexCell : MonoBehaviour {
      * Rivers. Possible cell configurations:
      * 
      *         / \     / \
-     *        |   |   |  -|
+     *        |   |   | +-+
      *         \ /     \ /
      * 
      *     / \     / \     / \
-     *    | +-|   | +-|   |---|
-     *     \ \     / /     \ /
+     *    | +-+   | +-+   +---+
+     *     \ X     X /     \ /
      */
 
     bool hasIncomingRiver, hasOutgoingRiver;

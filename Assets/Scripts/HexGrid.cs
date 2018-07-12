@@ -219,26 +219,47 @@ public class HexGrid : MonoBehaviour {
         }
 
         var delay    = new WaitForSeconds(1 / 60f);
-        var frontier = new Queue<HexCell>();
+        var frontier = new List<HexCell>();
         cell.Distance = 0;
-        frontier.Enqueue(cell);
+        frontier.Add(cell);
 
         while (frontier.Count > 0) {
             yield return delay;
-            HexCell current = frontier.Dequeue();
+            HexCell current = frontier[0];
+            frontier.RemoveAt(0);
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
-                if (neighbor == null || neighbor.Distance != int.MaxValue) {
-                    continue;       // skip null or visited cells
+
+                if (neighbor == null) {
+                    continue;
                 }
                 if (neighbor.IsUnderwater) { 
-                    continue;       // skip to avoid water
+                    continue;
                 }
                 if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
                     continue;
                 }
-                neighbor.Distance = current.Distance + 1;
-                frontier.Enqueue(neighbor);
+
+                int distance = current.Distance;
+                if (current.HasRoadThroughEdge(d)) {
+                    distance += 1;
+                }
+                else {
+                    distance += 10;
+                }
+
+                // not yet visited
+                if (neighbor.Distance == int.MaxValue) {
+                    neighbor.Distance = distance;
+                    frontier.Add(neighbor);
+                }
+                // update if we found a quicker path
+                else if (distance < neighbor.Distance) {
+                    neighbor.Distance = distance;
+                }
+
+                frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+                Debug.Log("Frontier count: " +  frontier.Count);
             }
         }
     }
