@@ -238,7 +238,14 @@ public class HexGrid : MonoBehaviour {
             HexCell current = frontier[0];
             frontier.RemoveAt(0);
 
-            if (current == toCell) { break; }   // found it! done.
+            if (current == toCell) {    // found it! done.
+                current = current.PathFrom;
+                while (current != fromCell) {
+                    current.EnableHighlight(Color.white);
+                    current = current.PathFrom;
+                }
+                break;
+            }
 
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
@@ -277,11 +284,13 @@ public class HexGrid : MonoBehaviour {
                 // not yet visited
                 if (neighbor.Distance == int.MaxValue) {
                     neighbor.Distance = distance;
+                    neighbor.PathFrom = current;
                     frontier.Add(neighbor);
                 }
                 // update if we found a quicker path
                 else if (distance < neighbor.Distance) {
                     neighbor.Distance = distance;
+                    neighbor.PathFrom = current;
                 }
 
                 frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
