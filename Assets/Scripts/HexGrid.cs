@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,7 +43,7 @@ public class HexGrid : MonoBehaviour {
                 x <= 0 || x % HexMetrics.chunkSizeX != 0
             ||  x <= 0 || z % HexMetrics.chunkSizeZ != 0
         ) {
-            Debug.LogError("Unsupported map size: " + x + "," + z 
+            UnityEngine.Debug.LogError("Unsupported map size: " + x + "," + z 
                            + " does not divide into chunk size "
                            + HexMetrics.chunkSizeX + ", " 
                            + HexMetrics.chunkSizeZ + "."
@@ -146,7 +149,7 @@ public class HexGrid : MonoBehaviour {
         Text label = Instantiate<Text>(cellLabelPrefab);
         // label.rectTransform.SetParent(gridCanvas.transform, false);
         label.rectTransform.anchoredPosition = new Vector2(position.x, position.z);
-        label.text = cell.coordinates.ToStringOnSeparateLines();
+
         cell.uiRect = label.rectTransform;
 
         cell.Elevation = 0;
@@ -178,6 +181,8 @@ public class HexGrid : MonoBehaviour {
     }
 
     public void Load(BinaryReader reader, int header) {
+        StopAllCoroutines();        // stop distance searches
+
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
             x = reader.ReadInt32();
@@ -200,4 +205,87 @@ public class HexGrid : MonoBehaviour {
         }
     }
 
+    /*
+     * Distances
+     */
+
+    public void FindDistancesTo (HexCell cell) {
+        StopAllCoroutines();
+        StartCoroutine(Search(cell));
+    }
+
+    IEnumerator Search (HexCell cell) {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        for (int i = 0; i < cells.Length; i++) {
+            cells[i].Distance = int.MaxValue;   // max = cell has not been visited
+        }
+
+        var delay    = new WaitForSeconds(1 / 60f);
+        var frontier = new List<HexCell>();
+        int cellsProcessed = 1;
+
+        cell.Distance = 0;
+        frontier.Add(cell);
+
+        while (frontier.Count > 0) {
+            yield return delay;
+            HexCell current = frontier[0];
+            frontier.RemoveAt(0);
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+                HexCell neighbor = current.GetNeighbor(d);
+
+                if (neighbor == null) {
+                    continue;
+                }
+                if (neighbor.IsUnderwater) { 
+                    continue;
+                }
+                HexEdgeType edgeType = current.GetEdgeType(neighbor);
+                if ( edgeType == HexEdgeType.Cliff) {
+                    continue;
+                }
+
+                int distance = current.Distance;
+                // road travel costs 1
+                if (current.HasRoadThroughEdge(d)) {
+                    distance += 1;
+                }
+                // don't allow travel thru walls
+                else if (current.Walled != neighbor.Walled) {
+                    continue;
+                }
+                // offroad flats cost 5, everything else costs 10
+                else {
+                    distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+
+                    // slow own when moving thru features
+                    distance +=   neighbor.UrbanLevel 
+                                + neighbor.FarmLevel
+                                + neighbor.PlantLevel
+                                + neighbor.SpecialIndex;
+                }
+
+                // not yet visited
+                if (neighbor.Distance == int.MaxValue) {
+                    neighbor.Distance = distance;
+                    frontier.Add(neighbor);
+                }
+                // update if we found a quicker path
+                else if (distance < neighbor.Distance) {
+                    neighbor.Distance = distance;
+                }
+
+                frontier.Sort((x, y) => x.Distance.CompareTo(y.Distance));
+
+                cellsProcessed++;
+                UnityEngine.Debug.Log("Frontier count: " +  frontier.Count);
+            }
+        }
+        stopwatch.Stop();
+        UnityEngine.Debug.Log("Search complete: " + cellsProcessed 
+                              + " cells in " + stopwatch.Elapsed);
+
+    }
 }

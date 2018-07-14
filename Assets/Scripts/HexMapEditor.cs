@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 public class HexMapEditor : MonoBehaviour {
 
     public HexGrid  hexGrid;
+    public Material terrainMaterial;
 
     int activeElevation;
     int activeWaterLevel;
@@ -20,6 +21,12 @@ public class HexMapEditor : MonoBehaviour {
     bool isDrag;
     HexDirection dragDirection;
     HexCell previousCell;
+
+    bool editMode;
+
+    void Awake() {
+        terrainMaterial.DisableKeyword("GRID_ON");
+    }
 
     void Update() {
         if (Input.GetMouseButton(0) && 
@@ -42,8 +49,13 @@ public class HexMapEditor : MonoBehaviour {
             } else {
                 isDrag = false;
             }
+            if (editMode) {
+                EditCells(currentCell);
+            }
+            else {
+                hexGrid.FindDistancesTo(currentCell);
+            }
 
-            EditCells(currentCell);
             previousCell = currentCell;
         } else {
             previousCell = null;
@@ -176,10 +188,6 @@ public class HexMapEditor : MonoBehaviour {
         brushSize = (int)size;
     }
 
-    public void ShowUI (bool visible) {
-        hexGrid.ShowUI(visible);
-    }
-
     enum OptionalToggle {
         Ignore, Yes, No
     }
@@ -243,5 +251,19 @@ public class HexMapEditor : MonoBehaviour {
 
     public void SetTerrainTypeInde (int index) {
         activeTerrainTypeIndex = index;
+    }
+
+    public void ShowGrid (bool visible) {
+        if (visible) {
+            terrainMaterial.EnableKeyword("GRID_ON");
+        }
+        else {
+            terrainMaterial.DisableKeyword("GRID_ON");
+        }
+    }
+
+    public void SetEditMode (bool toggle) {
+        editMode = toggle;
+        hexGrid.ShowUI(!toggle);    // hide labels when in edit mode, else show them
     }
 }

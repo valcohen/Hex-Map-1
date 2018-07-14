@@ -1,3 +1,4 @@
+using UnityEngine.UI;
 using UnityEngine;
 using System.IO;
 
@@ -6,6 +7,10 @@ public class HexCell : MonoBehaviour {
     public HexCoordinates coordinates;
 
     int terrainTypeIndex;
+
+    int elevation = int.MinValue;
+
+    int distance;
 
     public int TerrainTypeIndex {
         get {
@@ -16,6 +21,16 @@ public class HexCell : MonoBehaviour {
                 terrainTypeIndex = value;
                 Refresh();
             }
+        }
+    }
+
+    public int Distance {
+        get {
+            return distance;
+        }
+        set {
+            distance = value;
+            UpdateDistanceLabel();
         }
     }
 
@@ -59,8 +74,6 @@ public class HexCell : MonoBehaviour {
         uiPosition.z = -position.y;   // ui Z cuz canvas is rotated
         uiRect.localPosition = uiPosition;
     }
-
-    int elevation = int.MinValue;
 
     public int GetElevationDifference (HexDirection direction) {
         int difference = elevation - GetNeighbor(direction).elevation;
@@ -156,16 +169,21 @@ public class HexCell : MonoBehaviour {
         this.chunk.Refresh();
     }
 
+    void UpdateDistanceLabel () {
+        Text label = uiRect.GetComponent<Text>();
+        label.text = (distance == int.MaxValue) ? "" : distance.ToString();
+    }
+
     /*
      * Rivers. Possible cell configurations:
      * 
      *         / \     / \
-     *        |   |   |  -|
+     *        |   |   | +-+
      *         \ /     \ /
      * 
      *     / \     / \     / \
-     *    | +-|   | +-|   |---|
-     *     \ \     / /     \ /
+     *    | +-+   | +-+   +---+
+     *     \ X     X /     \ /
      */
 
     bool hasIncomingRiver, hasOutgoingRiver;
