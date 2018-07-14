@@ -209,30 +209,37 @@ public class HexGrid : MonoBehaviour {
      * Distances
      */
 
-    public void FindDistancesTo (HexCell cell) {
+    public void FindPath (HexCell fromCell, HexCell toCell) {
         StopAllCoroutines();
-        StartCoroutine(Search(cell));
+        StartCoroutine(Search(fromCell, toCell));
     }
 
-    IEnumerator Search (HexCell cell) {
+    IEnumerator Search (HexCell fromCell, HexCell toCell) {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
+        // reset
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Distance = int.MaxValue;   // max = cell has not been visited
+            cells[i].DisableHighlight();
         }
+        fromCell.EnableHighlight(Color.blue);
+        toCell.EnableHighlight(Color.red);
 
         var delay    = new WaitForSeconds(1 / 60f);
         var frontier = new List<HexCell>();
         int cellsProcessed = 1;
 
-        cell.Distance = 0;
-        frontier.Add(cell);
+        fromCell.Distance = 0;
+        frontier.Add(fromCell);
 
         while (frontier.Count > 0) {
             yield return delay;
             HexCell current = frontier[0];
             frontier.RemoveAt(0);
+
+            if (current == toCell) { break; }   // found it! done.
+
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
 
