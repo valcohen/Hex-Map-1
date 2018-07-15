@@ -181,7 +181,7 @@ public class HexGrid : MonoBehaviour {
     }
 
     public void Load(BinaryReader reader, int header) {
-        StopAllCoroutines();        // stop distance searches
+        // StopAllCoroutines();        // stop distance searches
 
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
@@ -212,11 +212,14 @@ public class HexGrid : MonoBehaviour {
     HexCellPriorityQueue searchFrontier;
 
     public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
-        StopAllCoroutines();
-        StartCoroutine(Search(fromCell, toCell, speed));
+        // StopAllCoroutines();
+        // StartCoroutine(Search(fromCell, toCell, speed));
+        Search(fromCell, toCell, speed);
     }
 
-    IEnumerator Search (HexCell fromCell, HexCell toCell, int speed) {
+    // signature for use with coroutines:
+    // IEnumerator Search(HexCell fromCell, HexCell toCell, int speed)
+    void Search (HexCell fromCell, HexCell toCell, int speed) {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -237,14 +240,14 @@ public class HexGrid : MonoBehaviour {
         toCell.EnableHighlight(Color.red);
 
 
-        var delay    = new WaitForSeconds(1 / 60f);
+        // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
         int cellsProcessed = 1;
 
         fromCell.Distance = 0;
         searchFrontier.Enqueue(fromCell);
 
         while (searchFrontier.Count > 0) {
-            yield return delay;
+            // yield return delay;  // use with coroutines
             HexCell current = searchFrontier.Dequeue();
 
             if (current == toCell) {    // found it! done.
