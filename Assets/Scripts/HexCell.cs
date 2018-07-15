@@ -30,7 +30,6 @@ public class HexCell : MonoBehaviour {
         }
         set {
             distance = value;
-            UpdateDistanceLabel();
         }
     }
 
@@ -57,6 +56,11 @@ public class HexCell : MonoBehaviour {
 
             Refresh();
         }
+    }
+
+    public void SetLabel (string text) {
+        Text label = uiRect.GetComponent<Text>();
+        label.text = text;
     }
 
     void RefreshPosition () {
@@ -167,11 +171,6 @@ public class HexCell : MonoBehaviour {
 
     void RefreshSelfOnly () {
         this.chunk.Refresh();
-    }
-
-    void UpdateDistanceLabel () {
-        Text label = uiRect.GetComponent<Text>();
-        label.text = (distance == int.MaxValue) ? "" : distance.ToString();
     }
 
     /*

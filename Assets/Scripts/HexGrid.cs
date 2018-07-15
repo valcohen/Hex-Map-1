@@ -211,12 +211,12 @@ public class HexGrid : MonoBehaviour {
 
     HexCellPriorityQueue searchFrontier;
 
-    public void FindPath (HexCell fromCell, HexCell toCell) {
+    public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
         StopAllCoroutines();
-        StartCoroutine(Search(fromCell, toCell));
+        StartCoroutine(Search(fromCell, toCell, speed));
     }
 
-    IEnumerator Search (HexCell fromCell, HexCell toCell) {
+    IEnumerator Search (HexCell fromCell, HexCell toCell, int speed) {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -230,6 +230,7 @@ public class HexGrid : MonoBehaviour {
 
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Distance = int.MaxValue;   // max = cell has not been visited
+            cells[i].SetLabel(null);
             cells[i].DisableHighlight();
         }
         fromCell.EnableHighlight(Color.blue);
@@ -255,6 +256,8 @@ public class HexGrid : MonoBehaviour {
                 break;
             }
 
+            int currentTurn = current.Distance / speed;
+
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
 
@@ -268,11 +271,10 @@ public class HexGrid : MonoBehaviour {
                 if ( edgeType == HexEdgeType.Cliff) {
                     continue;
                 }
-
-                int distance = current.Distance;
+                int moveCost;
                 // road travel costs 1
                 if (current.HasRoadThroughEdge(d)) {
-                    distance += 1;
+                    moveCost = 1;
                 }
                 // don't allow travel thru walls
                 else if (current.Walled != neighbor.Walled) {
@@ -280,18 +282,26 @@ public class HexGrid : MonoBehaviour {
                 }
                 // offroad flats cost 5, everything else costs 10
                 else {
-                    distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+                    moveCost = (edgeType == HexEdgeType.Flat) ? 5 : 10;
 
                     // slow own when moving thru features
-                    distance +=   neighbor.UrbanLevel 
-                                + neighbor.FarmLevel
-                                + neighbor.PlantLevel
-                                + neighbor.SpecialIndex;
+                    moveCost += neighbor.UrbanLevel 
+                              + neighbor.FarmLevel
+                              + neighbor.PlantLevel
+                              + neighbor.SpecialIndex;
+                }
+
+                int distance = current.Distance + moveCost;
+                int turn = distance / speed;
+                if (turn > currentTurn) {
+                    // eat up all remaining movement points
+                    distance = turn * speed + moveCost;
                 }
 
                 // not yet visited
                 if (neighbor.Distance == int.MaxValue) {
                     neighbor.Distance = distance;
+                    neighbor.SetLabel(turn.ToString());
                     neighbor.PathFrom = current;
                     neighbor.SearchHeuristic =
                         neighbor.coordinates.DistanceTo(toCell.coordinates);
@@ -301,6 +311,7 @@ public class HexGrid : MonoBehaviour {
                 else if (distance < neighbor.Distance) {
                     int oldPriority = neighbor.SearchPriority;
                     neighbor.Distance = distance;
+                    neighbor.SetLabel(distance.ToString());
                     neighbor.PathFrom = current;
                     searchFrontier.Change(neighbor, oldPriority);
                 }
