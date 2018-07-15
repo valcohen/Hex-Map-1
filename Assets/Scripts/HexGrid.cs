@@ -237,7 +237,6 @@ public class HexGrid : MonoBehaviour {
             cells[i].DisableHighlight();
         }
         fromCell.EnableHighlight(Color.blue);
-        toCell.EnableHighlight(Color.red);
 
 
         // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
@@ -251,11 +250,13 @@ public class HexGrid : MonoBehaviour {
             HexCell current = searchFrontier.Dequeue();
 
             if (current == toCell) {    // found it! done.
-                current = current.PathFrom;
                 while (current != fromCell) {
+                    int turn = current.Distance / speed;
+                    current.SetLabel(turn.ToString());
                     current.EnableHighlight(Color.white);
                     current = current.PathFrom;
                 }
+                toCell.EnableHighlight(Color.red);
                 break;
             }
 
@@ -304,7 +305,7 @@ public class HexGrid : MonoBehaviour {
                 // not yet visited
                 if (neighbor.Distance == int.MaxValue) {
                     neighbor.Distance = distance;
-                    neighbor.SetLabel(turn.ToString());
+                    // neighbor.SetLabel(turn.ToString()); // use with coroutines to display progress
                     neighbor.PathFrom = current;
                     neighbor.SearchHeuristic =
                         neighbor.coordinates.DistanceTo(toCell.coordinates);
@@ -314,7 +315,7 @@ public class HexGrid : MonoBehaviour {
                 else if (distance < neighbor.Distance) {
                     int oldPriority = neighbor.SearchPriority;
                     neighbor.Distance = distance;
-                    neighbor.SetLabel(distance.ToString());
+                    // neighbor.SetLabel(distance.ToString()); // use with coroutines to display progress
                     neighbor.PathFrom = current;
                     searchFrontier.Change(neighbor, oldPriority);
                 }
@@ -324,8 +325,11 @@ public class HexGrid : MonoBehaviour {
             }
         }
         stopwatch.Stop();
-        UnityEngine.Debug.Log("Search complete: " + cellsProcessed 
-                              + " cells in " + stopwatch.Elapsed);
+        UnityEngine.Debug.Log(
+            string.Format("Search complete: {0} cells in {1} milliseconds", 
+                          cellsProcessed,
+                          stopwatch.ElapsedMilliseconds)
+        );
 
     }
 }
