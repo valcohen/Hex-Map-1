@@ -166,11 +166,17 @@ public class HexCell : MonoBehaviour {
                     neighbor.chunk.Refresh();
                 }
             }
+            if (Unit) {
+                Unit.ValidateLocation();
+            }
         }
     }
 
     void RefreshSelfOnly () {
         this.chunk.Refresh();
+        if (Unit) {
+            Unit.ValidateLocation();
+        }
     }
 
     /*
