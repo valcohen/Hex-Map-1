@@ -6,6 +6,7 @@ public class HexMapEditor : MonoBehaviour {
 
     public HexGrid  hexGrid;
     public Material terrainMaterial;
+    public HexUnit  unitPrefab;
 
     int activeElevation;
     int activeWaterLevel;
@@ -29,21 +30,26 @@ public class HexMapEditor : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetMouseButton(0) && 
-            !EventSystem.current.IsPointerOverGameObject()
-        ) {
-            HandleInput();
-        } else {
-            previousCell = null;
+        if (!EventSystem.current.IsPointerOverGameObject()) {
+            if (Input.GetMouseButton(0)) {
+                HandleInput();
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.U)) {
+                CreateUnit();
+                return;
+            }
         }
+        previousCell = null;
     }
 
-    void HandleInput() {
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(inputRay, out hit)) {
-            HexCell currentCell = hexGrid.GetCell(hit.point);
+    /*
+     * IO
+     */
 
+    void HandleInput() {
+        HexCell currentCell = GetCellUnderCursor();
+        if (currentCell) {
             if (previousCell && previousCell != currentCell) {
                 ValidateDrag(currentCell);
             } else {
@@ -79,6 +85,15 @@ public class HexMapEditor : MonoBehaviour {
         }
     }
 
+    HexCell GetCellUnderCursor () {
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(inputRay, out hit)) {
+            return hexGrid.GetCell(hit.point);
+        }
+        return null;
+    }
+
     void ValidateDrag (HexCell currentCell) {
         for (
             dragDirection = HexDirection.NE;
@@ -94,35 +109,32 @@ public class HexMapEditor : MonoBehaviour {
     }
 
     /*
+     * Edit cells
+     * 
      * axes          
-     * x: --    \  / y
-     * y: /   ___\/___ x
-     * z: \      /\
-     *          /  \ z
-     *
-     *                 / \     / \     / \     / \
-     *               / -3  \ / -2  \ / -1  \ /  0  \
-     *              |   0   |  -1   |  -2   |  -3   |
-     *             / \  3  /.\  3  /.\  3  /.\  3  / \
-     *           / -3  \ / -2 .\ / -1 .\ /. 0 .\ /  1  \
-     *          |   1   |.. 0 ..|. -1 ..|. -2 ..|  -3   |
-     *         / \  2  /.\. 2 ./ \. 2 ./ \. 2 ./.\  2  / \
-     *       / -3  \ / -2 .\./ -1  \./  0  \./. 1 .\ /  2  \
-     *      |   2   |.. 1 ..|   0   |  -1   |. -2 ..|  -3   |
-     *     / \  1  /.\. 1 ./ \  1  /.\  1  / \. 1 ./ \  1  / \
-     *   / -3  \ / -2 .\./ -1  \ /. 0 .\ /  1  \./. 2 .\ /  3  \
-     *  |   3   |.. 2 ..|   1   |.. 0 ..|  -1   |. -2 ..|  -3   |
-     *   \  0  / \. 0 ./.\  0  / \. 0 ./ \  0  / \. 0 ./ \  0  /
-     *     \ / -2  \./ -1 .\ /  0  \./  1  \ /. 2 .\ /  3  \ /
-     *      |   3   |.. 2 ..|   1   |   0   |. -1 ..|  -2   |
-     *       \ -1  / \ -1 ./.\ -1  /.\ -1  /.\ -1 ./ \ -1  /
-     *         \ / -1  \./. 0 .\ /. 1 .\ /. 2 .\ /  3  \ /
-     *          |   3   |.. 2 ..|.. 1 ..|.. 0 ..|  -1   |
-     *           \ -2  / \ -2 ./ \ -2 ./ \ -2 ./ \ -2  /
-     *             \ /  0  \./  1  \./  2  \./  3  \ /
-     *              |   3   |   2   |   1   |   0   |
-     *               \ -3  / \ -3  / \ -3  / \ -3  /
-     *                 \ /     \ /     \ /     \ /
+     * x: --    \  / y         / \     / \     / \     / \
+     * y: /   ___\/___ x     / -3  \ / -2  \ / -1  \ /  0  \
+     * z: \      /\         |   0   |  -1   |  -2   |  -3   |
+     *          /  \ z     / \  3  /.\  3  /.\  3  /.\  3  / \
+     *                   / -3  \ / -2 .\ / -1 .\ /. 0 .\ /  1  \
+     *                  |   1   |.. 0 ..|. -1 ..|. -2 ..|  -3   |
+     *                 / \  2  /.\. 2 ./ \. 2 ./ \. 2 ./.\  2  / \
+     *               / -3  \ / -2 .\./ -1  \./  0  \./. 1 .\ /  2  \
+     *              |   2   |.. 1 ..|   0   |  -1   |. -2 ..|  -3   |
+     *             / \  1  /.\. 1 ./ \  1  /.\  1  / \. 1 ./ \  1  / \
+     *           / -3  \ / -2 .\./ -1  \ /. 0 .\ /  1  \./. 2 .\ /  3  \
+     *          |   3   |.. 2 ..|   1   |.. 0 ..|  -1   |. -2 ..|  -3   |
+     *           \  0  / \. 0 ./.\  0  / \. 0 ./ \  0  / \. 0 ./ \  0  /
+     *             \ / -2  \./ -1 .\ /  0  \./  1  \ /. 2 .\ /  3  \ /
+     *              |   3   |.. 2 ..|   1   |   0   |. -1 ..|  -2   |
+     *               \ -1  / \ -1 ./.\ -1  /.\ -1  /.\ -1 ./ \ -1  /
+     *                 \ / -1  \./. 0 .\ /. 1 .\ /. 2 .\ /  3  \ /
+     *                  |   3   |.. 2 ..|.. 1 ..|.. 0 ..|  -1   |
+     *                   \ -2  / \ -2 ./ \ -2 ./ \ -2 ./ \ -2  /
+     *                     \ /  0  \./  1  \./  2  \./  3  \ /
+     *                      |   3   |   2   |   1   |   0   |
+     *                       \ -3  / \ -3  / \ -3  / \ -3  /
+     *                         \ /     \ /     \ /     \ /
      */
     void EditCells(HexCell center) {
         int centerX = center.coordinates.X;
@@ -192,6 +204,23 @@ public class HexMapEditor : MonoBehaviour {
             }
         }
     }
+
+    /*
+     * Units
+     */
+
+    void CreateUnit () {
+        HexCell cell = GetCellUnderCursor();
+        if (cell) {
+            HexUnit unit = Instantiate(unitPrefab);
+            unit.transform.SetParent(hexGrid.transform, false);
+        }
+    }
+
+
+    /*
+     * UI controls
+     */
 
     public void SetElevation(float elevation) {
         activeElevation = (int)elevation;

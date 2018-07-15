@@ -7185,6 +7185,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexGrid: {fileID: 411347303}
   terrainMaterial: {fileID: 2100000, guid: 755f4ee247f80428a83e5310ad1c7679, type: 2}
+  unitPrefab: {fileID: 114315226828232660, guid: 2fe0e099d107b4d3fb631d753f7adf48,
+    type: 2}
 --- !u!114 &1069095399
 MonoBehaviour:
   m_ObjectHideFlags: 0
