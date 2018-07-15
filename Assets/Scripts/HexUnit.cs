@@ -15,7 +15,6 @@ public class HexUnit : MonoBehaviour {
 
     HexCell location;
 
-
     public float Orientation {
         get {
             return orientation;
@@ -30,6 +29,11 @@ public class HexUnit : MonoBehaviour {
 
     public void ValidateLocation() {
         transform.localPosition = location.Position;
+    }
+
+    public void Die () {
+        location.Unit = null;
+        Destroy(gameObject);
     }
 
 }

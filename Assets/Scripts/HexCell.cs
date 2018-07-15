@@ -538,4 +538,5 @@ public class HexCell : MonoBehaviour {
      */
 
     public HexUnit Unit { get; set; }
+
 }
