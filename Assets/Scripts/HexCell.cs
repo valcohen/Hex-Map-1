@@ -521,4 +521,9 @@ public class HexCell : MonoBehaviour {
     }
 
     public HexCell NextWithSamePriority { get; set; }
+
+    /*
+     * 0 = not yet reached, 1 = currently in frontier, 2 = removed from frontier
+     */
+    public int SearchPhase { get; set; }
 }

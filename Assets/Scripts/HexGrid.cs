@@ -210,6 +210,7 @@ public class HexGrid : MonoBehaviour {
      */
 
     HexCellPriorityQueue searchFrontier;
+    int searchFrontierPhase;
 
     public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
         // StopAllCoroutines();
@@ -224,6 +225,7 @@ public class HexGrid : MonoBehaviour {
         stopwatch.Start();
 
         // reset
+        searchFrontierPhase += 2;
         if (searchFrontier == null) {
             searchFrontier = new HexCellPriorityQueue();
         }
@@ -232,7 +234,6 @@ public class HexGrid : MonoBehaviour {
         }
 
         for (int i = 0; i < cells.Length; i++) {
-            cells[i].Distance = int.MaxValue;   // max = cell has not been visited
             cells[i].SetLabel(null);
             cells[i].DisableHighlight();
         }
@@ -242,12 +243,16 @@ public class HexGrid : MonoBehaviour {
         // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
         int cellsProcessed = 1;
 
+        fromCell.SearchPhase = searchFrontierPhase;
         fromCell.Distance = 0;
         searchFrontier.Enqueue(fromCell);
 
         while (searchFrontier.Count > 0) {
             // yield return delay;  // use with coroutines
+
+            // take cell out of frontier
             HexCell current = searchFrontier.Dequeue();
+            current.SearchPhase += 1;
 
             if (current == toCell) {    // found it! done.
                 while (current != fromCell) {
@@ -265,7 +270,11 @@ public class HexGrid : MonoBehaviour {
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
 
-                if (neighbor == null) {
+                if (
+                        neighbor == null
+                    // skip cells that have already been removed from frontier
+                    ||  neighbor.SearchPhase > searchFrontierPhase
+                ) {
                     continue;
                 }
                 if (neighbor.IsUnderwater) { 
@@ -303,7 +312,8 @@ public class HexGrid : MonoBehaviour {
                 }
 
                 // not yet visited
-                if (neighbor.Distance == int.MaxValue) {
+                if (neighbor.SearchPhase < searchFrontierPhase) {
+                    neighbor.SearchPhase = searchFrontierPhase;
                     neighbor.Distance = distance;
                     // neighbor.SetLabel(turn.ToString()); // use with coroutines to display progress
                     neighbor.PathFrom = current;
