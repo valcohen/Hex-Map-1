@@ -30,7 +30,6 @@ public class HexCell : MonoBehaviour {
         }
         set {
             distance = value;
-            UpdateDistanceLabel();
         }
     }
 
@@ -57,6 +56,11 @@ public class HexCell : MonoBehaviour {
 
             Refresh();
         }
+    }
+
+    public void SetLabel (string text) {
+        Text label = uiRect.GetComponent<Text>();
+        label.text = text;
     }
 
     void RefreshPosition () {
@@ -167,11 +171,6 @@ public class HexCell : MonoBehaviour {
 
     void RefreshSelfOnly () {
         this.chunk.Refresh();
-    }
-
-    void UpdateDistanceLabel () {
-        Text label = uiRect.GetComponent<Text>();
-        label.text = (distance == int.MaxValue) ? "" : distance.ToString();
     }
 
     /*
@@ -522,4 +521,9 @@ public class HexCell : MonoBehaviour {
     }
 
     public HexCell NextWithSamePriority { get; set; }
+
+    /*
+     * 0 = not yet reached, 1 = currently in frontier, 2 = removed from frontier
+     */
+    public int SearchPhase { get; set; }
 }

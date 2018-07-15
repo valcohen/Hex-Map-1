@@ -51,6 +51,7 @@ public class HexGrid : MonoBehaviour {
             return false;
         }
 
+        ClearPath();
         if (chunks != null) {
             for (int i = 0; i < chunks.Length; i++) {
                 Destroy(chunks[i].gameObject);
@@ -181,7 +182,9 @@ public class HexGrid : MonoBehaviour {
     }
 
     public void Load(BinaryReader reader, int header) {
-        StopAllCoroutines();        // stop distance searches
+        // StopAllCoroutines();        // stop distance searches
+
+        ClearPath();
 
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
@@ -210,17 +213,39 @@ public class HexGrid : MonoBehaviour {
      */
 
     HexCellPriorityQueue searchFrontier;
+    int searchFrontierPhase;
+    HexCell currentPathFrom, currentPathTo;
+    bool currentPathExists;
+    int cellsProcessed;
 
-    public void FindPath (HexCell fromCell, HexCell toCell) {
-        StopAllCoroutines();
-        StartCoroutine(Search(fromCell, toCell));
-    }
+    public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
+        // StopAllCoroutines();
+        // StartCoroutine(Search(fromCell, toCell, speed));
 
-    IEnumerator Search (HexCell fromCell, HexCell toCell) {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
+        ClearPath();
+        currentPathFrom = fromCell;
+        currentPathTo = toCell;
+        currentPathExists = Search(fromCell, toCell, speed);
+        ShowPath(speed);
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log(
+            string.Format("Search complete: {0} cells in {1} milliseconds",
+                          cellsProcessed,
+                          stopwatch.ElapsedMilliseconds)
+        );
+
+    }
+
+    // signature for use with coroutines:
+    // IEnumerator Search(HexCell fromCell, HexCell toCell, int speed)
+    bool Search (HexCell fromCell, HexCell toCell, int speed) {
+
         // reset
+        searchFrontierPhase += 2;
         if (searchFrontier == null) {
             searchFrontier = new HexCellPriorityQueue();
         }
@@ -228,37 +253,34 @@ public class HexGrid : MonoBehaviour {
             searchFrontier.Clear();
         }
 
-        for (int i = 0; i < cells.Length; i++) {
-            cells[i].Distance = int.MaxValue;   // max = cell has not been visited
-            cells[i].DisableHighlight();
-        }
-        fromCell.EnableHighlight(Color.blue);
-        toCell.EnableHighlight(Color.red);
+        // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
+        cellsProcessed = 1;
 
-
-        var delay    = new WaitForSeconds(1 / 60f);
-        int cellsProcessed = 1;
-
+        fromCell.SearchPhase = searchFrontierPhase;
         fromCell.Distance = 0;
         searchFrontier.Enqueue(fromCell);
 
         while (searchFrontier.Count > 0) {
-            yield return delay;
+            // yield return delay;  // use with coroutines
+
+            // take cell out of frontier
             HexCell current = searchFrontier.Dequeue();
+            current.SearchPhase += 1;
 
             if (current == toCell) {    // found it! done.
-                current = current.PathFrom;
-                while (current != fromCell) {
-                    current.EnableHighlight(Color.white);
-                    current = current.PathFrom;
-                }
-                break;
+                return true;
             }
+
+            int currentTurn = current.Distance / speed;
 
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = current.GetNeighbor(d);
 
-                if (neighbor == null) {
+                if (
+                        neighbor == null
+                    // skip cells that have already been removed from frontier
+                    ||  neighbor.SearchPhase > searchFrontierPhase
+                ) {
                     continue;
                 }
                 if (neighbor.IsUnderwater) { 
@@ -268,11 +290,10 @@ public class HexGrid : MonoBehaviour {
                 if ( edgeType == HexEdgeType.Cliff) {
                     continue;
                 }
-
-                int distance = current.Distance;
+                int moveCost;
                 // road travel costs 1
                 if (current.HasRoadThroughEdge(d)) {
-                    distance += 1;
+                    moveCost = 1;
                 }
                 // don't allow travel thru walls
                 else if (current.Walled != neighbor.Walled) {
@@ -280,18 +301,27 @@ public class HexGrid : MonoBehaviour {
                 }
                 // offroad flats cost 5, everything else costs 10
                 else {
-                    distance += (edgeType == HexEdgeType.Flat) ? 5 : 10;
+                    moveCost = (edgeType == HexEdgeType.Flat) ? 5 : 10;
 
                     // slow own when moving thru features
-                    distance +=   neighbor.UrbanLevel 
-                                + neighbor.FarmLevel
-                                + neighbor.PlantLevel
-                                + neighbor.SpecialIndex;
+                    moveCost += neighbor.UrbanLevel 
+                              + neighbor.FarmLevel
+                              + neighbor.PlantLevel
+                              + neighbor.SpecialIndex;
+                }
+
+                int distance = current.Distance + moveCost;
+                int turn = distance / speed;
+                if (turn > currentTurn) {
+                    // eat up all remaining movement points
+                    distance = turn * speed + moveCost;
                 }
 
                 // not yet visited
-                if (neighbor.Distance == int.MaxValue) {
+                if (neighbor.SearchPhase < searchFrontierPhase) {
+                    neighbor.SearchPhase = searchFrontierPhase;
                     neighbor.Distance = distance;
+                    // neighbor.SetLabel(turn.ToString()); // use with coroutines to display progress
                     neighbor.PathFrom = current;
                     neighbor.SearchHeuristic =
                         neighbor.coordinates.DistanceTo(toCell.coordinates);
@@ -301,6 +331,7 @@ public class HexGrid : MonoBehaviour {
                 else if (distance < neighbor.Distance) {
                     int oldPriority = neighbor.SearchPriority;
                     neighbor.Distance = distance;
+                    // neighbor.SetLabel(distance.ToString()); // use with coroutines to display progress
                     neighbor.PathFrom = current;
                     searchFrontier.Change(neighbor, oldPriority);
                 }
@@ -309,9 +340,34 @@ public class HexGrid : MonoBehaviour {
                 // UnityEngine.Debug.Log("Frontier count: " +  frontier.Count);
             }
         }
-        stopwatch.Stop();
-        UnityEngine.Debug.Log("Search complete: " + cellsProcessed 
-                              + " cells in " + stopwatch.Elapsed);
+        return false;
+    }
 
+    void ShowPath (int speed) {
+        if (currentPathExists) {
+            HexCell current = currentPathTo;
+            while (current != currentPathFrom) {
+                int turn = current.Distance / speed;
+                current.SetLabel(turn.ToString());
+                current.EnableHighlight(Color.white);
+                current = current.PathFrom;
+            }
+            currentPathFrom.EnableHighlight(Color.blue);
+            currentPathTo.EnableHighlight(Color.red);
+        }
+    }
+
+    void ClearPath()
+    {
+        if (currentPathExists) {
+            HexCell current = currentPathTo;
+            while (current != currentPathFrom) {
+                current.SetLabel(null);
+                current.DisableHighlight();
+                current = current.PathFrom;
+            }
+            currentPathFrom.DisableHighlight();
+        }
+        currentPathFrom = currentPathTo = null;
     }
 }
