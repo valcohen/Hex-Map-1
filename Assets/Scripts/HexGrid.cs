@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour {
 
-
     public int cellCountX = 20;
     public int cellCountZ = 15;
     int chunkCountX, chunkCountZ;
+    List<HexUnit> units = new List<HexUnit>();
 
     public HexGridChunk chunkPrefab;
 
@@ -52,6 +52,7 @@ public class HexGrid : MonoBehaviour {
         }
 
         ClearPath();
+        ClearUnits();
         if (chunks != null) {
             for (int i = 0; i < chunks.Length; i++) {
                 Destroy(chunks[i].gameObject);
@@ -185,6 +186,7 @@ public class HexGrid : MonoBehaviour {
         // StopAllCoroutines();        // stop distance searches
 
         ClearPath();
+        ClearUnits();
 
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
@@ -369,5 +371,24 @@ public class HexGrid : MonoBehaviour {
             currentPathFrom.DisableHighlight();
         }
         currentPathFrom = currentPathTo = null;
+    }
+
+    void ClearUnits () {
+        for (int i = 0; i < units.Count; i++) {
+            units[i].Die();
+        }
+        units.Clear();
+    }
+
+    public void AddUnit (HexUnit unit, HexCell location, float orientation) {
+        units.Add(unit);
+        unit.transform.SetParent(this.transform, false);
+        unit.Location = location;
+        unit.Orientation = orientation;
+    }
+
+    public void RemoveUnit (HexUnit unit) {
+        units.Remove(unit);
+        unit.Die();
     }
 }
