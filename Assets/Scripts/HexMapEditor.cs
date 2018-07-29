@@ -6,7 +6,6 @@ public class HexMapEditor : MonoBehaviour {
 
     public HexGrid  hexGrid;
     public Material terrainMaterial;
-    public HexUnit  unitPrefab;
 
     int activeElevation;
     int activeWaterLevel;
@@ -218,7 +217,7 @@ public class HexMapEditor : MonoBehaviour {
         HexCell cell = GetCellUnderCursor();
         if (cell && !cell.Unit) {
             hexGrid.AddUnit(
-                Instantiate(unitPrefab), cell, Random.Range(0f, 360f)
+                Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f)
             );
         }
     }

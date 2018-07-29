@@ -42,4 +42,13 @@ public class HexUnit : MonoBehaviour {
         writer.Write(orientation);
     }
 
+    public static void Load (BinaryReader reader, HexGrid grid) {
+        HexCoordinates coordinates = HexCoordinates.Load(reader);
+        float orientation = reader.ReadSingle();
+        grid.AddUnit(
+            Instantiate(unitPrefab), grid.GetCell(coordinates), orientation
+        );
+    }
+
+    public static HexUnit unitPrefab;
 }

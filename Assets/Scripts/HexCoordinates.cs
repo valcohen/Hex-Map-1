@@ -88,4 +88,11 @@ public struct HexCoordinates
         writer.Write(x);
         writer.Write(z);
     }
+
+    public static HexCoordinates Load (BinaryReader reader) {
+        HexCoordinates c;
+        c.x = reader.ReadInt32();
+        c.z = reader.ReadInt32();
+        return c;
+    }
 }

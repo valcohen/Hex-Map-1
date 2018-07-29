@@ -100,7 +100,7 @@ public class SaveLoadMenu : MonoBehaviour {
         )
         {
             int header = reader.ReadInt32();     // read file format version number
-            if (header <= 1)
+            if (header <= 2)
             {
                 hexGrid.Load(reader, header);
                 HexMapCamera.ValidatePosition();
