@@ -82,7 +82,7 @@ public class SaveLoadMenu : MonoBehaviour {
             new BinaryWriter(File.Open(path, FileMode.Create))
         )
         {
-            writer.Write(1);        // file format version number
+            writer.Write(2);        // file format version number
             hexGrid.Save(writer);
         }
     }

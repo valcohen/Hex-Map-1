@@ -180,6 +180,11 @@ public class HexGrid : MonoBehaviour {
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Save(writer);
         }
+
+        writer.Write(units.Count);
+        for (int i = 0; i < units.Count; i++) {
+            units[i].Save(writer);
+        }
     }
 
     public void Load(BinaryReader reader, int header) {
