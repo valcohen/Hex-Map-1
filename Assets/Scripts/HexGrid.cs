@@ -114,6 +114,15 @@ public class HexGrid : MonoBehaviour {
         return cells[x + z * cellCountX];
     }
 
+    public HexCell GetCell(Ray ray) {
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit)) {
+            return GetCell(hit.point);
+        }
+        return null;
+    }
+
+
     public void ShowUI (bool visible) {
         for (int i = 0; i < chunks.Length; i++) {
             chunks[i].ShowUI(visible);
@@ -407,4 +416,5 @@ public class HexGrid : MonoBehaviour {
         units.Remove(unit);
         unit.Die();
     }
+
 }
