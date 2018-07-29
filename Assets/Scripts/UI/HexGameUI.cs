@@ -22,4 +22,20 @@ public class HexGameUI : MonoBehaviour {
         return false;
     }
 
+    HexUnit selectedUnit;
+
+    void DoSelection() {
+        UpdateCurrentCell();
+        if (currentCell) {
+            selectedUnit = currentCell.Unit;
+        }
+    }
+
+    void Update() {
+        if (!EventSystem.current.IsPointerOverGameObject()) {
+            if (Input.GetMouseButtonDown(0)) {
+                DoSelection();
+            }
+        }
+    }
 }
