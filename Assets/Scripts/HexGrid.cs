@@ -384,8 +384,7 @@ public class HexGrid : MonoBehaviour {
         }
     }
 
-    void ClearPath()
-    {
+    public void ClearPath() {
         if (currentPathExists) {
             HexCell current = currentPathTo;
             while (current != currentPathFrom) {
