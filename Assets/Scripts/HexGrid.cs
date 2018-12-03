@@ -370,6 +370,10 @@ public class HexGrid : MonoBehaviour {
         return false;
     }
 
+    public bool HasPath {
+        get { return currentPathExists; }
+    }
+
     void ShowPath (int speed) {
         if (currentPathExists) {
             HexCell current = currentPathTo;

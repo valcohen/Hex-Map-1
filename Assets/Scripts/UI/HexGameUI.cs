@@ -33,7 +33,14 @@ public class HexGameUI : MonoBehaviour {
                 DoSelection();
             }
             else if (selectedUnit) {
-                DoPathFinding();
+                if (Input.GetMouseButton(1))    // RMB
+                {
+                    DoMove();
+                }
+                else
+                {
+                    DoPathFinding();
+                }
             }
         }
     }
@@ -56,4 +63,12 @@ public class HexGameUI : MonoBehaviour {
             }
         }
     }
+
+    void DoMove () {
+        if (grid.HasPath) {
+            selectedUnit.Location = currentCell;
+            grid.ClearPath();
+        }
+    }
+
 }

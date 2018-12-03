@@ -8,6 +8,9 @@ public class HexUnit : MonoBehaviour {
             return location;
         }
         set {
+            if (location) {
+                location.Unit = null;   // clear old unit on move
+            }
             location = value;
             value.Unit = this;
             transform.localPosition = value.Position;
