@@ -259,12 +259,12 @@ public class HexGrid : MonoBehaviour {
         ShowPath(speed);
 
         stopwatch.Stop();
-        UnityEngine.Debug.Log(
+        /* UnityEngine.Debug.Log(
             string.Format("Search complete: {0} cells in {1} milliseconds",
                           cellsProcessed,
                           stopwatch.ElapsedMilliseconds)
         );
-
+        */
     }
 
     // signature for use with coroutines:

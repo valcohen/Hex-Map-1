@@ -41,9 +41,26 @@ public class HexUnit : MonoBehaviour {
                 &&  !cell.Unit;
     }
 
+    List<HexCell> pathToTravel;
+
     public void Travel (List<HexCell> path) {
         Location = path[path.Count - 1];
+        pathToTravel = path;
     }
+
+    void OnDrawGizmos() {
+        if (pathToTravel == null || pathToTravel.Count == 0) { return; }
+
+        for (int i = 1; i < pathToTravel.Count; i++)
+        {
+            Vector3 a = pathToTravel[i - 1].Position;
+            Vector3 b = pathToTravel[i].Position;
+            for (float t = 0f; t < 1f; t += 0.2f) {
+                Gizmos.DrawSphere(Vector3.Lerp(a, b, t), 1.5f);
+            }
+        }
+    }
+
 
     public void Die () {
         location.Unit = null;
