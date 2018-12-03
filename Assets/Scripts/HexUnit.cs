@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -42,10 +43,13 @@ public class HexUnit : MonoBehaviour {
     }
 
     List<HexCell> pathToTravel;
+    const float travelSpeed = 4f;
 
     public void Travel (List<HexCell> path) {
         Location = path[path.Count - 1];
         pathToTravel = path;
+        StopAllCoroutines();
+        StartCoroutine(TravelPath());
     }
 
     void OnDrawGizmos() {
@@ -57,6 +61,24 @@ public class HexUnit : MonoBehaviour {
             Vector3 b = pathToTravel[i].Position;
             for (float t = 0f; t < 1f; t += 0.2f) {
                 Gizmos.DrawSphere(Vector3.Lerp(a, b, t), 1.5f);
+            }
+        }
+    }
+
+    void OnEnable() {
+        if (location) {
+            transform.localPosition = location.Position;
+        }
+    }
+
+    IEnumerator TravelPath () {
+        for (int i = 1; i < pathToTravel.Count; i++) {
+            Vector3 a = pathToTravel[i - 1].Position;
+            Vector3 b = pathToTravel[i].Position;
+            for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed)
+            {
+                transform.localPosition = Vector3.Lerp(a, b, t);
+                yield return null;
             }
         }
     }
