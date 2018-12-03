@@ -29,7 +29,6 @@ public class HexGameUI : MonoBehaviour {
     void Update() {
         if (!EventSystem.current.IsPointerOverGameObject()) {
             if (Input.GetMouseButtonDown(0)) {
-                Debug.Log("selecting...");
                 DoSelection();
             }
             else if (selectedUnit) {
