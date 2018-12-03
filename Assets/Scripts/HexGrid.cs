@@ -310,7 +310,7 @@ public class HexGrid : MonoBehaviour {
                 ) {
                     continue;
                 }
-                if (neighbor.IsUnderwater) { 
+                if (neighbor.IsUnderwater || neighbor.Unit) { 
                     continue;
                 }
                 HexEdgeType edgeType = current.GetEdgeType(neighbor);
