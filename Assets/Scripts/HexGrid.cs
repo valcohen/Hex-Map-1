@@ -7,10 +7,10 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour {
 
-
     public int cellCountX = 20;
     public int cellCountZ = 15;
     int chunkCountX, chunkCountZ;
+    List<HexUnit> units = new List<HexUnit>();
 
     public HexGridChunk chunkPrefab;
 
@@ -24,9 +24,12 @@ public class HexGrid : MonoBehaviour {
 
     public int seed;
 
+    public HexUnit unitPrefab;
+
     void Awake() {
         HexMetrics.noiseSource = noiseSource;
         HexMetrics.InitializeHashGrid(seed);
+        HexUnit.unitPrefab = unitPrefab;
         CreateMap(cellCountX, cellCountZ);
     }
 
@@ -34,6 +37,7 @@ public class HexGrid : MonoBehaviour {
         if (!HexMetrics.noiseSource) {
             HexMetrics.noiseSource = noiseSource;
             HexMetrics.InitializeHashGrid(seed);
+            HexUnit.unitPrefab = unitPrefab;
         }
 
     }
@@ -52,6 +56,7 @@ public class HexGrid : MonoBehaviour {
         }
 
         ClearPath();
+        ClearUnits();
         if (chunks != null) {
             for (int i = 0; i < chunks.Length; i++) {
                 Destroy(chunks[i].gameObject);
@@ -108,6 +113,15 @@ public class HexGrid : MonoBehaviour {
         }
         return cells[x + z * cellCountX];
     }
+
+    public HexCell GetCell(Ray ray) {
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit)) {
+            return GetCell(hit.point);
+        }
+        return null;
+    }
+
 
     public void ShowUI (bool visible) {
         for (int i = 0; i < chunks.Length; i++) {
@@ -179,12 +193,18 @@ public class HexGrid : MonoBehaviour {
         for (int i = 0; i < cells.Length; i++) {
             cells[i].Save(writer);
         }
+
+        writer.Write(units.Count);
+        for (int i = 0; i < units.Count; i++) {
+            units[i].Save(writer);
+        }
     }
 
     public void Load(BinaryReader reader, int header) {
         // StopAllCoroutines();        // stop distance searches
 
         ClearPath();
+        ClearUnits();
 
         int x = 20, z = 15;         // default values for version 0
         if (header >= 1) {
@@ -205,6 +225,13 @@ public class HexGrid : MonoBehaviour {
 
         for (int i = 0; i < chunks.Length; i++) {
             chunks[i].Refresh();
+        }
+
+        if (header >= 2) {
+            int unitCount = reader.ReadInt32();
+            for (int i = 0; i < unitCount; i++) {
+                HexUnit.Load(reader, this);
+            }
         }
     }
 
@@ -283,7 +310,7 @@ public class HexGrid : MonoBehaviour {
                 ) {
                     continue;
                 }
-                if (neighbor.IsUnderwater) { 
+                if (neighbor.IsUnderwater || neighbor.Unit) { 
                     continue;
                 }
                 HexEdgeType edgeType = current.GetEdgeType(neighbor);
@@ -343,6 +370,10 @@ public class HexGrid : MonoBehaviour {
         return false;
     }
 
+    public bool HasPath {
+        get { return currentPathExists; }
+    }
+
     void ShowPath (int speed) {
         if (currentPathExists) {
             HexCell current = currentPathTo;
@@ -357,8 +388,7 @@ public class HexGrid : MonoBehaviour {
         }
     }
 
-    void ClearPath()
-    {
+    public void ClearPath() {
         if (currentPathExists) {
             HexCell current = currentPathTo;
             while (current != currentPathFrom) {
@@ -366,8 +396,32 @@ public class HexGrid : MonoBehaviour {
                 current.DisableHighlight();
                 current = current.PathFrom;
             }
-            currentPathFrom.DisableHighlight();
+            if (currentPathFrom != null)    // TODO: ugly hack; why is this null when currentPathExists is TRUE?
+            {
+                currentPathFrom.DisableHighlight();
+            }
+            currentPathExists = false;
         }
         currentPathFrom = currentPathTo = null;
     }
+
+    void ClearUnits () {
+        for (int i = 0; i < units.Count; i++) {
+            units[i].Die();
+        }
+        units.Clear();
+    }
+
+    public void AddUnit (HexUnit unit, HexCell location, float orientation) {
+        units.Add(unit);
+        unit.transform.SetParent(this.transform, false);
+        unit.Location = location;
+        unit.Orientation = orientation;
+    }
+
+    public void RemoveUnit (HexUnit unit) {
+        units.Remove(unit);
+        unit.Die();
+    }
+
 }

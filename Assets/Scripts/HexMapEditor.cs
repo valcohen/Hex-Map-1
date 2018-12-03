@@ -20,63 +20,54 @@ public class HexMapEditor : MonoBehaviour {
 
     bool isDrag;
     HexDirection dragDirection;
-    HexCell previousCell, searchFromCell, searchToCell;
-
-    bool editMode;
+    HexCell previousCell;
 
     void Awake() {
         terrainMaterial.DisableKeyword("GRID_ON");
+        SetEditMode(false);
     }
 
     void Update() {
-        if (Input.GetMouseButton(0) && 
-            !EventSystem.current.IsPointerOverGameObject()
-        ) {
-            HandleInput();
-        } else {
-            previousCell = null;
+        if (!EventSystem.current.IsPointerOverGameObject()) {
+            if (Input.GetMouseButton(0)) {
+                HandleInput();
+                return;
+            }
+            if (Input.GetKeyDown(KeyCode.U)) {
+                if (Input.GetKey(KeyCode.LeftShift)) {
+                    DestroyUnit();
+                }
+                else {
+                    CreateUnit();
+                }
+                return;
+            }
         }
+        previousCell = null;
     }
 
-    void HandleInput() {
-        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(inputRay, out hit)) {
-            HexCell currentCell = hexGrid.GetCell(hit.point);
+    /*
+     * IO
+     */
 
+    void HandleInput() {
+        HexCell currentCell = GetCellUnderCursor();
+        if (currentCell) {
             if (previousCell && previousCell != currentCell) {
                 ValidateDrag(currentCell);
             } else {
                 isDrag = false;
             }
-            if (editMode) {
-                EditCells(currentCell);
-            }
-            else if (   Input.GetKey(KeyCode.LeftShift) 
-                     && searchToCell != currentCell
-            ) {
-                if (searchFromCell != currentCell) {
-                    if (searchFromCell) {
-                        searchFromCell.DisableHighlight();
-                    }
-                    searchFromCell = currentCell;
-                    searchFromCell.EnableHighlight(Color.blue);
-                    if (searchToCell) {
-                        hexGrid.FindPath(searchFromCell, searchToCell, 24);
-                    }
-                }
-            }
-            else if (searchFromCell && searchFromCell != currentCell) {
-                if (searchToCell != currentCell) {
-                    searchToCell = currentCell;
-                    hexGrid.FindPath(searchFromCell, searchToCell, 24);
-                }
-            }
-
+            EditCells(currentCell);
             previousCell = currentCell;
         } else {
             previousCell = null;
         }
+    }
+
+    HexCell GetCellUnderCursor () {
+        Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return hexGrid.GetCell(inputRay);
     }
 
     void ValidateDrag (HexCell currentCell) {
@@ -94,35 +85,32 @@ public class HexMapEditor : MonoBehaviour {
     }
 
     /*
+     * Edit cells
+     * 
      * axes          
-     * x: --    \  / y
-     * y: /   ___\/___ x
-     * z: \      /\
-     *          /  \ z
-     *
-     *                 / \     / \     / \     / \
-     *               / -3  \ / -2  \ / -1  \ /  0  \
-     *              |   0   |  -1   |  -2   |  -3   |
-     *             / \  3  /.\  3  /.\  3  /.\  3  / \
-     *           / -3  \ / -2 .\ / -1 .\ /. 0 .\ /  1  \
-     *          |   1   |.. 0 ..|. -1 ..|. -2 ..|  -3   |
-     *         / \  2  /.\. 2 ./ \. 2 ./ \. 2 ./.\  2  / \
-     *       / -3  \ / -2 .\./ -1  \./  0  \./. 1 .\ /  2  \
-     *      |   2   |.. 1 ..|   0   |  -1   |. -2 ..|  -3   |
-     *     / \  1  /.\. 1 ./ \  1  /.\  1  / \. 1 ./ \  1  / \
-     *   / -3  \ / -2 .\./ -1  \ /. 0 .\ /  1  \./. 2 .\ /  3  \
-     *  |   3   |.. 2 ..|   1   |.. 0 ..|  -1   |. -2 ..|  -3   |
-     *   \  0  / \. 0 ./.\  0  / \. 0 ./ \  0  / \. 0 ./ \  0  /
-     *     \ / -2  \./ -1 .\ /  0  \./  1  \ /. 2 .\ /  3  \ /
-     *      |   3   |.. 2 ..|   1   |   0   |. -1 ..|  -2   |
-     *       \ -1  / \ -1 ./.\ -1  /.\ -1  /.\ -1 ./ \ -1  /
-     *         \ / -1  \./. 0 .\ /. 1 .\ /. 2 .\ /  3  \ /
-     *          |   3   |.. 2 ..|.. 1 ..|.. 0 ..|  -1   |
-     *           \ -2  / \ -2 ./ \ -2 ./ \ -2 ./ \ -2  /
-     *             \ /  0  \./  1  \./  2  \./  3  \ /
-     *              |   3   |   2   |   1   |   0   |
-     *               \ -3  / \ -3  / \ -3  / \ -3  /
-     *                 \ /     \ /     \ /     \ /
+     * x: --    \  / y         / \     / \     / \     / \
+     * y: /   ___\/___ x     / -3  \ / -2  \ / -1  \ /  0  \
+     * z: \      /\         |   0   |  -1   |  -2   |  -3   |
+     *          /  \ z     / \  3  /.\  3  /.\  3  /.\  3  / \
+     *                   / -3  \ / -2 .\ / -1 .\ /. 0 .\ /  1  \
+     *                  |   1   |.. 0 ..|. -1 ..|. -2 ..|  -3   |
+     *                 / \  2  /.\. 2 ./ \. 2 ./ \. 2 ./.\  2  / \
+     *               / -3  \ / -2 .\./ -1  \./  0  \./. 1 .\ /  2  \
+     *              |   2   |.. 1 ..|   0   |  -1   |. -2 ..|  -3   |
+     *             / \  1  /.\. 1 ./ \  1  /.\  1  / \. 1 ./ \  1  / \
+     *           / -3  \ / -2 .\./ -1  \ /. 0 .\ /  1  \./. 2 .\ /  3  \
+     *          |   3   |.. 2 ..|   1   |.. 0 ..|  -1   |. -2 ..|  -3   |
+     *           \  0  / \. 0 ./.\  0  / \. 0 ./ \  0  / \. 0 ./ \  0  /
+     *             \ / -2  \./ -1 .\ /  0  \./  1  \ /. 2 .\ /  3  \ /
+     *              |   3   |.. 2 ..|   1   |   0   |. -1 ..|  -2   |
+     *               \ -1  / \ -1 ./.\ -1  /.\ -1  /.\ -1 ./ \ -1  /
+     *                 \ / -1  \./. 0 .\ /. 1 .\ /. 2 .\ /  3  \ /
+     *                  |   3   |.. 2 ..|.. 1 ..|.. 0 ..|  -1   |
+     *                   \ -2  / \ -2 ./ \ -2 ./ \ -2 ./ \ -2  /
+     *                     \ /  0  \./  1  \./  2  \./  3  \ /
+     *                      |   3   |   2   |   1   |   0   |
+     *                       \ -3  / \ -3  / \ -3  / \ -3  /
+     *                         \ /     \ /     \ /     \ /
      */
     void EditCells(HexCell center) {
         int centerX = center.coordinates.X;
@@ -192,6 +180,31 @@ public class HexMapEditor : MonoBehaviour {
             }
         }
     }
+
+    /*
+     * Units
+     */
+
+    void CreateUnit () {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && !cell.Unit) {
+            hexGrid.AddUnit(
+                Instantiate(HexUnit.unitPrefab), cell, Random.Range(0f, 360f)
+            );
+        }
+    }
+
+    void DestroyUnit () {
+        HexCell cell = GetCellUnderCursor();
+        if (cell && cell.Unit) {
+            hexGrid.RemoveUnit(cell.Unit);
+        }
+    }
+
+
+    /*
+     * UI controls
+     */
 
     public void SetElevation(float elevation) {
         activeElevation = (int)elevation;
@@ -280,7 +293,6 @@ public class HexMapEditor : MonoBehaviour {
     }
 
     public void SetEditMode (bool toggle) {
-        editMode = toggle;
-        hexGrid.ShowUI(!toggle);    // hide labels when in edit mode, else show them
+        this.enabled = toggle;
     }
 }

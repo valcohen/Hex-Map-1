@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using UnityEngine;
 
 [System.Serializable]
@@ -81,5 +82,17 @@ public struct HexCoordinates
 
     public string ToStringOnSeparateLines() {
         return "X:" + X.ToString() + "\n" + "Y:" + Y.ToString() + "\n" + "Z:" + Z.ToString();
+    }
+
+    public void Save (BinaryWriter writer) {
+        writer.Write(x);
+        writer.Write(z);
+    }
+
+    public static HexCoordinates Load (BinaryReader reader) {
+        HexCoordinates c;
+        c.x = reader.ReadInt32();
+        c.z = reader.ReadInt32();
+        return c;
     }
 }

@@ -1,0 +1,717 @@
+fileFormatVersion: 2
+guid: 21e4fe436fcc74f719f90aca8ef0675d
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: base
+    100002: base cornice lower
+    100004: base cornice upper
+    100006: base moulding outer
+    100008: base moundling inner
+    100010: cupola
+    100012: cupola base
+    100014: dome
+    100016: dome base
+    100018: entablature
+    100020: entablature.001
+    100022: entablature.002
+    100024: entablature.003
+    100026: main moulding inner
+    100028: main moulding outer
+    100030: pediment
+    100032: pediment.001
+    100034: pediment.002
+    100036: pediment.003
+    100038: pillar abacus
+    100040: pillar abacus.001
+    100042: pillar abacus.002
+    100044: pillar abacus.003
+    100046: pillar abacus.004
+    100048: pillar abacus.005
+    100050: pillar abacus.006
+    100052: pillar abacus.007
+    100054: pillar abacus.008
+    100056: pillar abacus.009
+    100058: pillar abacus.010
+    100060: pillar abacus.011
+    100062: pillar abacus.012
+    100064: pillar abacus.013
+    100066: pillar abacus.014
+    100068: pillar abacus.015
+    100070: pillar abacus.016
+    100072: pillar abacus.017
+    100074: pillar abacus.018
+    100076: pillar abacus.019
+    100078: pillar abacus.020
+    100080: pillar abacus.021
+    100082: pillar abacus.022
+    100084: pillar abacus.023
+    100086: pillar base
+    100088: pillar base.001
+    100090: pillar base.002
+    100092: pillar base.003
+    100094: pillar base.004
+    100096: pillar base.005
+    100098: pillar base.006
+    100100: pillar base.007
+    100102: pillar base.008
+    100104: pillar base.009
+    100106: pillar base.010
+    100108: pillar base.011
+    100110: pillar base.012
+    100112: pillar base.013
+    100114: pillar base.014
+    100116: pillar base.015
+    100118: pillar base.016
+    100120: pillar base.017
+    100122: pillar base.018
+    100124: pillar base.019
+    100126: pillar base.020
+    100128: pillar base.021
+    100130: pillar base.022
+    100132: pillar base.023
+    100134: pillar shaft
+    100136: pillar shaft.001
+    100138: pillar shaft.002
+    100140: pillar shaft.003
+    100142: pillar shaft.004
+    100144: pillar shaft.005
+    100146: pillar shaft.006
+    100148: pillar shaft.007
+    100150: pillar shaft.008
+    100152: pillar shaft.009
+    100154: pillar shaft.010
+    100156: pillar shaft.011
+    100158: pillar shaft.012
+    100160: pillar shaft.013
+    100162: pillar shaft.014
+    100164: pillar shaft.015
+    100166: pillar shaft.016
+    100168: pillar shaft.017
+    100170: pillar shaft.018
+    100172: pillar shaft.019
+    100174: pillar shaft.020
+    100176: pillar shaft.021
+    100178: pillar shaft.022
+    100180: pillar shaft.023
+    100182: pillar volute
+    100184: pillar volute.001
+    100186: pillar volute.002
+    100188: pillar volute.003
+    100190: pillar volute.004
+    100192: pillar volute.005
+    100194: pillar volute.006
+    100196: pillar volute.007
+    100198: pillar volute.008
+    100200: pillar volute.009
+    100202: pillar volute.010
+    100204: pillar volute.011
+    100206: pillar volute.012
+    100208: pillar volute.013
+    100210: pillar volute.014
+    100212: pillar volute.015
+    100214: pillar volute.016
+    100216: pillar volute.017
+    100218: pillar volute.018
+    100220: pillar volute.019
+    100222: pillar volute.020
+    100224: pillar volute.021
+    100226: pillar volute.022
+    100228: pillar volute.023
+    100230: porch architrave
+    100232: porch architrave.001
+    100234: porch architrave.002
+    100236: porch architrave.003
+    100238: porch cornice
+    100240: porch cornice.001
+    100242: porch cornice.002
+    100244: porch cornice.003
+    100246: porch pedestal left
+    100248: porch pedestal left.001
+    100250: porch pedestal left.002
+    100252: porch pedestal left.003
+    100254: porch pedestal right
+    100256: porch pedestal right.001
+    100258: porch pedestal right.002
+    100260: porch pedestal right.003
+    100262: porch roof
+    100264: porch roof.001
+    100266: porch roof.002
+    100268: porch roof.003
+    100270: porch stairs
+    100272: porch stairs.001
+    100274: porch stairs.002
+    100276: porch stairs.003
+    100278: porch wall left
+    100280: porch wall left.001
+    100282: porch wall left.002
+    100284: porch wall left.003
+    100286: porch wall right
+    100288: porch wall right.001
+    100290: porch wall right.002
+    100292: porch wall right.003
+    100294: roof
+    100296: //RootNode
+    400000: base
+    400002: base cornice lower
+    400004: base cornice upper
+    400006: base moulding outer
+    400008: base moundling inner
+    400010: cupola
+    400012: cupola base
+    400014: dome
+    400016: dome base
+    400018: entablature
+    400020: entablature.001
+    400022: entablature.002
+    400024: entablature.003
+    400026: main moulding inner
+    400028: main moulding outer
+    400030: pediment
+    400032: pediment.001
+    400034: pediment.002
+    400036: pediment.003
+    400038: pillar abacus
+    400040: pillar abacus.001
+    400042: pillar abacus.002
+    400044: pillar abacus.003
+    400046: pillar abacus.004
+    400048: pillar abacus.005
+    400050: pillar abacus.006
+    400052: pillar abacus.007
+    400054: pillar abacus.008
+    400056: pillar abacus.009
+    400058: pillar abacus.010
+    400060: pillar abacus.011
+    400062: pillar abacus.012
+    400064: pillar abacus.013
+    400066: pillar abacus.014
+    400068: pillar abacus.015
+    400070: pillar abacus.016
+    400072: pillar abacus.017
+    400074: pillar abacus.018
+    400076: pillar abacus.019
+    400078: pillar abacus.020
+    400080: pillar abacus.021
+    400082: pillar abacus.022
+    400084: pillar abacus.023
+    400086: pillar base
+    400088: pillar base.001
+    400090: pillar base.002
+    400092: pillar base.003
+    400094: pillar base.004
+    400096: pillar base.005
+    400098: pillar base.006
+    400100: pillar base.007
+    400102: pillar base.008
+    400104: pillar base.009
+    400106: pillar base.010
+    400108: pillar base.011
+    400110: pillar base.012
+    400112: pillar base.013
+    400114: pillar base.014
+    400116: pillar base.015
+    400118: pillar base.016
+    400120: pillar base.017
+    400122: pillar base.018
+    400124: pillar base.019
+    400126: pillar base.020
+    400128: pillar base.021
+    400130: pillar base.022
+    400132: pillar base.023
+    400134: pillar shaft
+    400136: pillar shaft.001
+    400138: pillar shaft.002
+    400140: pillar shaft.003
+    400142: pillar shaft.004
+    400144: pillar shaft.005
+    400146: pillar shaft.006
+    400148: pillar shaft.007
+    400150: pillar shaft.008
+    400152: pillar shaft.009
+    400154: pillar shaft.010
+    400156: pillar shaft.011
+    400158: pillar shaft.012
+    400160: pillar shaft.013
+    400162: pillar shaft.014
+    400164: pillar shaft.015
+    400166: pillar shaft.016
+    400168: pillar shaft.017
+    400170: pillar shaft.018
+    400172: pillar shaft.019
+    400174: pillar shaft.020
+    400176: pillar shaft.021
+    400178: pillar shaft.022
+    400180: pillar shaft.023
+    400182: pillar volute
+    400184: pillar volute.001
+    400186: pillar volute.002
+    400188: pillar volute.003
+    400190: pillar volute.004
+    400192: pillar volute.005
+    400194: pillar volute.006
+    400196: pillar volute.007
+    400198: pillar volute.008
+    400200: pillar volute.009
+    400202: pillar volute.010
+    400204: pillar volute.011
+    400206: pillar volute.012
+    400208: pillar volute.013
+    400210: pillar volute.014
+    400212: pillar volute.015
+    400214: pillar volute.016
+    400216: pillar volute.017
+    400218: pillar volute.018
+    400220: pillar volute.019
+    400222: pillar volute.020
+    400224: pillar volute.021
+    400226: pillar volute.022
+    400228: pillar volute.023
+    400230: porch architrave
+    400232: porch architrave.001
+    400234: porch architrave.002
+    400236: porch architrave.003
+    400238: porch cornice
+    400240: porch cornice.001
+    400242: porch cornice.002
+    400244: porch cornice.003
+    400246: porch pedestal left
+    400248: porch pedestal left.001
+    400250: porch pedestal left.002
+    400252: porch pedestal left.003
+    400254: porch pedestal right
+    400256: porch pedestal right.001
+    400258: porch pedestal right.002
+    400260: porch pedestal right.003
+    400262: porch roof
+    400264: porch roof.001
+    400266: porch roof.002
+    400268: porch roof.003
+    400270: porch stairs
+    400272: porch stairs.001
+    400274: porch stairs.002
+    400276: porch stairs.003
+    400278: porch wall left
+    400280: porch wall left.001
+    400282: porch wall left.002
+    400284: porch wall left.003
+    400286: porch wall right
+    400288: porch wall right.001
+    400290: porch wall right.002
+    400292: porch wall right.003
+    400294: roof
+    400296: //RootNode
+    2100000: Walls
+    2100002: Shield
+    2100004: Roof
+    2100006: Windows
+    2300000: base
+    2300002: base cornice lower
+    2300004: base cornice upper
+    2300006: base moulding outer
+    2300008: base moundling inner
+    2300010: cupola
+    2300012: cupola base
+    2300014: dome
+    2300016: dome base
+    2300018: entablature
+    2300020: entablature.001
+    2300022: entablature.002
+    2300024: entablature.003
+    2300026: main moulding inner
+    2300028: main moulding outer
+    2300030: pediment
+    2300032: pediment.001
+    2300034: pediment.002
+    2300036: pediment.003
+    2300038: pillar abacus
+    2300040: pillar abacus.001
+    2300042: pillar abacus.002
+    2300044: pillar abacus.003
+    2300046: pillar abacus.004
+    2300048: pillar abacus.005
+    2300050: pillar abacus.006
+    2300052: pillar abacus.007
+    2300054: pillar abacus.008
+    2300056: pillar abacus.009
+    2300058: pillar abacus.010
+    2300060: pillar abacus.011
+    2300062: pillar abacus.012
+    2300064: pillar abacus.013
+    2300066: pillar abacus.014
+    2300068: pillar abacus.015
+    2300070: pillar abacus.016
+    2300072: pillar abacus.017
+    2300074: pillar abacus.018
+    2300076: pillar abacus.019
+    2300078: pillar abacus.020
+    2300080: pillar abacus.021
+    2300082: pillar abacus.022
+    2300084: pillar abacus.023
+    2300086: pillar base
+    2300088: pillar base.001
+    2300090: pillar base.002
+    2300092: pillar base.003
+    2300094: pillar base.004
+    2300096: pillar base.005
+    2300098: pillar base.006
+    2300100: pillar base.007
+    2300102: pillar base.008
+    2300104: pillar base.009
+    2300106: pillar base.010
+    2300108: pillar base.011
+    2300110: pillar base.012
+    2300112: pillar base.013
+    2300114: pillar base.014
+    2300116: pillar base.015
+    2300118: pillar base.016
+    2300120: pillar base.017
+    2300122: pillar base.018
+    2300124: pillar base.019
+    2300126: pillar base.020
+    2300128: pillar base.021
+    2300130: pillar base.022
+    2300132: pillar base.023
+    2300134: pillar shaft
+    2300136: pillar shaft.001
+    2300138: pillar shaft.002
+    2300140: pillar shaft.003
+    2300142: pillar shaft.004
+    2300144: pillar shaft.005
+    2300146: pillar shaft.006
+    2300148: pillar shaft.007
+    2300150: pillar shaft.008
+    2300152: pillar shaft.009
+    2300154: pillar shaft.010
+    2300156: pillar shaft.011
+    2300158: pillar shaft.012
+    2300160: pillar shaft.013
+    2300162: pillar shaft.014
+    2300164: pillar shaft.015
+    2300166: pillar shaft.016
+    2300168: pillar shaft.017
+    2300170: pillar shaft.018
+    2300172: pillar shaft.019
+    2300174: pillar shaft.020
+    2300176: pillar shaft.021
+    2300178: pillar shaft.022
+    2300180: pillar shaft.023
+    2300182: pillar volute
+    2300184: pillar volute.001
+    2300186: pillar volute.002
+    2300188: pillar volute.003
+    2300190: pillar volute.004
+    2300192: pillar volute.005
+    2300194: pillar volute.006
+    2300196: pillar volute.007
+    2300198: pillar volute.008
+    2300200: pillar volute.009
+    2300202: pillar volute.010
+    2300204: pillar volute.011
+    2300206: pillar volute.012
+    2300208: pillar volute.013
+    2300210: pillar volute.014
+    2300212: pillar volute.015
+    2300214: pillar volute.016
+    2300216: pillar volute.017
+    2300218: pillar volute.018
+    2300220: pillar volute.019
+    2300222: pillar volute.020
+    2300224: pillar volute.021
+    2300226: pillar volute.022
+    2300228: pillar volute.023
+    2300230: porch architrave
+    2300232: porch architrave.001
+    2300234: porch architrave.002
+    2300236: porch architrave.003
+    2300238: porch cornice
+    2300240: porch cornice.001
+    2300242: porch cornice.002
+    2300244: porch cornice.003
+    2300246: porch pedestal left
+    2300248: porch pedestal left.001
+    2300250: porch pedestal left.002
+    2300252: porch pedestal left.003
+    2300254: porch pedestal right
+    2300256: porch pedestal right.001
+    2300258: porch pedestal right.002
+    2300260: porch pedestal right.003
+    2300262: porch roof
+    2300264: porch roof.001
+    2300266: porch roof.002
+    2300268: porch roof.003
+    2300270: porch stairs
+    2300272: porch stairs.001
+    2300274: porch stairs.002
+    2300276: porch stairs.003
+    2300278: porch wall left
+    2300280: porch wall left.001
+    2300282: porch wall left.002
+    2300284: porch wall left.003
+    2300286: porch wall right
+    2300288: porch wall right.001
+    2300290: porch wall right.002
+    2300292: porch wall right.003
+    2300294: roof
+    3300000: base
+    3300002: base cornice lower
+    3300004: base cornice upper
+    3300006: base moulding outer
+    3300008: base moundling inner
+    3300010: cupola
+    3300012: cupola base
+    3300014: dome
+    3300016: dome base
+    3300018: entablature
+    3300020: entablature.001
+    3300022: entablature.002
+    3300024: entablature.003
+    3300026: main moulding inner
+    3300028: main moulding outer
+    3300030: pediment
+    3300032: pediment.001
+    3300034: pediment.002
+    3300036: pediment.003
+    3300038: pillar abacus
+    3300040: pillar abacus.001
+    3300042: pillar abacus.002
+    3300044: pillar abacus.003
+    3300046: pillar abacus.004
+    3300048: pillar abacus.005
+    3300050: pillar abacus.006
+    3300052: pillar abacus.007
+    3300054: pillar abacus.008
+    3300056: pillar abacus.009
+    3300058: pillar abacus.010
+    3300060: pillar abacus.011
+    3300062: pillar abacus.012
+    3300064: pillar abacus.013
+    3300066: pillar abacus.014
+    3300068: pillar abacus.015
+    3300070: pillar abacus.016
+    3300072: pillar abacus.017
+    3300074: pillar abacus.018
+    3300076: pillar abacus.019
+    3300078: pillar abacus.020
+    3300080: pillar abacus.021
+    3300082: pillar abacus.022
+    3300084: pillar abacus.023
+    3300086: pillar base
+    3300088: pillar base.001
+    3300090: pillar base.002
+    3300092: pillar base.003
+    3300094: pillar base.004
+    3300096: pillar base.005
+    3300098: pillar base.006
+    3300100: pillar base.007
+    3300102: pillar base.008
+    3300104: pillar base.009
+    3300106: pillar base.010
+    3300108: pillar base.011
+    3300110: pillar base.012
+    3300112: pillar base.013
+    3300114: pillar base.014
+    3300116: pillar base.015
+    3300118: pillar base.016
+    3300120: pillar base.017
+    3300122: pillar base.018
+    3300124: pillar base.019
+    3300126: pillar base.020
+    3300128: pillar base.021
+    3300130: pillar base.022
+    3300132: pillar base.023
+    3300134: pillar shaft
+    3300136: pillar shaft.001
+    3300138: pillar shaft.002
+    3300140: pillar shaft.003
+    3300142: pillar shaft.004
+    3300144: pillar shaft.005
+    3300146: pillar shaft.006
+    3300148: pillar shaft.007
+    3300150: pillar shaft.008
+    3300152: pillar shaft.009
+    3300154: pillar shaft.010
+    3300156: pillar shaft.011
+    3300158: pillar shaft.012
+    3300160: pillar shaft.013
+    3300162: pillar shaft.014
+    3300164: pillar shaft.015
+    3300166: pillar shaft.016
+    3300168: pillar shaft.017
+    3300170: pillar shaft.018
+    3300172: pillar shaft.019
+    3300174: pillar shaft.020
+    3300176: pillar shaft.021
+    3300178: pillar shaft.022
+    3300180: pillar shaft.023
+    3300182: pillar volute
+    3300184: pillar volute.001
+    3300186: pillar volute.002
+    3300188: pillar volute.003
+    3300190: pillar volute.004
+    3300192: pillar volute.005
+    3300194: pillar volute.006
+    3300196: pillar volute.007
+    3300198: pillar volute.008
+    3300200: pillar volute.009
+    3300202: pillar volute.010
+    3300204: pillar volute.011
+    3300206: pillar volute.012
+    3300208: pillar volute.013
+    3300210: pillar volute.014
+    3300212: pillar volute.015
+    3300214: pillar volute.016
+    3300216: pillar volute.017
+    3300218: pillar volute.018
+    3300220: pillar volute.019
+    3300222: pillar volute.020
+    3300224: pillar volute.021
+    3300226: pillar volute.022
+    3300228: pillar volute.023
+    3300230: porch architrave
+    3300232: porch architrave.001
+    3300234: porch architrave.002
+    3300236: porch architrave.003
+    3300238: porch cornice
+    3300240: porch cornice.001
+    3300242: porch cornice.002
+    3300244: porch cornice.003
+    3300246: porch pedestal left
+    3300248: porch pedestal left.001
+    3300250: porch pedestal left.002
+    3300252: porch pedestal left.003
+    3300254: porch pedestal right
+    3300256: porch pedestal right.001
+    3300258: porch pedestal right.002
+    3300260: porch pedestal right.003
+    3300262: porch roof
+    3300264: porch roof.001
+    3300266: porch roof.002
+    3300268: porch roof.003
+    3300270: porch stairs
+    3300272: porch stairs.001
+    3300274: porch stairs.002
+    3300276: porch stairs.003
+    3300278: porch wall left
+    3300280: porch wall left.001
+    3300282: porch wall left.002
+    3300284: porch wall left.003
+    3300286: porch wall right
+    3300288: porch wall right.001
+    3300290: porch wall right.002
+    3300292: porch wall right.003
+    3300294: roof
+    4300000: porch stairs.003
+    4300002: pediment.003
+    4300004: porch roof.003
+    4300006: entablature.003
+    4300008: porch wall right.003
+    4300010: porch wall left.003
+    4300012: porch pedestal left.003
+    4300014: pillar shaft.023
+    4300016: pillar abacus.023
+    4300018: pillar volute.023
+    4300020: pillar base.023
+    4300022: porch cornice.003
+    4300024: porch architrave.003
+    4300026: porch wall left.002
+    4300028: porch wall right.002
+    4300030: porch wall right.001
+    4300032: porch wall left.001
+    4300034: porch wall left
+    4300036: porch wall right
+    4300038: base
+    4300040: main moulding outer
+    4300042: main moulding inner
+    4300044: base moulding outer
+    4300046: base moundling inner
+    4300048: roof
+    4300050: dome base
+    4300052: dome
+    4300054: cupola base
+    4300056: cupola
+    4300058: base cornice upper
+    4300060: base cornice lower
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

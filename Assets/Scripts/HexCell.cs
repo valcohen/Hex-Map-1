@@ -166,11 +166,17 @@ public class HexCell : MonoBehaviour {
                     neighbor.chunk.Refresh();
                 }
             }
+            if (Unit) {
+                Unit.ValidateLocation();
+            }
         }
     }
 
     void RefreshSelfOnly () {
         this.chunk.Refresh();
+        if (Unit) {
+            Unit.ValidateLocation();
+        }
     }
 
     /*
@@ -526,4 +532,11 @@ public class HexCell : MonoBehaviour {
      * 0 = not yet reached, 1 = currently in frontier, 2 = removed from frontier
      */
     public int SearchPhase { get; set; }
+
+    /*
+     * Units
+     */
+
+    public HexUnit Unit { get; set; }
+
 }
