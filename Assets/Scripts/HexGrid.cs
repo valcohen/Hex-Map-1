@@ -392,7 +392,11 @@ public class HexGrid : MonoBehaviour {
                 current.DisableHighlight();
                 current = current.PathFrom;
             }
-            currentPathFrom.DisableHighlight();
+            if (currentPathFrom != null)    // TODO: ugly hack; why is this null when currentPathExists is TRUE?
+            {
+                currentPathFrom.DisableHighlight();
+            }
+            currentPathExists = false;
         }
         currentPathFrom = currentPathTo = null;
     }
