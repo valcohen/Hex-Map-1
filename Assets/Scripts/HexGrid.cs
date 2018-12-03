@@ -405,6 +405,17 @@ public class HexGrid : MonoBehaviour {
         currentPathFrom = currentPathTo = null;
     }
 
+    public List<HexCell> GetPath () {
+        if (!currentPathExists) { return null; }
+        List<HexCell> path = ListPool<HexCell>.Get();
+        for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathFrom) {
+            path.Add(c);
+        }
+        path.Add(currentPathFrom);
+        path.Reverse();
+        return path;
+    }
+
     void ClearUnits () {
         for (int i = 0; i < units.Count; i++) {
             units[i].Die();

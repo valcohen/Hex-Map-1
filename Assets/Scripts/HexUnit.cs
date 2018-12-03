@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
@@ -38,6 +39,10 @@ public class HexUnit : MonoBehaviour {
     public bool IsValidDestination (HexCell cell) {
         return      !cell.IsUnderwater
                 &&  !cell.Unit;
+    }
+
+    public void Travel (List<HexCell> path) {
+        Location = path[path.Count - 1];
     }
 
     public void Die () {
