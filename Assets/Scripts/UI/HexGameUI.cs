@@ -48,7 +48,7 @@ public class HexGameUI : MonoBehaviour {
 
     void DoPathFinding() {
         if (UpdateCurrentCell()) {
-            if (currentCell) {
+            if (currentCell && selectedUnit.IsValidDestination(currentCell)) {
                 grid.FindPath(selectedUnit.Location, currentCell, 24);
             } 
             else {

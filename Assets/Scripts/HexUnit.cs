@@ -32,6 +32,11 @@ public class HexUnit : MonoBehaviour {
         transform.localPosition = location.Position;
     }
 
+    public bool IsValidDestination (HexCell cell) {
+        return      !cell.IsUnderwater
+                &&  !cell.Unit;
+    }
+
     public void Die () {
         location.Unit = null;
         Destroy(gameObject);
