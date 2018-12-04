@@ -26,6 +26,25 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public bool IsVisible {
+        get { return visibility > 0; }
+    }
+    int visibility;
+
+    public void IncreaseVisibility () {
+        visibility += 1;
+        if (visibility == 1) {
+            ShaderData.RefreshVisibility(this);
+        }
+    }
+
+    public void DecreaseVisibility() {
+        visibility -= 1;
+        if (visibility == 0) {
+            ShaderData.RefreshVisibility(this);
+        }
+    }
+
     public int Distance {
         get {
             return distance;
