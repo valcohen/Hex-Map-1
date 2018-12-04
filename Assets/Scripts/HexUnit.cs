@@ -42,6 +42,13 @@ public class HexUnit : MonoBehaviour {
                 &&  !cell.Unit;
     }
 
+    void OnEnable() {
+        if (location)
+        {
+            transform.localPosition = location.Position;
+        }
+    }
+
     List<HexCell> pathToTravel;
     const float travelSpeed = 4f;
 
@@ -52,55 +59,55 @@ public class HexUnit : MonoBehaviour {
         StartCoroutine(TravelPath());
     }
 
+    // draw spheres along path using Gizmos, which must be enabled in the view
     void OnDrawGizmos() {
         if (pathToTravel == null || pathToTravel.Count == 0) { return; }
 
-        Vector3 a, b = pathToTravel[0].Position;
+        Vector3 a, b, c = pathToTravel[0].Position;
 
         for (int i = 1; i < pathToTravel.Count; i++)
         {
             // cut across corners of adjacent cells by averaging their positions
-            a = b;
-            b = (pathToTravel[i - 1].Position + pathToTravel[i].Position) * 0.5f;
-            for (float t = 0f; t < 1f; t += 0.2f) {
-                Gizmos.DrawSphere(Vector3.Lerp(a, b, t), 1.5f);
+            a = c;
+            b = pathToTravel[i - 1].Position;
+            c = (b + pathToTravel[i].Position) * 0.5f;
+
+            for (float t = 0f; t < 1f; t += 0.2f) {  // 1 / .2 = 5 steps
+            // for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed) { // smooth steps, lots-o-spheres
+                Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
             }
         }
 
         // move to center of destination cell
-        a = b;
+        a = c;
         b = pathToTravel[pathToTravel.Count - 1].Position;
-        for (float t = 0f; t < 1f; t += 0.2f) {
-            Gizmos.DrawSphere(Vector3.Lerp(a, b, t), 2f);
+        c = b;
+        for (float t = 0f; t < 1f; t += 0.2f) {  // 1 / .2 = 5 steps
+            Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
         }
     }
 
-    void OnEnable() {
-        if (location) {
-            transform.localPosition = location.Position;
-        }
-    }
 
     IEnumerator TravelPath () {
-        Vector3 a, b = pathToTravel[0].Position;
+        Vector3 a, b, c = pathToTravel[0].Position;
 
         for (int i = 1; i < pathToTravel.Count; i++) {
             // cut across corners of adjacent cells by averaging their positions
-            a = b;
-            b = (pathToTravel[i - 1].Position + pathToTravel[i].Position) * 0.5f;
-            for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed)
-            {
-                transform.localPosition = Vector3.Lerp(a, b, t);
+            a = c;
+            b = pathToTravel[i - 1].Position;
+            c = (b + pathToTravel[i].Position) * 0.5f;
+            for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed) {
+                transform.localPosition = Bezier.GetPoint(a, b, c, t);
                 yield return null;
             }
         }
 
         // move to center of destination cell
-        a = b;
+        a = c;
         b = pathToTravel[pathToTravel.Count - 1].Position;
-        for (float t = 0f; t < 1f; t += 0.2f)
-        {
-            transform.localPosition = Vector3.Lerp(a, b, t);
+        c = b;
+        for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed) {
+            transform.localPosition = Bezier.GetPoint(a, b, c, t);
             yield return null;
         }
     }
