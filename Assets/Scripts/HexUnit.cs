@@ -91,25 +91,29 @@ public class HexUnit : MonoBehaviour {
     IEnumerator TravelPath () {
         Vector3 a, b, c = pathToTravel[0].Position;
 
+        float t = Time.deltaTime * travelSpeed;   // time remaining to destination
         for (int i = 1; i < pathToTravel.Count; i++) {
             // cut across corners of adjacent cells by averaging their positions
             a = c;
             b = pathToTravel[i - 1].Position;
             c = (b + pathToTravel[i].Position) * 0.5f;
-            for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed) {
+            for (; t < 1f; t += Time.deltaTime * travelSpeed) {
                 transform.localPosition = Bezier.GetPoint(a, b, c, t);
                 yield return null;
             }
+            t -= 1f;
         }
 
         // move to center of destination cell
         a = c;
         b = pathToTravel[pathToTravel.Count - 1].Position;
         c = b;
-        for (float t = 0f; t < 1f; t += Time.deltaTime * travelSpeed) {
+        for (; t < 1f; t += Time.deltaTime * travelSpeed) {
             transform.localPosition = Bezier.GetPoint(a, b, c, t);
             yield return null;
         }
+
+        transform.localPosition = location.Position;
     }
 
 
