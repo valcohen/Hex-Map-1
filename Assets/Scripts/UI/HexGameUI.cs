@@ -29,7 +29,6 @@ public class HexGameUI : MonoBehaviour {
     void Update() {
         if (!EventSystem.current.IsPointerOverGameObject()) {
             if (Input.GetMouseButtonDown(0)) {
-                Debug.Log("selecting...");
                 DoSelection();
             }
             else if (selectedUnit) {
@@ -66,7 +65,7 @@ public class HexGameUI : MonoBehaviour {
 
     void DoMove () {
         if (grid.HasPath) {
-            selectedUnit.Location = currentCell;
+            selectedUnit.Travel(grid.GetPath());
             grid.ClearPath();
         }
     }
