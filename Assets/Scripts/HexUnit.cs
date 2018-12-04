@@ -60,6 +60,7 @@ public class HexUnit : MonoBehaviour {
     }
 
     // draw spheres along path using Gizmos, which must be enabled in the view
+    /*
     void OnDrawGizmos() {
         if (pathToTravel == null || pathToTravel.Count == 0) { return; }
 
@@ -86,6 +87,7 @@ public class HexUnit : MonoBehaviour {
             Gizmos.DrawSphere(Bezier.GetPoint(a, b, c, t), 2f);
         }
     }
+    */
 
 
     IEnumerator TravelPath () {
@@ -127,9 +129,13 @@ public class HexUnit : MonoBehaviour {
 
         transform.localPosition = location.Position;
         orientation = transform.localRotation.eulerAngles.y;
+
+        // disable this if using OnDrawGgizmos, as it uses pathToTravel
+        ListPool<HexCell>.Add(pathToTravel);
+        pathToTravel = null;
     }
 
-    const float rotationSpeed = 180f;
+    const float rotationSpeed = 360f;
     IEnumerator LookAt (Vector3 point) {
         point.y = transform.localPosition.y;    // prevent leaning
 
