@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
+    const int visionRange = 3;
     
     public HexCell Location {
         get {
@@ -11,16 +12,15 @@ public class HexUnit : MonoBehaviour {
         }
         set {
             if (location) {
-                location.DecreaseVisibility();  // update old location
+                Grid.DecreaseVisibility(location, visionRange); // update old location
                 location.Unit = null;           // clear old unit on move
             }
             location = value;
             value.Unit = this;
-            value.IncreaseVisibility();         // update new location
+            Grid.IncreaseVisibility(location, visionRange);     // update new location
             transform.localPosition = value.Position;
         }
     }
-
     HexCell location;
 
     public float Orientation {
@@ -32,7 +32,6 @@ public class HexUnit : MonoBehaviour {
             transform.localRotation = Quaternion.Euler(0f, value, 0f);
         }
     }
-
     float orientation;
 
     public void ValidateLocation() {
@@ -43,6 +42,8 @@ public class HexUnit : MonoBehaviour {
         return      !cell.IsUnderwater
                 &&  !cell.Unit;
     }
+
+    public HexGrid Grid { get; set; }
 
     void OnEnable() {
         if (location)
@@ -167,7 +168,7 @@ public class HexUnit : MonoBehaviour {
 
     public void Die () {
         if (location) {
-            location.DecreaseVisibility();
+            Grid.DecreaseVisibility(location, visionRange);
         }
         location.Unit = null;
         Destroy(gameObject);
