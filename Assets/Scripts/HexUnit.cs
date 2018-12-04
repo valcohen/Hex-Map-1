@@ -99,6 +99,11 @@ public class HexUnit : MonoBehaviour {
             c = (b + pathToTravel[i].Position) * 0.5f;
             for (; t < 1f; t += Time.deltaTime * travelSpeed) {
                 transform.localPosition = Bezier.GetPoint(a, b, c, t);
+
+                Vector3 d = Bezier.GetDerivative(a, b, c, t);
+                d.y = 0f;   // force vertical orientation vs leaning along the path
+                transform.localRotation = Quaternion.LookRotation(d);
+
                 yield return null;
             }
             t -= 1f;
@@ -110,10 +115,16 @@ public class HexUnit : MonoBehaviour {
         c = b;
         for (; t < 1f; t += Time.deltaTime * travelSpeed) {
             transform.localPosition = Bezier.GetPoint(a, b, c, t);
+
+            Vector3 d = Bezier.GetDerivative(a, b, c, t);
+            d.y = 0f;   // force vertical orientation
+            transform.localRotation = Quaternion.LookRotation(d);
+
             yield return null;
         }
 
         transform.localPosition = location.Position;
+        orientation = transform.localRotation.eulerAngles.y;
     }
 
 
