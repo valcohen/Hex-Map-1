@@ -143,9 +143,11 @@ public class HexGrid : MonoBehaviour {
         // cell.transform.SetParent(transform, false);
         cell.transform.localPosition = position;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
+        cell.Index = i;
         cell.ShaderData = cellShaderData;
         cell.name = "Cell " + cell.coordinates.ToString();
 
+        // assign neighbor cells
         if (x > 0) {    // skip 1st col, set West neighbor
             cell.SetNeighbor(HexDirection.W, cells[i - 1]);
         }

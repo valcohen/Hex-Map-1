@@ -12,6 +12,8 @@ public class HexCell : MonoBehaviour {
 
     int distance;
 
+    public int Index { get; set; }
+
     public int TerrainTypeIndex {
         get {
             return terrainTypeIndex;

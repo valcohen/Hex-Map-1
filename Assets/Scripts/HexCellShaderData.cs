@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// transfers cell-specific data to the GPU to inform rendering
 public class HexCellShaderData : MonoBehaviour {
     Texture2D cellTexture;
     Color32[] cellTextureData;
@@ -26,9 +27,18 @@ public class HexCellShaderData : MonoBehaviour {
                 cellTextureData[i] = new Color32(0, 0, 0, 0);
             }
         }
+
+        enabled = true;
     }
 
     public void RefreshTerrain (HexCell cell) {
-        
+        cellTextureData[cell.Index].a = (byte)cell.TerrainTypeIndex;
+        enabled = true;
+    }
+
+    void LateUpdate() {
+        cellTexture.SetPixels32(cellTextureData);
+        cellTexture.Apply();
+        enabled = false;
     }
 }
