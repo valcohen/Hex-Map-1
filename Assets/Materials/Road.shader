@@ -20,6 +20,9 @@
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
 
+        // create shader variant HEX_MAP_EDIT_MODE for when keyword is defined
+        #pragma multi_compile _ HEX_MAP_EDIT_MODE
+
         #include "HexCellData.cginc"
 
 		sampler2D _MainTex;

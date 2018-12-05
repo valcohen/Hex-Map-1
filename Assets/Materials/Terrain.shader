@@ -19,6 +19,9 @@
 
         #pragma multi_compile _ GRID_ON
        
+        // create shader variant HEX_MAP_EDIT_MODE for when keyword is defined
+        #pragma multi_compile _ HEX_MAP_EDIT_MODE
+
         #include "HexCellData.cginc"
 
 		UNITY_DECLARE_TEX2DARRAY(_MainTex);

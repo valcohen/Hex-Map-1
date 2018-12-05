@@ -8,6 +8,13 @@ public class HexGameUI : MonoBehaviour {
         this.enabled = !toggle;
         grid.ShowUI(!toggle);
         grid.ClearPath();
+
+        if (toggle) {
+            Shader.EnableKeyword("HEX_MAP_EDIT_MODE");
+        } 
+        else {
+            Shader.DisableKeyword("HEX_MAP_EDIT_MODE");
+        }
     }
 
     HexCell currentCell;
