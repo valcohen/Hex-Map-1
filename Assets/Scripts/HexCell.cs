@@ -34,6 +34,7 @@ public class HexCell : MonoBehaviour {
     public void IncreaseVisibility () {
         visibility += 1;
         if (visibility == 1) {
+            IsExplored = true;
             ShaderData.RefreshVisibility(this);
         }
     }
@@ -569,5 +570,7 @@ public class HexCell : MonoBehaviour {
      */
 
     public HexCellShaderData ShaderData { get; set; }
+
+    public bool IsExplored { get; private set; }
 
 }
