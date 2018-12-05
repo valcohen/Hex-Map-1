@@ -35,7 +35,20 @@
 
             float3 pos = mul(unity_ObjectToWorld, v.vertex);
 
-            data.visibility = 1;
+            float4 gridUV = float4(pos.xz, 0, 0);
+            gridUV.x *= 1 / (4 * 8.66025404);   // inner radius = 5 * sqrt(3), * 4 to move 2 cells right
+            gridUV.y *= 1 / (2 * 15.0);         // fwd dist = 15, 2x to move 2 cells up
+
+            // find the 2x2 cell patch we're in by taking floor of UV coords
+            // to get coords of current cell, add offsets stored in texture
+            float2 cellDataCoordinates = 
+                floor(gridUV.xy) + tex2Dlod(_GridCoordinates, gridUV).rg;
+
+            // because grid patch is 2x2 and offsets are halved, double the result
+            cellDataCoordinates *= 2;
+
+            data.visibility = GetCellData(cellDataCoordinates).x;
+            data.visibility = lerp(0.25, 1, data.visibility);
         }
 
 		void surf (Input IN, inout SurfaceOutputStandard o) {
