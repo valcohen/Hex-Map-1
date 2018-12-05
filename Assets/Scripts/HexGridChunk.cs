@@ -1031,6 +1031,9 @@ public class HexGridChunk : MonoBehaviour {
         Vector3 c2 = center + HexMetrics.GetSecondWaterCorner(direction);
 
         water.AddTriangle(center, c1, c2);
+        Vector3 indices;
+        indices.x = indices.y = indices.z = cell.Index;
+        water.AddTriangleCellData(indices, weights1);
 
         // connect adjacent water cells with a single quad
         if (direction <= HexDirection.SE && neighbor != null) {
@@ -1040,12 +1043,18 @@ public class HexGridChunk : MonoBehaviour {
             Vector3 e2 = c2 + bridge;
 
             water.AddQuad(c1, c2, e1, e2);
+            indices.y = neighbor.Index;
+            water.AddQuadCellData(indices, weights1, weights2);
 
             if (direction <= HexDirection.E) {
                 HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
                 if (nextNeighbor == null || !nextNeighbor.IsUnderwater) { return; }
                 water.AddTriangle(
                     c2, e2, c2 + HexMetrics.GetWaterBridge(direction.Next())
+                );
+                indices.z = nextNeighbor.Index;
+                water.AddTriangleCellData(
+                    indices, weights1, weights2, weights3
                 );
             }
         }
@@ -1063,6 +1072,12 @@ public class HexGridChunk : MonoBehaviour {
         water.AddTriangle(center, e1.v2, e1.v3);
         water.AddTriangle(center, e1.v3, e1.v4);
         water.AddTriangle(center, e1.v4, e1.v5);
+        Vector3 indices;
+        indices.x = indices.y = indices.z = cell.Index;
+        water.AddTriangleCellData(indices, weights1);
+        water.AddTriangleCellData(indices, weights1);
+        water.AddTriangleCellData(indices, weights1);
+        water.AddTriangleCellData(indices, weights1);
 
         Vector3 center2 = neighbor.Position;
         center2.y = center.y;
