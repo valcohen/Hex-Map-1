@@ -17,6 +17,7 @@
 		#pragma target 3.0
 
         #include "Water.cginc"
+        #include "HexCellData.cginc"
 
 		sampler2D _MainTex;
 
@@ -24,6 +25,7 @@
 			float2 uv_MainTex;
             float2 riverUV;
             float3 worldPos;
+            float  visibility;
 		};
 
 		half _Glossiness;
@@ -40,6 +42,13 @@
         void vert (inout appdata_full v, out Input o) {
             UNITY_INITIALIZE_OUTPUT(Input, o);
             o.riverUV = v.texcoord1.xy;
+
+            float4 cell0 = GetCellData(v, 0);
+            float4 cell1 = GetCellData(v, 1);
+
+            o.visibility = cell0.x * v.color.x
+                         + cell1.x * v.color.y;
+            o.visibility = lerp(0.25, 1, o.visibility);
         }
 
         void surf (Input IN, inout SurfaceOutputStandard o) {
@@ -53,7 +62,7 @@
 
             fixed4 c = saturate(_Color + water); // fixed4(IN.riverUV, 1, 1); 
             // fixed4 c = fixed4(IN.riverUV, 1, 1); 
-			o.Albedo = c.rgb;
+			o.Albedo = c.rgb * IN.visibility;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

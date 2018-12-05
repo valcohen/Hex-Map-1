@@ -12,6 +12,8 @@ public class HexCell : MonoBehaviour {
 
     int distance;
 
+    public int Index { get; set; }
+
     public int TerrainTypeIndex {
         get {
             return terrainTypeIndex;
@@ -19,8 +21,27 @@ public class HexCell : MonoBehaviour {
         set {
             if (terrainTypeIndex != value) {
                 terrainTypeIndex = value;
-                Refresh();
+                ShaderData.RefreshTerrain(this);
             }
+        }
+    }
+
+    public bool IsVisible {
+        get { return visibility > 0; }
+    }
+    int visibility;
+
+    public void IncreaseVisibility () {
+        visibility += 1;
+        if (visibility == 1) {
+            ShaderData.RefreshVisibility(this);
+        }
+    }
+
+    public void DecreaseVisibility() {
+        visibility -= 1;
+        if (visibility == 0) {
+            ShaderData.RefreshVisibility(this);
         }
     }
 
@@ -467,8 +488,11 @@ public class HexCell : MonoBehaviour {
     public void Load (BinaryReader reader) {
 
         terrainTypeIndex = reader.ReadByte();
+        ShaderData.RefreshTerrain(this);
+
         elevation       = reader.ReadByte();
         RefreshPosition();
+
         waterLevel      = reader.ReadByte();
         urbanLevel      = reader.ReadByte();
         farmLevel       = reader.ReadByte();
@@ -538,5 +562,12 @@ public class HexCell : MonoBehaviour {
      */
 
     public HexUnit Unit { get; set; }
+
+
+    /*
+     * Cell data
+     */
+
+    public HexCellShaderData ShaderData { get; set; }
 
 }
