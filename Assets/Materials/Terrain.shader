@@ -30,7 +30,7 @@
             float4 color : COLOR;
             float3 worldPos;
             float3 terrain;
-            float3 visibility;
+            float4 visibility;
 		};
 
         void vert (inout appdata_full v, out Input data) {
@@ -47,7 +47,11 @@
             data.visibility.x = cell0.x;
             data.visibility.y = cell1.x;
             data.visibility.z = cell2.x;    // visibility is 0..1, too dark...
-            data.visibility = lerp(0.25, 1, data.visibility);   // now 0.25..1
+            data.visibility.xyz = lerp(0.25, 1, data.visibility.xyz);   // now 0.25..1
+            // set exploration states: 1+ = explored
+            data.visibility.w = cell0.y * v.color.x
+                              + cell1.y * v.color.y
+                              + cell2.y * v.color.z;
         }
 
 		half _Glossiness;
@@ -82,7 +86,8 @@
                 grid = tex2D(_GridTex, gridUV);
             #endif
 
-			o.Albedo = c.rgb * grid * _Color;
+            float explored = IN.visibility.w;
+			o.Albedo = c.rgb * grid * _Color * explored;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

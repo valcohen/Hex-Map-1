@@ -1,10 +1,12 @@
 ﻿sampler2D   _HexCellData;
 float4      _HexCellData_TexelSize;
 
-// force visibility = 1 in edit mode
+/*
+    force visibility = 1 in edit mode
+*/
 float4 FilterCellData (float4 data) {
     #if defined(HEX_MAP_EDIT_MODE)
-        data.x = 1;
+        data.xy = 1;    // xy = visibility, exploration
     #endif
     return data;
 }
