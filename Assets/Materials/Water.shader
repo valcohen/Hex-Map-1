@@ -63,13 +63,14 @@
             float4 waves = Waves(IN.worldPos.xz, _MainTex);
 
             fixed4 c = saturate(_Color + waves);
-			o.Albedo = c.rgb * IN.visibility.x;
 
-            float explored= IN.visibility.y;
-            o.Specular = _Specular * explored;
+            float explored = IN.visibility.y;
+
+            o.Albedo     = c.rgb * IN.visibility.x;
+            o.Specular   = _Specular * explored;
 			o.Smoothness = _Glossiness;
-            o.Occlusion = explored;
-			o.Alpha = c.a * explored;
+            o.Occlusion  = explored;
+			o.Alpha      = c.a * explored;
 		}
 		ENDCG
 	}
