@@ -4,7 +4,9 @@
 		_MainTex ("Terrain Texture Array", 2DArray) = "white" {}
         _GridTex ("Grid Texture", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+        // use Specular workflow so we can fade specular color to black 
+        // to avoid highlights when painitng unexplored areas black 
+        _Specular ("Specular", Color) = (0.2, 0.2, 0.2)
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -12,7 +14,7 @@
 
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert
+		#pragma surface surf StandardSpecular fullforwardshadows vertex:vert
 
 		// Use shader model 3.5 target, to enable texture arrays
 		#pragma target 3.5
@@ -55,7 +57,7 @@
         }
 
 		half _Glossiness;
-		half _Metallic;
+		fixed3 _Specular;
 		fixed4 _Color;
         sampler2D _GridTex;
 
@@ -72,7 +74,7 @@
             return c * (IN.color[index] * IN.visibility[index]);
         }
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
+		void surf (Input IN, inout SurfaceOutputStandardSpecular o) {
 			fixed4 c = 
                 GetTerrainColor(IN, 0) +
                 GetTerrainColor(IN, 1) +
@@ -88,9 +90,9 @@
 
             float explored = IN.visibility.w;
 			o.Albedo = c.rgb * grid * _Color * explored;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
+			o.Specular = _Specular * explored;
 			o.Smoothness = _Glossiness;
+            o.Occlusion = explored;
 			o.Alpha = c.a;
 		}
 		ENDCG
