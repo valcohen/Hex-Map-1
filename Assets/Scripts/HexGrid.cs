@@ -252,9 +252,9 @@ public class HexGrid : MonoBehaviour {
     bool currentPathExists;
     int cellsProcessed;
 
-    public void FindPath (HexCell fromCell, HexCell toCell, int speed) {
+    public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
         // StopAllCoroutines();
-        // StartCoroutine(Search(fromCell, toCell, speed));
+        // StartCoroutine(Search(fromCell, toCell, unit));
 
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -262,8 +262,8 @@ public class HexGrid : MonoBehaviour {
         ClearPath();
         currentPathFrom = fromCell;
         currentPathTo = toCell;
-        currentPathExists = Search(fromCell, toCell, speed);
-        ShowPath(speed);
+        currentPathExists = Search(fromCell, toCell, unit);
+        ShowPath(unit.Speed);
 
         stopwatch.Stop();
         /* UnityEngine.Debug.Log(
@@ -275,8 +275,9 @@ public class HexGrid : MonoBehaviour {
     }
 
     // signature for use with coroutines:
-    // IEnumerator Search(HexCell fromCell, HexCell toCell, int speed)
-    bool Search (HexCell fromCell, HexCell toCell, int speed) {
+    // IEnumerator Search(HexCell fromCell, HexCell toCell, HexUnit unit)
+    bool Search (HexCell fromCell, HexCell toCell, HexUnit unit) {
+        int speed = unit.Speed;
 
         // reset
         searchFrontierPhase += 2;
@@ -317,31 +318,14 @@ public class HexGrid : MonoBehaviour {
                 ) {
                     continue;
                 }
-                if (neighbor.IsUnderwater || neighbor.Unit) { 
-                    continue;
-                }
-                HexEdgeType edgeType = current.GetEdgeType(neighbor);
-                if ( edgeType == HexEdgeType.Cliff) {
-                    continue;
-                }
-                int moveCost;
-                // road travel costs 1
-                if (current.HasRoadThroughEdge(d)) {
-                    moveCost = 1;
-                }
-                // don't allow travel thru walls
-                else if (current.Walled != neighbor.Walled) {
-                    continue;
-                }
-                // offroad flats cost 5, everything else costs 10
-                else {
-                    moveCost = (edgeType == HexEdgeType.Flat) ? 5 : 10;
 
-                    // slow own when moving thru features
-                    moveCost += neighbor.UrbanLevel 
-                              + neighbor.FarmLevel
-                              + neighbor.PlantLevel
-                              + neighbor.SpecialIndex;
+                if (!unit.IsValidDestination(neighbor)) {
+                    continue;
+                }
+
+                int moveCost = unit.GetMoveCost(current, neighbor, d);
+                if (moveCost < 0) {     // can't move
+                    continue;
                 }
 
                 int distance = current.Distance + moveCost;
