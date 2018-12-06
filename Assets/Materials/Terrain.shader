@@ -14,7 +14,7 @@
 		LOD 200
 
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
+		// Physically based Specular lighting model, and enable shadows on all light types
 		#pragma surface surf StandardSpecular fullforwardshadows vertex:vert
 
 		// Use shader model 3.5 target, to enable texture arrays
@@ -57,9 +57,9 @@
                               + cell2.y * v.color.z;
         }
 
-		half _Glossiness;
-		fixed3 _Specular;
-		fixed4 _Color;
+        half _Glossiness;
+        fixed3 _Specular;
+        fixed4 _Color;
         half3 _BackgroundColor;
         sampler2D _GridTex;
 
