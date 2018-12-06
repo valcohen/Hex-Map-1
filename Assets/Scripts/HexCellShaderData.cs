@@ -1,9 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 // transfers cell-specific data to the GPU to inform rendering
 public class HexCellShaderData : MonoBehaviour {
+
     Texture2D cellTexture;
     Color32[] cellTextureData;
+
+    List<HexCell> transitioningCells = new List<HexCell>();
+    const float transitionSpeed = 255f;
+
+    public bool ImmediateMode { get; set; }
 
     public void Initalize(int x, int z) {
         if (cellTexture) {
@@ -34,6 +42,7 @@ public class HexCellShaderData : MonoBehaviour {
             }
         }
 
+        transitioningCells.Clear();
         enabled = true;
     }
 
@@ -44,14 +53,46 @@ public class HexCellShaderData : MonoBehaviour {
 
     public void RefreshVisibility (HexCell cell) {
         int index = cell.Index;
-        cellTextureData[index].r = cell.IsVisible  ? (byte)255 : (byte)0;
-        cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0;
+        if (ImmediateMode) {
+            cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0;
+            cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0;
+        }
+        else {
+            transitioningCells.Add(cell);
+        }
+        
         enabled = true;
     }
 
     void LateUpdate() {
+        int delta = (int)(Time.deltaTime * transitionSpeed);
+        // high framerates + low transiion speed could result in delta = 0
+        if (delta == 0) {
+            delta = 1;
+        }
+        for (int i = 0; i < transitioningCells.Count; i++) {
+            // remove cell from list when transition is finished
+            if ( !UpdateCellData(transitioningCells[i], delta) ) {
+                // optimization to prevent RemoveAt() shifting the list:
+                // move the last cell to current index, then remove the last one. 
+                transitioningCells[i--] = 
+                    transitioningCells[transitioningCells.Count - 1];
+                transitioningCells.RemoveAt(transitioningCells.Count - 1);
+            }
+        }
+
         cellTexture.SetPixels32(cellTextureData);
         cellTexture.Apply();
-        enabled = false;
+
+        enabled = transitioningCells.Count > 0;
+    }
+
+    bool UpdateCellData(HexCell cell, int delta) {
+        int     index           = cell.Index;
+        Color32 data            = cellTextureData[index];
+        bool    stillUpdating   = false;
+
+        cellTextureData[index] = data;
+        return stillUpdating;
     }
 }
