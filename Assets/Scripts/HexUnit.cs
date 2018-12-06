@@ -34,12 +34,15 @@ public class HexUnit : MonoBehaviour {
     }
     float orientation;
 
+    public int Speed { get { return 24; } }
+
     public void ValidateLocation() {
         transform.localPosition = location.Position;
     }
 
     public bool IsValidDestination (HexCell cell) {
-        return      !cell.IsUnderwater
+        return       cell.IsExplored
+                &&  !cell.IsUnderwater
                 &&  !cell.Unit;
     }
 
@@ -54,6 +57,41 @@ public class HexUnit : MonoBehaviour {
                 currentTravelLocation = null;
             }
         }
+    }
+
+    public int GetMoveCost (
+        HexCell fromCell, HexCell toCell, HexDirection direction
+    ) {
+        HexEdgeType edgeType = fromCell.GetEdgeType(toCell);
+        if (edgeType == HexEdgeType.Cliff) {
+            return -1;
+        }
+
+        int moveCost;
+
+        // road travel costs 1
+        if (fromCell.HasRoadThroughEdge(direction)) {
+            moveCost = 1;
+        }
+
+        // don't allow travel thru walls
+        else if (fromCell.Walled != toCell.Walled) {
+            return -1;
+        }
+
+        // offroad flats cost 5, everything else costs 10
+        else
+        {
+            moveCost = (edgeType == HexEdgeType.Flat) ? 5 : 10;
+
+            // slow own when moving thru features
+            moveCost += toCell.UrbanLevel
+                      + toCell.FarmLevel
+                      + toCell.PlantLevel
+                      + toCell.SpecialIndex;
+        }
+
+        return moveCost;
     }
 
     List<HexCell> pathToTravel;
@@ -179,7 +217,6 @@ public class HexUnit : MonoBehaviour {
         transform.LookAt(point);
         orientation = transform.localRotation.eulerAngles.y;
     }
-
 
     public void Die () {
         if (location) {

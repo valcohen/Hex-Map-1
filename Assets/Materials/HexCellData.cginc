@@ -2,6 +2,16 @@
 float4      _HexCellData_TexelSize;
 
 /*
+    force visibility = 1 in edit mode
+*/
+float4 FilterCellData (float4 data) {
+    #if defined(HEX_MAP_EDIT_MODE)
+        data.xy = 1;    // xy = visibility, exploration
+    #endif
+    return data;
+}
+
+/*
     cell indices are stored in v.texcoord2
 
     convert x & y indices to UV coordinates to sample cell data texture:
@@ -30,7 +40,7 @@ float4 GetCellData (appdata_full v, int index) {
     // 4th data component is terrain type index, stored as a byte.
     // The GPU converts it to a float 0..1 ; convert back by multiplying by 255
     data.w *= 255;
-    return data;
+    return FilterCellData(data);
 }
 
 /*
@@ -45,5 +55,5 @@ float GetCellData (float2 cellDataCoordinates) {
     uv.x *= _HexCellData_TexelSize.x;
     uv.y *= _HexCellData_TexelSize.y;
 
-    return tex2Dlod(_HexCellData, float4(uv, 0, 0));
+    return FilterCellData(tex2Dlod(_HexCellData, float4(uv, 0, 0)));
 }

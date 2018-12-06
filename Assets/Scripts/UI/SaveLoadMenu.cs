@@ -17,6 +17,8 @@ public class SaveLoadMenu : MonoBehaviour {
 
     bool saveMode;
 
+    const int mapFileVersion = 3;
+
     public void Open (bool saveMode) {
         this.saveMode = saveMode;
 
@@ -82,7 +84,7 @@ public class SaveLoadMenu : MonoBehaviour {
             new BinaryWriter(File.Open(path, FileMode.Create))
         )
         {
-            writer.Write(2);        // file format version number
+            writer.Write(mapFileVersion);
             hexGrid.Save(writer);
         }
     }
@@ -100,7 +102,7 @@ public class SaveLoadMenu : MonoBehaviour {
         )
         {
             int header = reader.ReadInt32();     // read file format version number
-            if (header <= 2)
+            if (header <= mapFileVersion)
             {
                 hexGrid.Load(reader, header);
                 HexMapCamera.ValidatePosition();

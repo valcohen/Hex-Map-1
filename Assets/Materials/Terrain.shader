@@ -4,21 +4,27 @@
 		_MainTex ("Terrain Texture Array", 2DArray) = "white" {}
         _GridTex ("Grid Texture", 2D) = "white" {}
 		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+        // use Specular workflow so we can fade specular color to black 
+        // to avoid highlights when painitng unexplored areas black 
+        _Specular ("Specular", Color) = (0.2, 0.2, 0.2)
+        _BackgroundColor ("BackgroundColor", Color) = (0, 0, 0)
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
 		LOD 200
 
 		CGPROGRAM
-		// Physically based Standard lighting model, and enable shadows on all light types
-		#pragma surface surf Standard fullforwardshadows vertex:vert
+		// Physically based Specular lighting model, and enable shadows on all light types
+		#pragma surface surf StandardSpecular fullforwardshadows vertex:vert
 
 		// Use shader model 3.5 target, to enable texture arrays
 		#pragma target 3.5
 
         #pragma multi_compile _ GRID_ON
        
+        // create shader variant HEX_MAP_EDIT_MODE for when keyword is defined
+        #pragma multi_compile _ HEX_MAP_EDIT_MODE
+
         #include "HexCellData.cginc"
 
 		UNITY_DECLARE_TEX2DARRAY(_MainTex);
@@ -27,7 +33,7 @@
             float4 color : COLOR;
             float3 worldPos;
             float3 terrain;
-            float3 visibility;
+            float4 visibility;
 		};
 
         void vert (inout appdata_full v, out Input data) {
@@ -44,12 +50,17 @@
             data.visibility.x = cell0.x;
             data.visibility.y = cell1.x;
             data.visibility.z = cell2.x;    // visibility is 0..1, too dark...
-            data.visibility = lerp(0.25, 1, data.visibility);   // now 0.25..1
+            data.visibility.xyz = lerp(0.25, 1, data.visibility.xyz);   // now 0.25..1
+            // set exploration states: 1+ = explored
+            data.visibility.w = cell0.y * v.color.x
+                              + cell1.y * v.color.y
+                              + cell2.y * v.color.z;
         }
 
-		half _Glossiness;
-		half _Metallic;
-		fixed4 _Color;
+        half _Glossiness;
+        fixed3 _Specular;
+        fixed4 _Color;
+        half3 _BackgroundColor;
         sampler2D _GridTex;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -65,7 +76,7 @@
             return c * (IN.color[index] * IN.visibility[index]);
         }
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
+		void surf (Input IN, inout SurfaceOutputStandardSpecular o) {
 			fixed4 c = 
                 GetTerrainColor(IN, 0) +
                 GetTerrainColor(IN, 1) +
@@ -79,10 +90,12 @@
                 grid = tex2D(_GridTex, gridUV);
             #endif
 
-			o.Albedo = c.rgb * grid * _Color;
-			// Metallic and smoothness come from slider variables
-			o.Metallic = _Metallic;
+            float explored = IN.visibility.w;
+			o.Albedo = c.rgb * grid * _Color * explored;
+			o.Specular = _Specular * explored;
 			o.Smoothness = _Glossiness;
+            o.Occlusion = explored;
+            o.Emission = _BackgroundColor * (1 - explored);
 			o.Alpha = c.a;
 		}
 		ENDCG
