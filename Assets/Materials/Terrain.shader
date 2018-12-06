@@ -7,6 +7,7 @@
         // use Specular workflow so we can fade specular color to black 
         // to avoid highlights when painitng unexplored areas black 
         _Specular ("Specular", Color) = (0.2, 0.2, 0.2)
+        _BackgroundColor ("BackgroundColor", Color) = (0, 0, 0)
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -59,6 +60,7 @@
 		half _Glossiness;
 		fixed3 _Specular;
 		fixed4 _Color;
+        half3 _BackgroundColor;
         sampler2D _GridTex;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -93,6 +95,7 @@
 			o.Specular = _Specular * explored;
 			o.Smoothness = _Glossiness;
             o.Occlusion = explored;
+            o.Emission = _BackgroundColor * (1 - explored);
 			o.Alpha = c.a;
 		}
 		ENDCG
