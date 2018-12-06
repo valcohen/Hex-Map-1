@@ -41,7 +41,8 @@ public class HexUnit : MonoBehaviour {
     }
 
     public bool IsValidDestination (HexCell cell) {
-        return      !cell.IsUnderwater
+        return       cell.IsExplored
+                &&  !cell.IsUnderwater
                 &&  !cell.Unit;
     }
 
