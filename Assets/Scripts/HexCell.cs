@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.IO;
+using System;
 
 public class HexCell : MonoBehaviour {
     
@@ -61,7 +62,11 @@ public class HexCell : MonoBehaviour {
         {
             if (elevation == value) { return; }
 
+            int originalViewElevation = ViewElevation;
             elevation = value;
+            if (ViewElevation != originalViewElevation) {
+                ShaderData.ViewElevationChanged();
+            }
 
             RefreshPosition();
 
@@ -77,6 +82,12 @@ public class HexCell : MonoBehaviour {
             }
 
             Refresh();
+        }
+    }
+
+    public int ViewElevation {
+        get {
+            return elevation > waterLevel ? elevation : waterLevel;
         }
     }
 
@@ -136,7 +147,13 @@ public class HexCell : MonoBehaviour {
         }
         set {
             if (waterLevel == value) { return; }
+
+            int originalViewElevation = ViewElevation;
             waterLevel = value;
+            if (ViewElevation != originalViewElevation) {
+                ShaderData.ViewElevationChanged();    
+            }
+
             ValidateRivers();
             Refresh();
         }
@@ -576,4 +593,10 @@ public class HexCell : MonoBehaviour {
 
     public bool IsExplored { get; private set; }
 
+    public void ResetVisibility() {
+        if (visibility > 0) {
+            visibility = 0;
+        }
+        ShaderData.RefreshVisibility(this);
+    }
 }

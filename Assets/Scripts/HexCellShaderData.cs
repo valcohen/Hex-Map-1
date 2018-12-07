@@ -11,7 +11,11 @@ public class HexCellShaderData : MonoBehaviour {
     List<HexCell> transitioningCells = new List<HexCell>();
     const float transitionSpeed = 255f;
 
+    bool needsVisibilityReset;
+
     public bool ImmediateMode { get; set; }
+
+    public HexGrid Grid { get; set; }
 
     public void Initalize(int x, int z) {
         if (cellTexture) {
@@ -66,6 +70,11 @@ public class HexCellShaderData : MonoBehaviour {
     }
 
     void LateUpdate() {
+        if (needsVisibilityReset) {
+            needsVisibilityReset = false;
+            Grid.ResetVisibility();
+        }
+
         int delta = (int)(Time.deltaTime * transitionSpeed);
         // high framerates + low transiion speed could result in delta = 0
         if (delta == 0) {
@@ -126,5 +135,10 @@ public class HexCellShaderData : MonoBehaviour {
 
         cellTextureData[index] = data;
         return stillUpdating;
+    }
+
+    public void ViewElevationChanged() {
+        needsVisibilityReset = true;
+        enabled = true;
     }
 }

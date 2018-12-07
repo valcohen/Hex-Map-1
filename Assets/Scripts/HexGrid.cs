@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -33,6 +34,7 @@ public class HexGrid : MonoBehaviour {
         HexMetrics.InitializeHashGrid(seed);
         HexUnit.unitPrefab = unitPrefab;
         cellShaderData = gameObject.AddComponent<HexCellShaderData>();
+        cellShaderData.Grid = this;
         CreateMap(cellCountX, cellCountZ);
     }
 
@@ -41,6 +43,7 @@ public class HexGrid : MonoBehaviour {
             HexMetrics.noiseSource = noiseSource;
             HexMetrics.InitializeHashGrid(seed);
             HexUnit.unitPrefab = unitPrefab;
+            ResetVisibility();
         }
 
     }
@@ -517,7 +520,15 @@ public class HexGrid : MonoBehaviour {
             cells[i].DecreaseVisibility();
         }
         ListPool<HexCell>.Add(cells);
-
     }
 
+    public void ResetVisibility() {
+        for (int i = 0; i < cells.Length; i++) {
+            cells[i].ResetVisibility();
+        }
+        for (int i = 0; i < units.Count; i++) {
+            HexUnit unit = units[i];
+            IncreaseVisibility(unit.Location, unit.VisionRange);
+        }
+    }
 }
