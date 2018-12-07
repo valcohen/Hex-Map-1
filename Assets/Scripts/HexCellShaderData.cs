@@ -57,7 +57,8 @@ public class HexCellShaderData : MonoBehaviour {
             cellTextureData[index].r = cell.IsVisible ? (byte)255 : (byte)0;
             cellTextureData[index].g = cell.IsExplored ? (byte)255 : (byte)0;
         }
-        else {
+        else if (cellTextureData[index].b != 255) {
+            cellTextureData[index].b = 255;     // cell is in transition
             transitioningCells.Add(cell);
         }
         
@@ -117,6 +118,10 @@ public class HexCellShaderData : MonoBehaviour {
 
             int t = data.r - delta;
             data.r = t < 0 ? (byte)0 : (byte)t;         // don't underflow byte!
+        }
+
+        if (!stillUpdating) {
+            data.b = 0;     // b = cell is in transition
         }
 
         cellTextureData[index] = data;
