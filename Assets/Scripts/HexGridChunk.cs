@@ -619,12 +619,12 @@ public class HexGridChunk : MonoBehaviour {
         for (int i = 2; i < HexMetrics.terraceSteps; i++)
         {
             EdgeVertices e1 = e2;
-            Color c1 = w2;
+            Color w1 = w2;
 
             e2 = EdgeVertices.TerraceLerp(begin, end, i);
             w2 = HexMetrics.TerraceLerp(weights1, weights2, i);
 
-            TriangulateEdgeStrip(e1, c1, i1, e2, w2, i2, hasRoad);
+            TriangulateEdgeStrip(e1, w1, i1, e2, w2, i2, hasRoad);
         }
 
         // last step
