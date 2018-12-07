@@ -73,6 +73,9 @@ public class HexCellShaderData : MonoBehaviour {
         for (int i = 0; i < transitioningCells.Count; i++) {
             // remove cell from list when transition is finished
             if ( !UpdateCellData(transitioningCells[i], delta) ) {
+
+                // transitioningCells.RemoveAt(i--);
+
                 // optimization to prevent RemoveAt() shifting the list:
                 // move the last cell to current index, then remove the last one. 
                 transitioningCells[i--] = 
@@ -91,6 +94,30 @@ public class HexCellShaderData : MonoBehaviour {
         int     index           = cell.Index;
         Color32 data            = cellTextureData[index];
         bool    stillUpdating   = false;
+
+        // data.g = exploration
+        if (cell.IsExplored && data.g < 255) {  // still in transition
+            stillUpdating = true;
+
+            int t = data.g + delta;
+            data.g = t >= 255 ? (byte)255 : (byte)t;    // don't overflow byte!
+        }
+
+        // data.r = visibility
+        if (cell.IsVisible) {
+            if (data.r < 255) {
+                stillUpdating = true;
+
+                int t = data.r + delta;
+                data.r = t >= 255 ? (byte)255 : (byte)t;
+            }
+        }
+        else if (data.r > 0) {  // if cell is invisible, decrease R if > 0
+            stillUpdating = true;
+
+            int t = data.r - delta;
+            data.r = t < 0 ? (byte)0 : (byte)t;         // don't underflow byte!
+        }
 
         cellTextureData[index] = data;
         return stillUpdating;
