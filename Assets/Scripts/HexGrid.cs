@@ -453,6 +453,7 @@ public class HexGrid : MonoBehaviour {
         // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
         cellsProcessed = 1;
 
+        range = fromCell.ViewElevation;
         fromCell.SearchPhase = searchFrontierPhase;
         fromCell.Distance = 0;
         searchFrontier.Enqueue(fromCell);
@@ -479,7 +480,7 @@ public class HexGrid : MonoBehaviour {
                 }
 
                 int distance = current.Distance + 1;
-                if (distance > range) { 
+                if (distance + neighbor.ViewElevation > range) { 
                     continue; 
                 }
 
