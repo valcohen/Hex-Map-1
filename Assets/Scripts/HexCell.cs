@@ -27,8 +27,10 @@ public class HexCell : MonoBehaviour {
         }
     }
 
+    public bool Explorable { get; set; }
+
     public bool IsVisible {
-        get { return visibility > 0; }
+        get { return visibility > 0 && Explorable; }
     }
     int visibility;
 
@@ -591,7 +593,15 @@ public class HexCell : MonoBehaviour {
 
     public HexCellShaderData ShaderData { get; set; }
 
-    public bool IsExplored { get; private set; }
+    public bool IsExplored { 
+        get {
+            return explored && Explorable;
+        } 
+        private set {
+            explored = value;
+        } 
+    }
+    bool explored;
 
     public void ResetVisibility() {
         if (visibility > 0) {
