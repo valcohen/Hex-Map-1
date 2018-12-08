@@ -148,6 +148,11 @@ public class HexGrid : MonoBehaviour {
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x, z);
         cell.Index = i;
         cell.ShaderData = cellShaderData;
+
+        // make map edges unexplorable & therefore hidden, so they fade into bg:
+        cell.Explorable =  x > 0 && x < cellCountX - 1
+                        && z > 0 && z < cellCountZ - 1;
+
         cell.name = "Cell " + cell.coordinates.ToString();
 
         // assign neighbor cells
@@ -476,6 +481,7 @@ public class HexGrid : MonoBehaviour {
                         neighbor == null
                     // skip cells that have already been removed from frontier
                     || neighbor.SearchPhase > searchFrontierPhase
+                    || !neighbor.Explorable
                 ) {
                     continue;
                 }
