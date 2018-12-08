@@ -453,11 +453,12 @@ public class HexGrid : MonoBehaviour {
         // var delay    = new WaitForSeconds(1 / 60f);  // use with coroutines
         cellsProcessed = 1;
 
-        range = fromCell.ViewElevation;
+        range += fromCell.ViewElevation;
         fromCell.SearchPhase = searchFrontierPhase;
         fromCell.Distance = 0;
         searchFrontier.Enqueue(fromCell);
 
+        HexCoordinates fromCoordinates = fromCell.coordinates;
         while (searchFrontier.Count > 0)
         {
             // yield return delay;  // use with coroutines
@@ -480,7 +481,10 @@ public class HexGrid : MonoBehaviour {
                 }
 
                 int distance = current.Distance + 1;
-                if (distance + neighbor.ViewElevation > range) { 
+                if (    distance + neighbor.ViewElevation > range
+                    // only use shortest path for visibility:
+                    ||  distance > fromCoordinates.DistanceTo(neighbor.coordinates)
+                ) { 
                     continue; 
                 }
 
