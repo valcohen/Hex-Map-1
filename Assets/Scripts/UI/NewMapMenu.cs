@@ -3,11 +3,12 @@
 public class NewMapMenu : MonoBehaviour {
 
     public HexGrid hexGrid;
+    public HexMapGenerator mapGenerator;
 
     public void Open () {
         gameObject.SetActive(true);
         HexMapCamera.Locked = true;
-}
+    }
 
     public void Close () {
         gameObject.SetActive(false);
@@ -27,8 +28,19 @@ public class NewMapMenu : MonoBehaviour {
     }
 
     void CreateMap (int x, int z) {
-        hexGrid.CreateMap(x, z);
+        if (generateMaps) {
+            mapGenerator.GenerateMap(x, x);
+        }
+        else {
+            hexGrid.CreateMap(x, z);
+        }
         HexMapCamera.ValidatePosition();
         Close();
+    }
+
+    bool generateMaps = true;
+
+    public void ToggleMapGeneration (bool toggle)   {
+        generateMaps = toggle;
     }
 }
