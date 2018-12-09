@@ -19,7 +19,7 @@ public class HexMapGenerator : MonoBehaviour {
             searchFrontier = new HexCellPriorityQueue();
         }
 
-        RaiseTerrain(7);
+        RaiseTerrain(30);
 
         // Modifying adjacent cells sets a cell's search frontier, 
         // which is also used by unit pathfinding. Reset them.
@@ -35,6 +35,7 @@ public class HexMapGenerator : MonoBehaviour {
         firstCell.Distance = 0;
         firstCell.SearchHeuristic = 0;
         searchFrontier.Enqueue(firstCell);
+        HexCoordinates center = firstCell.coordinates;
 
         int size = 0;
         while (size < chunkSize && searchFrontier.Count > 0) {
@@ -46,7 +47,7 @@ public class HexMapGenerator : MonoBehaviour {
                 HexCell neighbor = current.GetNeighbor(d);
                 if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
                     neighbor.SearchPhase = searchFrontierPhase;
-                    neighbor.Distance = 0;
+                    neighbor.Distance = neighbor.coordinates.DistanceTo(center);
                     neighbor.SearchHeuristic = 0;
                     searchFrontier.Enqueue(neighbor);
                 }
