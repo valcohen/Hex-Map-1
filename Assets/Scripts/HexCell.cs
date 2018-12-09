@@ -473,7 +473,7 @@ public class HexCell : MonoBehaviour {
     public void Save (BinaryWriter writer) {
 
         writer.Write((byte)terrainTypeIndex);
-        writer.Write((byte)elevation);
+        writer.Write((byte)(elevation + 127));  // +127 so we can store -127..128
         writer.Write((byte)waterLevel);
         writer.Write((byte)urbanLevel);
         writer.Write((byte)farmLevel);
@@ -511,6 +511,9 @@ public class HexCell : MonoBehaviour {
         ShaderData.RefreshTerrain(this);
 
         elevation       = reader.ReadByte();
+        if (header >= 4) {
+            elevation -= 127;
+        }
         RefreshPosition();
 
         waterLevel      = reader.ReadByte();
