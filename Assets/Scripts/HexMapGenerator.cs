@@ -31,6 +31,10 @@ public class HexMapGenerator : MonoBehaviour {
             searchFrontier = new HexCellPriorityQueue();
         }
 
+        for (int i = 0; i < cellCount; i++) {
+            grid.GetCell(i).WaterLevel = 1;
+        }
+
         CreateLand();
         SetTerraintype();
 
@@ -93,7 +97,9 @@ public class HexMapGenerator : MonoBehaviour {
     void SetTerraintype () {
         for (int i = 0; i < cellCount; i++) {
             HexCell cell = grid.GetCell(i);
-            cell.TerrainTypeIndex = cell.Elevation;
+            if (!cell.IsUnderwater) {
+                cell.TerrainTypeIndex = cell.Elevation -  cell.WaterLevel;
+            }
         }
     }
 }
