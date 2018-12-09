@@ -5,6 +5,9 @@ public class HexMapGenerator : MonoBehaviour {
 
     public HexGrid grid;
 
+    [Range(0f, 0.5f)]
+    public float jitterProbability = 0.25f;
+
     int cellCount;
 
     HexCellPriorityQueue searchFrontier;
@@ -48,7 +51,8 @@ public class HexMapGenerator : MonoBehaviour {
                 if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
                     neighbor.SearchPhase = searchFrontierPhase;
                     neighbor.Distance = neighbor.coordinates.DistanceTo(center);
-                    neighbor.SearchHeuristic = 0;
+                    neighbor.SearchHeuristic = Random.value < jitterProbability 
+                                             ? 1 : 0;
                     searchFrontier.Enqueue(neighbor);
                 }
             }
