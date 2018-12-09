@@ -5,6 +5,8 @@ public class HexMapGenerator : MonoBehaviour {
 
     public HexGrid grid;
 
+    public int seed;
+
     [Range(0f, 0.5f)]
     public float jitterProbability = 0.25f;
 
@@ -38,6 +40,12 @@ public class HexMapGenerator : MonoBehaviour {
     int searchFrontierPhase;
 
     public void GenerateMap (int x, int z) {
+        Random.State originalRandomState = Random.state;
+        seed = Random.Range(0, int.MaxValue);
+        seed ^= (int)System.DateTime.Now.Ticks;
+        seed ^= (int)Time.unscaledTime;
+        Random.InitState(seed);
+
         cellCount = x * z;
 
         grid.CreateMap(x, z);
@@ -58,6 +66,8 @@ public class HexMapGenerator : MonoBehaviour {
         for (int i = 0; i < cellCount; i++) {
             grid.GetCell(i).SearchPhase = 0;
         }
+
+        Random.state = originalRandomState;
     }
 
     int RaiseTerrain (int chunkSize, int budget) {
