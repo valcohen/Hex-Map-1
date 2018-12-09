@@ -5,6 +5,7 @@ public class HexMapGenerator : MonoBehaviour {
 
     public HexGrid grid;
 
+    public bool useFixedSeed;
     public int seed;
 
     [Range(0f, 0.5f)]
@@ -41,9 +42,11 @@ public class HexMapGenerator : MonoBehaviour {
 
     public void GenerateMap (int x, int z) {
         Random.State originalRandomState = Random.state;
-        seed = Random.Range(0, int.MaxValue);
-        seed ^= (int)System.DateTime.Now.Ticks;
-        seed ^= (int)Time.unscaledTime;
+
+        if (!useFixedSeed) {
+            GenerateNewSeed();
+        }
+
         Random.InitState(seed);
 
         cellCount = x * z;
@@ -68,6 +71,13 @@ public class HexMapGenerator : MonoBehaviour {
         }
 
         Random.state = originalRandomState;
+    }
+
+    void GenerateNewSeed() {
+        seed = Random.Range(0, int.MaxValue);
+        seed ^= (int)System.DateTime.Now.Ticks;
+        seed ^= (int)Time.time;
+        seed &= int.MaxValue;
     }
 
     int RaiseTerrain (int chunkSize, int budget) {
