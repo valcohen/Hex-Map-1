@@ -14,6 +14,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(20, 200)]
     public int chunkSizeMax = 100;
 
+    [Range(0f, 1f)]
+    public float highRiseProbability = 0.25f;
+
     [Range(5, 95)]
     public int landPercentage = 50;
 
@@ -57,12 +60,17 @@ public class HexMapGenerator : MonoBehaviour {
         searchFrontier.Enqueue(firstCell);
         HexCoordinates center = firstCell.coordinates;
 
+        int rise = Random.value < highRiseProbability ? 2 : 1;
         int size = 0;
         while (size < chunkSize && searchFrontier.Count > 0) {
             HexCell current = searchFrontier.Dequeue();
 
-            current.Elevation += 1;
-            if (current.Elevation == waterLevel && --budget == 0)  {
+            int originalElevation = current.Elevation;
+            current.Elevation = originalElevation + rise;
+            if (    originalElevation  < waterLevel
+                &&  current.Elevation >= waterLevel 
+                &&  --budget == 0
+            )  {
                 break;
             }
 
