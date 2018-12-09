@@ -26,6 +26,12 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(1, 5)]
     public int waterLevel = 3;
 
+    [Range(-4, 0)]
+    public int elevationMinimum = -2;
+
+    [Range(6, 10)]
+    public int elevationMaximum = 8;
+
     int cellCount;
 
     HexCellPriorityQueue searchFrontier;
@@ -69,9 +75,14 @@ public class HexMapGenerator : MonoBehaviour {
             HexCell current = searchFrontier.Dequeue();
 
             int originalElevation = current.Elevation;
-            current.Elevation = originalElevation + rise;
+            int newElevation = originalElevation + rise;
+            if (newElevation > elevationMaximum) { 
+                continue; 
+            }
+            current.Elevation = newElevation;
+
             if (    originalElevation  < waterLevel
-                &&  current.Elevation >= waterLevel 
+                &&  newElevation      >= waterLevel 
                 &&  --budget == 0
             )  {
                 break;
@@ -110,9 +121,13 @@ public class HexMapGenerator : MonoBehaviour {
             HexCell current = searchFrontier.Dequeue();
 
             int originalElevation = current.Elevation;
-            current.Elevation = originalElevation + sink;
+            int newElevation = current.Elevation - sink;
+            if (newElevation < elevationMinimum) {
+                continue;
+            }
+            current.Elevation = newElevation;
             if (    originalElevation >= waterLevel
-                &&  current.Elevation  < waterLevel
+                &&  newElevation       < waterLevel
             ) {
                 budget += 1;
             }
