@@ -17,6 +17,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(5, 95)]
     public int landPercentage = 50;
 
+    [Range(1, 5)]
+    public int waterLevel = 3;
+
     int cellCount;
 
     HexCellPriorityQueue searchFrontier;
@@ -32,7 +35,7 @@ public class HexMapGenerator : MonoBehaviour {
         }
 
         for (int i = 0; i < cellCount; i++) {
-            grid.GetCell(i).WaterLevel = 1;
+            grid.GetCell(i).WaterLevel = waterLevel;
         }
 
         CreateLand();
@@ -59,7 +62,7 @@ public class HexMapGenerator : MonoBehaviour {
             HexCell current = searchFrontier.Dequeue();
 
             current.Elevation += 1;
-            if (current.Elevation == 1 && --budget == 0)  {
+            if (current.Elevation == waterLevel && --budget == 0)  {
                 break;
             }
 
