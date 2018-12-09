@@ -32,6 +32,7 @@ public class HexMapGenerator : MonoBehaviour {
         }
 
         CreateLand();
+        SetTerraintype();
 
         // Modifying adjacent cells sets a cell's search frontier, 
         // which is also used by unit pathfinding. Reset them.
@@ -53,9 +54,9 @@ public class HexMapGenerator : MonoBehaviour {
         while (size < chunkSize && searchFrontier.Count > 0) {
             HexCell current = searchFrontier.Dequeue();
 
-            if (current.TerrainTypeIndex == 0) {
-                current.TerrainTypeIndex = 1;
-                if (--budget == 0) { break; }
+            current.Elevation += 1;
+            if (current.Elevation == 1 && --budget == 0)  {
+                break;
             }
 
             size += 1;
@@ -86,6 +87,13 @@ public class HexMapGenerator : MonoBehaviour {
             landBudget = RaiseTerrain(
                 Random.Range(chunkSizeMin, chunkSizeMax + 1), landBudget)
             ;
+        }
+    }
+
+    void SetTerraintype () {
+        for (int i = 0; i < cellCount; i++) {
+            HexCell cell = grid.GetCell(i);
+            cell.TerrainTypeIndex = cell.Elevation;
         }
     }
 }
