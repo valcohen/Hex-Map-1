@@ -35,7 +35,14 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(6, 10)]
     public int elevationMaximum = 8;
 
+    [Range(0, 10)]
+    public int mapBorderX = 5;
+
+    [Range(0, 10)]
+    public int mapBorderZ = 5;
+
     int cellCount;
+    int xMin, xMax, zMin, zMax;
 
     HexCellPriorityQueue searchFrontier;
     int searchFrontierPhase;
@@ -44,7 +51,7 @@ public class HexMapGenerator : MonoBehaviour {
         Random.State originalRandomState = Random.state;
 
         if (!useFixedSeed) {
-            GenerateNewSeed();
+            GenerateNewRandomSeed();
         }
 
         Random.InitState(seed);
@@ -61,6 +68,11 @@ public class HexMapGenerator : MonoBehaviour {
             grid.GetCell(i).WaterLevel = waterLevel;
         }
 
+        xMin = mapBorderX;
+        xMax = x - mapBorderX;
+        zMin = mapBorderZ;
+        zMax = z - mapBorderZ;
+
         CreateLand();
         SetTerraintype();
 
@@ -73,7 +85,7 @@ public class HexMapGenerator : MonoBehaviour {
         Random.state = originalRandomState;
     }
 
-    void GenerateNewSeed() {
+    void GenerateNewRandomSeed() {
         seed = Random.Range(0, int.MaxValue);
         seed ^= (int)System.DateTime.Now.Ticks;
         seed ^= (int)Time.time;
@@ -171,7 +183,7 @@ public class HexMapGenerator : MonoBehaviour {
     }
 
     HexCell GetRandomCell () {
-        return grid.GetCell(Random.Range(0, cellCount));
+        return grid.GetCell(Random.Range(xMin, xMax), Random.Range(zMin, zMax));
     }
 
     void CreateLand () {
