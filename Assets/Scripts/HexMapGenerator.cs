@@ -17,6 +17,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(0f, 1f)]
     public float highRiseProbability = 0.25f;
 
+    [Range(0f, 0.4f)]
+    public float sinkProbability = 0.2f;
+
     [Range(5, 95)]
     public int landPercentage = 50;
 
@@ -92,6 +95,46 @@ public class HexMapGenerator : MonoBehaviour {
         return budget;
     }
 
+    int SinkTerrain (int chunkSize, int budget) {
+        searchFrontierPhase += 1;
+        HexCell firstCell = GetRandomCell();
+        firstCell.SearchPhase = searchFrontierPhase;
+        firstCell.Distance = 0;
+        firstCell.SearchHeuristic = 0;
+        searchFrontier.Enqueue(firstCell);
+        HexCoordinates center = firstCell.coordinates;
+
+        int sink = Random.value < highRiseProbability ? 2 : 1;
+        int size = 0;
+        while (size < chunkSize && searchFrontier.Count > 0) {
+            HexCell current = searchFrontier.Dequeue();
+
+            int originalElevation = current.Elevation;
+            current.Elevation = originalElevation + sink;
+            if (    originalElevation >= waterLevel
+                &&  current.Elevation  < waterLevel
+            ) {
+                budget += 1;
+            }
+
+            size += 1;
+
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+                HexCell neighbor = current.GetNeighbor(d);
+                if (neighbor && neighbor.SearchPhase < searchFrontierPhase) {
+                    neighbor.SearchPhase = searchFrontierPhase;
+                    neighbor.Distance = neighbor.coordinates.DistanceTo(center);
+                    neighbor.SearchHeuristic = Random.value < jitterProbability
+                                             ? 1 : 0;
+                    searchFrontier.Enqueue(neighbor);
+                }
+            }
+        }
+        searchFrontier.Clear();
+
+        return budget;
+    }
+
     HexCell GetRandomCell () {
         return grid.GetCell(Random.Range(0, cellCount));
     }
@@ -99,9 +142,14 @@ public class HexMapGenerator : MonoBehaviour {
     void CreateLand () {
         int landBudget = Mathf.RoundToInt(cellCount * landPercentage * 0.01f);
         while (landBudget > 0) {
-            landBudget = RaiseTerrain(
-                Random.Range(chunkSizeMin, chunkSizeMax + 1), landBudget)
-            ;
+
+            int chunkSize = Random.Range(chunkSizeMin, chunkSizeMax - 1);
+            if (Random.value < sinkProbability) {
+                landBudget = SinkTerrain(chunkSize, landBudget);
+            }
+            else {
+                landBudget = RaiseTerrain(chunkSize, landBudget);
+            }
         }
     }
 
