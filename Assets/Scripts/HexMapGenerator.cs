@@ -14,6 +14,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(20, 200)]
     public int chunkSizeMax = 100;
 
+    [Range(5, 95)]
+    public int landPercentage = 50;
+
     int cellCount;
 
     HexCellPriorityQueue searchFrontier;
@@ -28,9 +31,7 @@ public class HexMapGenerator : MonoBehaviour {
             searchFrontier = new HexCellPriorityQueue();
         }
 
-        for (int i = 0; i < 5; i++) {
-            RaiseTerrain(Random.Range(chunkSizeMin, chunkSizeMax + 1));
-        }
+        CreateLand();
 
         // Modifying adjacent cells sets a cell's search frontier, 
         // which is also used by unit pathfinding. Reset them.
@@ -39,7 +40,7 @@ public class HexMapGenerator : MonoBehaviour {
         }
     }
 
-    void RaiseTerrain (int chunkSize) {
+    int RaiseTerrain (int chunkSize, int budget) {
         searchFrontierPhase += 1;
         HexCell firstCell = GetRandomCell();
         firstCell.SearchPhase = searchFrontierPhase;
@@ -51,7 +52,12 @@ public class HexMapGenerator : MonoBehaviour {
         int size = 0;
         while (size < chunkSize && searchFrontier.Count > 0) {
             HexCell current = searchFrontier.Dequeue();
-            current.TerrainTypeIndex = 1;
+
+            if (current.TerrainTypeIndex == 0) {
+                current.TerrainTypeIndex = 1;
+                if (--budget == 0) { break; }
+            }
+
             size += 1;
 
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
@@ -66,9 +72,20 @@ public class HexMapGenerator : MonoBehaviour {
             }
         }
         searchFrontier.Clear();
+
+        return budget;
     }
 
     HexCell GetRandomCell () {
         return grid.GetCell(Random.Range(0, cellCount));
+    }
+
+    void CreateLand () {
+        int landBudget = Mathf.RoundToInt(cellCount * landPercentage * 0.01f);
+        while (landBudget > 0) {
+            landBudget = RaiseTerrain(
+                Random.Range(chunkSizeMin, chunkSizeMax + 1), landBudget)
+            ;
+        }
     }
 }
