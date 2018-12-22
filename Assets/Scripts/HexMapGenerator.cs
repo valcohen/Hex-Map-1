@@ -49,21 +49,8 @@ public class HexMapGenerator : MonoBehaviour {
 
     List<MapRegion> regions;
 
-    void CreateRegions () {
-        if (regions == null) {
-            regions = new List<MapRegion>();
-        }
-        else {
-            regions.Clear();
-        }
-
-        MapRegion region;
-        region.xMin = mapBorderX;
-        region.xMax = grid.cellCountX - mapBorderX;
-        region.zMin = mapBorderZ;
-        region.zMax = grid.cellCountZ - mapBorderZ;
-        regions.Add(region);
-    }
+    [Range(0, 10)]
+    public int regionBorder = 5;
 
     HexCellPriorityQueue searchFrontier;
     int searchFrontierPhase;
@@ -239,4 +226,40 @@ public class HexMapGenerator : MonoBehaviour {
             }
         }
     }
+
+    void CreateRegions() {
+        if (regions == null) {
+            regions = new List<MapRegion>();
+        }
+        else {
+            regions.Clear();
+        }
+
+        MapRegion region = new MapRegion();
+
+        if (Random.value < 0.5f) {      // split vertically
+            region.xMin = mapBorderX;
+            region.xMax = grid.cellCountX / 2 - regionBorder;
+            region.zMin = mapBorderZ;
+            region.zMax = grid.cellCountZ - mapBorderZ;
+            regions.Add(region);
+
+            region.xMin = grid.cellCountX / 2 + regionBorder;
+            region.xMax = grid.cellCountX - mapBorderX;
+            regions.Add(region);
+        }
+        else {                          // split horizontally
+            region.xMin = mapBorderX;
+            region.xMax = grid.cellCountX - mapBorderX;
+            region.xMin = mapBorderZ;
+            region.zMax = grid.cellCountX / 2 - regionBorder;
+            regions.Add(region);
+
+            region.zMin = grid.cellCountZ / 2 + regionBorder;
+            region.zMax = grid.cellCountZ - mapBorderZ;
+            regions.Add(region);
+        }
+    }
+
+
 }
