@@ -52,6 +52,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(0, 10)]
     public int regionBorder = 5;
 
+    [Range(1, 4)]
+    public int regionCount = 1;
+
     HexCellPriorityQueue searchFrontier;
     int searchFrontierPhase;
 
@@ -237,28 +240,75 @@ public class HexMapGenerator : MonoBehaviour {
 
         MapRegion region = new MapRegion();
 
-        if (Random.value < 0.5f) {      // split vertically
-            region.xMin = mapBorderX;
-            region.xMax = grid.cellCountX / 2 - regionBorder;
-            region.zMin = mapBorderZ;
-            region.zMax = grid.cellCountZ - mapBorderZ;
-            regions.Add(region);
+        switch (regionCount) {
+            default:
+                region.xMin = mapBorderX;
+                region.xMax = grid.cellCountX - mapBorderX;
+                region.zMin = mapBorderZ;
+                region.zMax = grid.cellCountZ - mapBorderZ;
+                regions.Add(region);
+                break;
+            case 2:
+                if (Random.value < 0.5f) {      // split vertically
+                    region.xMin = mapBorderX;
+                    region.xMax = grid.cellCountX / 2 - regionBorder;
+                    region.zMin = mapBorderZ;
+                    region.zMax = grid.cellCountZ - mapBorderZ;
+                    regions.Add(region);
 
-            region.xMin = grid.cellCountX / 2 + regionBorder;
-            region.xMax = grid.cellCountX - mapBorderX;
-            regions.Add(region);
-        }
-        else {                          // split horizontally
-            region.xMin = mapBorderX;
-            region.xMax = grid.cellCountX - mapBorderX;
-            region.xMin = mapBorderZ;
-            region.zMax = grid.cellCountX / 2 - regionBorder;
-            regions.Add(region);
+                    region.xMin = grid.cellCountX / 2 + regionBorder;
+                    region.xMax = grid.cellCountX - mapBorderX;
+                    regions.Add(region);
+                }
+                else {                          // split horizontally
+                    region.xMin = mapBorderX;
+                    region.xMax = grid.cellCountX - mapBorderX;
+                    region.zMin = mapBorderZ;
+                    region.zMax = grid.cellCountX / 2 - regionBorder;
+                    regions.Add(region);
 
-            region.zMin = grid.cellCountZ / 2 + regionBorder;
-            region.zMax = grid.cellCountZ - mapBorderZ;
-            regions.Add(region);
+                    region.zMin = grid.cellCountZ / 2 + regionBorder;
+                    region.zMax = grid.cellCountZ - mapBorderZ;
+                    regions.Add(region);
+                }
+                break;
+            case 3:
+                // only vertical split; horizontal would be too narrow
+                region.xMin = mapBorderX;
+                region.xMax = grid.cellCountX / 3 - regionBorder;
+                region.zMin = mapBorderZ;
+                region.zMax = grid.cellCountZ - mapBorderZ;
+                regions.Add(region);
+
+                region.xMin = grid.cellCountX / 3 + regionBorder;
+                region.xMax = grid.cellCountX * 2 / 3 - regionBorder;
+                regions.Add(region);
+
+                region.xMin = grid.cellCountX * 2 / 3 + regionBorder;
+                region.xMax = grid.cellCountX - mapBorderX;
+                regions.Add(region);
+                break;
+            case 4:
+                region.xMin = mapBorderX;
+                region.xMax = grid.cellCountX / 2 - regionBorder;
+                region.zMin = mapBorderZ;
+                region.zMax = grid.cellCountZ / 2 - regionBorder;
+                regions.Add(region);
+
+                region.xMin = grid.cellCountX / 2 + regionBorder;
+                region.xMax = grid.cellCountX - mapBorderX;
+                regions.Add(region);
+
+                region.zMin = grid.cellCountZ / 2 + regionBorder;
+                region.zMax = grid.cellCountZ - mapBorderZ;
+                regions.Add(region);
+
+                region.xMin = mapBorderX;
+                region.xMax = grid.cellCountX / 2 - regionBorder;
+                regions.Add(region);
+                break;
         }
+
     }
 
 
