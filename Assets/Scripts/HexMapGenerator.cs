@@ -331,8 +331,10 @@ public class HexMapGenerator : MonoBehaviour {
         while (erodibleCells.Count > targetErodibleCount) {
             int index = Random.Range(0, erodibleCells.Count);
             HexCell cell = erodibleCells[index];
+            HexCell targetCell = GetErosionTarget(cell);
 
             cell.Elevation -= 1;
+            targetCell.Elevation += 1;
 
             // only remove the cell if it's no longer erodible
             if (!IsErodibe(cell)) {
@@ -346,12 +348,25 @@ public class HexMapGenerator : MonoBehaviour {
             // if neighbors are now erodible, add them to the list
             for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
                 HexCell neighbor = cell.GetNeighbor(d);
-                if (    neighbor && IsErodibe(neighbor)
+                if (   neighbor 
+                    && IsErodibe(neighbor)
                     && !erodibleCells.Contains(neighbor)
                 ) {
                     erodibleCells.Add(neighbor);
                 }
+            }
 
+            // raising target cell may make its neighbors no longer erodible,
+            // so check them and remove from the list
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+                HexCell neighbor = targetCell.GetNeighbor(d);
+                if (   neighbor 
+                    && neighbor != cell
+                    && !IsErodibe(neighbor)
+                    && erodibleCells.Contains(neighbor)
+                ) {
+                    erodibleCells.Remove(neighbor);
+                }
             }
         }
 
@@ -367,6 +382,20 @@ public class HexMapGenerator : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    HexCell GetErosionTarget (HexCell cell) {
+        List<HexCell> candidates = ListPool<HexCell>.Get();
+        int erosionElevation = cell.Elevation - 2;
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+            HexCell neighbor = cell.GetNeighbor(d);
+            if (neighbor && neighbor.Elevation <= erosionElevation) {
+                candidates.Add(neighbor);
+            }
+        }
+        HexCell target = candidates[Random.Range(0, candidates.Count)];
+        ListPool<HexCell>.Add(candidates);
+        return target;
     }
 
 }
