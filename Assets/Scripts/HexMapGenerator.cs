@@ -55,6 +55,9 @@ public class HexMapGenerator : MonoBehaviour {
     [Range(1, 4)]
     public int regionCount = 1;
 
+    [Range(0, 100)]
+    public int erosionPercentage = 50;
+
     HexCellPriorityQueue searchFrontier;
     int searchFrontierPhase;
 
@@ -81,6 +84,7 @@ public class HexMapGenerator : MonoBehaviour {
 
         CreateRegions();
         CreateLand();
+        ErodeLand();
         SetTerraintype();
 
         // Modifying adjacent cells sets a cell's search frontier, 
@@ -311,5 +315,58 @@ public class HexMapGenerator : MonoBehaviour {
 
     }
 
+
+    void ErodeLand () {
+        List<HexCell> erodibleCells = ListPool<HexCell>.Get();
+        for (int i = 0; i < cellCount; i++) {
+            HexCell cell = grid.GetCell(i);
+            if (IsErodibe(cell)) {
+                erodibleCells.Add(cell);
+            }
+        }
+
+        int targetErodibleCount = 
+            (int)(erodibleCells.Count * (100 - erosionPercentage) * 0.01f);
+
+        while (erodibleCells.Count > targetErodibleCount) {
+            int index = Random.Range(0, erodibleCells.Count);
+            HexCell cell = erodibleCells[index];
+
+            cell.Elevation -= 1;
+
+            // only remove the cell if it's no longer erodible
+            if (!IsErodibe(cell)) {
+                // To prevent the search required by erodibleCells.Remove(cell);
+                // override current cell with the last in the list, then 
+                // remove the last element. Order doesn't matter here.
+                erodibleCells[index] = erodibleCells[erodibleCells.Count - 1];
+                erodibleCells.RemoveAt(erodibleCells.Count - 1);
+            }
+
+            // if neighbors are now erodible, add them to the list
+            for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+                HexCell neighbor = cell.GetNeighbor(d);
+                if (    neighbor && IsErodibe(neighbor)
+                    && !erodibleCells.Contains(neighbor)
+                ) {
+                    erodibleCells.Add(neighbor);
+                }
+
+            }
+        }
+
+        ListPool<HexCell>.Add(erodibleCells);
+    }
+
+    bool IsErodibe (HexCell cell) {
+        int erodibleElevation = cell.Elevation - 2;
+        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+            HexCell neighbor = cell.GetNeighbor(d);
+            if (neighbor && neighbor.Elevation <= erodibleElevation) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
