@@ -42,7 +42,28 @@ public class HexMapGenerator : MonoBehaviour {
     public int mapBorderZ = 5;
 
     int cellCount;
-    int xMin, xMax, zMin, zMax;
+
+    struct MapRegion {
+        public int xMin, xMax, zMin, zMax;    
+    }
+
+    List<MapRegion> regions;
+
+    void CreateRegions () {
+        if (regions == null) {
+            regions = new List<MapRegion>();
+        }
+        else {
+            regions.Clear();
+        }
+
+        MapRegion region;
+        region.xMin = mapBorderX;
+        region.xMax = grid.cellCountX - mapBorderX;
+        region.zMin = mapBorderZ;
+        region.zMax = grid.cellCountZ - mapBorderZ;
+        regions.Add(region);
+    }
 
     HexCellPriorityQueue searchFrontier;
     int searchFrontierPhase;
@@ -68,11 +89,7 @@ public class HexMapGenerator : MonoBehaviour {
             grid.GetCell(i).WaterLevel = waterLevel;
         }
 
-        xMin = mapBorderX;
-        xMax = x - mapBorderX;
-        zMin = mapBorderZ;
-        zMax = z - mapBorderZ;
-
+        CreateRegions();
         CreateLand();
         SetTerraintype();
 
@@ -92,9 +109,9 @@ public class HexMapGenerator : MonoBehaviour {
         seed &= int.MaxValue;
     }
 
-    int RaiseTerrain (int chunkSize, int budget) {
+    int RaiseTerrain (int chunkSize, int budget, MapRegion region) {
         searchFrontierPhase += 1;
-        HexCell firstCell = GetRandomCell();
+        HexCell firstCell = GetRandomCell(region);
         firstCell.SearchPhase = searchFrontierPhase;
         firstCell.Distance = 0;
         firstCell.SearchHeuristic = 0;
@@ -138,9 +155,9 @@ public class HexMapGenerator : MonoBehaviour {
         return budget;
     }
 
-    int SinkTerrain (int chunkSize, int budget) {
+    int SinkTerrain (int chunkSize, int budget, MapRegion region) {
         searchFrontierPhase += 1;
-        HexCell firstCell = GetRandomCell();
+        HexCell firstCell = GetRandomCell(region);
         firstCell.SearchPhase = searchFrontierPhase;
         firstCell.Distance = 0;
         firstCell.SearchHeuristic = 0;
@@ -182,20 +199,30 @@ public class HexMapGenerator : MonoBehaviour {
         return budget;
     }
 
-    HexCell GetRandomCell () {
-        return grid.GetCell(Random.Range(xMin, xMax), Random.Range(zMin, zMax));
+    HexCell GetRandomCell (MapRegion region) {
+        return grid.GetCell(
+            Random.Range(region.xMin, region.xMax), 
+            Random.Range(region.zMin, region.zMax)
+        );
     }
 
     void CreateLand () {
         int landBudget = Mathf.RoundToInt(cellCount * landPercentage * 0.01f);
 
-        for (int guard = 0; landBudget > 0 && guard < 10000; guard++) {
-            int chunkSize = Random.Range(chunkSizeMin, chunkSizeMax - 1);
-            if (Random.value < sinkProbability) {
-                landBudget = SinkTerrain(chunkSize, landBudget);
-            }
-            else {
-                landBudget = RaiseTerrain(chunkSize, landBudget);
+        for (int guard = 0; guard < 10000; guard++) {
+            bool sink = Random.value < sinkProbability;
+            for (int i = 0; i < regions.Count; i++) {
+                MapRegion region = regions[i];
+                int chunkSize = Random.Range(chunkSizeMin, chunkSizeMax - 1);
+                if (sink) {
+                    landBudget = SinkTerrain(chunkSize, landBudget, region);
+                }
+                else {
+                    landBudget = RaiseTerrain(chunkSize, landBudget, region);
+                    if (landBudget == 0) {
+                        return;
+                    }
+                }
             }
         }
 
