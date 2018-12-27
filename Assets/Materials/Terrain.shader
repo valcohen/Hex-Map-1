@@ -44,8 +44,8 @@
             float4 cell2 = GetCellData(v, 2);
 
             data.terrain.x = cell0.w;
-            data.terrain.y = cell0.w;
-            data.terrain.z = cell0.w;
+            data.terrain.y = cell1.w;
+            data.terrain.z = cell2.w;
 
             data.visibility.x = cell0.x;
             data.visibility.y = cell1.x;
