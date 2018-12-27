@@ -141,4 +141,23 @@ public class HexCellShaderData : MonoBehaviour {
         needsVisibilityReset = true;
         enabled = true;
     }
+
+    public void SetMapData (HexCell cell, float data) {
+        // B 255 is used to indicate that a cell's visibility is in transition, 
+        // so limit data values to 254. Unit movement will wipe out map data.
+        byte clampedValue = data < 0f 
+                          ? (byte)0 
+                          : (data < 1f ? (byte)(data * 254f) : (byte)254);
+        cellTextureData[cell.Index].b = clampedValue;
+        enabled = true;
+
+        Debug.Log(String.Format(
+            "cell {0} elevation: {1}, data: {2} ({3}), mapData: {4}", 
+            cell.Index, 
+            cell.Elevation, 
+            data, 
+            clampedValue,
+            cellTextureData[cell.Index]
+        ));
+    }
 }

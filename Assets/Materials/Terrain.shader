@@ -8,6 +8,7 @@
         // to avoid highlights when painitng unexplored areas black 
         _Specular ("Specular", Color) = (0.2, 0.2, 0.2)
         _BackgroundColor ("BackgroundColor", Color) = (0, 0, 0)
+        [Toggle(SHOW_MAP_DATA)] _ShowMapData ("Show Map Data", Float) = 0
 	}
 	SubShader {
 		Tags { "RenderType"="Opaque" }
@@ -25,15 +26,27 @@
         // create shader variant HEX_MAP_EDIT_MODE for when keyword is defined
         #pragma multi_compile _ HEX_MAP_EDIT_MODE
 
+        #pragma shader_feature SHOW_MAP_DATA
+
         #include "HexCellData.cginc"
 
 		UNITY_DECLARE_TEX2DARRAY(_MainTex);
+
+        half _Glossiness;
+        fixed3 _Specular;
+        fixed4 _Color;
+        half3 _BackgroundColor;
+        sampler2D _GridTex;
 
 		struct Input {
             float4 color : COLOR;
             float3 worldPos;
             float3 terrain;
             float4 visibility;
+
+            #if defined(SHOW_MAP_DATA)
+                float mapData;
+            #endif
 		};
 
         void vert (inout appdata_full v, out Input data) {
@@ -44,8 +57,8 @@
             float4 cell2 = GetCellData(v, 2);
 
             data.terrain.x = cell0.w;
-            data.terrain.y = cell0.w;
-            data.terrain.z = cell0.w;
+            data.terrain.y = cell1.w;
+            data.terrain.z = cell2.w;
 
             data.visibility.x = cell0.x;
             data.visibility.y = cell1.x;
@@ -55,13 +68,13 @@
             data.visibility.w = cell0.y * v.color.x
                               + cell1.y * v.color.y
                               + cell2.y * v.color.z;
-        }
 
-        half _Glossiness;
-        fixed3 _Specular;
-        fixed4 _Color;
-        half3 _BackgroundColor;
-        sampler2D _GridTex;
+            #if defined(SHOW_MAP_DATA)
+                data.mapData = cell0.z * v.color.x; 
+                             + cell1.z * v.color.y 
+                             + cell2.z * v.color.z;
+            #endif
+        }
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -92,6 +105,9 @@
 
             float explored = IN.visibility.w;
 			o.Albedo = c.rgb * grid * _Color * explored;
+            #if defined(SHOW_MAP_DATA)
+                o.Albedo = IN.mapData * grid;
+            #endif
 			o.Specular = _Specular * explored;
 			o.Smoothness = _Glossiness;
             o.Occlusion = explored;

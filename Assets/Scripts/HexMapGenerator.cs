@@ -85,7 +85,7 @@ public class HexMapGenerator : MonoBehaviour {
         CreateRegions();
         CreateLand();
         ErodeLand();
-        SetTerraintype();
+        SetTerrainType();
 
         // Modifying adjacent cells sets a cell's search frontier, 
         // which is also used by unit pathfinding. Reset them.
@@ -225,12 +225,24 @@ public class HexMapGenerator : MonoBehaviour {
         }
     }
 
-    void SetTerraintype () {
+    void SetTerrainType () {
+        Debug.Log(string.Format(
+            "minElevation: {0}, maxElevation: {1}", 
+            elevationMinimum, elevationMaximum
+        ));
         for (int i = 0; i < cellCount; i++) {
             HexCell cell = grid.GetCell(i);
             if (!cell.IsUnderwater) {
                 cell.TerrainTypeIndex = cell.Elevation -  cell.WaterLevel;
             }
+
+            // visualize elevation: convert int to float 0..1
+            float elevationData =
+                (cell.Elevation - elevationMinimum) /
+                (float)(elevationMaximum - elevationMinimum)
+            ;
+
+            cell.SetMapData(elevationData);
         }
     }
 
